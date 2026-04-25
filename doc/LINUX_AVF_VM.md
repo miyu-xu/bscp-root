@@ -180,6 +180,7 @@ Windows 侧已有 host path mapping；Linux host 现在也能使用同一套环�
 - Linux regression 不再依赖 Windows 风格 `virtmgr-trace.log`，而是优先从 `vm-run-microdroid.log` / `guest-log.txt` 提取 marker
 - persistent 场景下，CID 会从 run log 回推，而不是强依赖 trace
 - regression 会记录初始 repo-local `crosvm` / `virtmgr` PID 集，并在 transient smoke 后清理由本轮新增的进程，避免后续 persistent 场景撞上前一轮 transient VM
+- regression 入口会先清理旧的 repo-local regression `virtmgr` / `crosvm` 残留；否则历史失败运行留下的 persistent service 或 orphan `crosvm` 可能长期占住低位 CID（例如 4097-4102）
 
 可选覆盖：
 

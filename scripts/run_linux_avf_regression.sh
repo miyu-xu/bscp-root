@@ -49,6 +49,20 @@ run_step() {
     "$@"
 }
 
+run_step_allow_status() {
+    local allowed_status="$1"
+    shift
+    local label="$1"
+    shift
+    echo "=== $label ==="
+    if "$@"; then
+        return 0
+    else
+        local status=$?
+        [[ $status -eq "$allowed_status" ]]
+    fi
+}
+
 list_process_pids_for_binary() {
     local binary="$1"
     ps -eo pid=,args= | awk -v exe="$binary" 'index($0, exe) { print $1 }'
@@ -87,6 +101,38 @@ cleanup_transient_host_processes() {
     kill_new_binary_processes "$BASELINE_CROSVM_PIDS" "$CROSVM_BIN"
     kill_new_binary_processes "$BASELINE_VIRTMGR_PIDS" "$VIRTMGR_BIN"
 }
+
+kill_all_binary_processes() {
+    local binary="$1"
+    local current_pids pid
+    current_pids="$(list_process_pids_for_binary "$binary")"
+    while IFS= read -r pid; do
+        [[ -n "$pid" ]] || continue
+        kill "$pid" 2>/dev/null || true
+        if ! wait_for_pid_exit "$pid"; then
+            kill -9 "$pid" 2>/dev/null || true
+            wait_for_pid_exit "$pid" || true
+        fi
+    done <<<"$current_pids"
+}
+
+stop_stale_regression_services() {
+    local service_root
+    find "$DIST_ROOT/logs" -maxdepth 2 -type d -name service 2>/dev/null | sort | while IFS= read -r service_root; do
+        [[ -n "$service_root" ]] || continue
+        [[ "$service_root" == "$SERVICE_ROOT" ]] && continue
+        "$VM_WRAPPER" -Command stop-service -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -ServiceRoot "$service_root" >/dev/null 2>&1 || true
+    done
+}
+
+cleanup_stale_regression_processes() {
+    stop_stale_regression_services
+    kill_all_binary_processes "$CROSVM_BIN"
+    kill_all_binary_processes "$VIRTMGR_BIN"
+}
+
+run_step "cleanup stale regression processes" \
+    cleanup_stale_regression_processes
 
 BASELINE_CROSVM_PIDS="$(list_process_pids_for_binary "$CROSVM_BIN")"
 BASELINE_VIRTMGR_PIDS="$(list_process_pids_for_binary "$VIRTMGR_BIN")"
@@ -136,6 +182,48 @@ wait_for_payload_ready() {
     return 1
 }
 
+run_log_has_guest_cid_conflict() {
+    local run_log="$1"
+    [[ -f "$run_log" ]] || return 1
+    grep -Eq 'failed to set CID for guest: .*Address already in use' "$run_log"
+}
+
+run_persistent_microdroid_with_retry() {
+    local log_dir="$1"
+    local max_attempts=4
+    local attempt=1
+    local status=0
+
+    while (( attempt <= max_attempts )); do
+        if [[ -d "$log_dir" ]]; then
+            rm -rf "$log_dir"
+        fi
+
+        if "$VM_WRAPPER" \
+            -Command run-microdroid \
+            -RepoRoot "$REPO_ROOT" \
+            -DistRoot "$DIST_ROOT" \
+            -LogDir "$log_dir" \
+            -KeepTemp \
+            -PersistVirtmgr \
+            -ServiceRoot "$SERVICE_ROOT"; then
+            return 0
+        fi
+        status=$?
+
+        if (( attempt == max_attempts )) || ! run_log_has_guest_cid_conflict "$log_dir/vm-run-microdroid.log"; then
+            return "$status"
+        fi
+
+        echo "Guest CID conflict detected during persistent run; retrying with a new VM context (attempt $((attempt + 1))/$max_attempts)." >&2
+        cleanup_transient_host_processes
+        "$VM_WRAPPER" -Command stop-service -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -ServiceRoot "$SERVICE_ROOT" >/dev/null 2>&1 || true
+        attempt=$((attempt + 1))
+    done
+
+    return "$status"
+}
+
 run_step "validate-prereqs" \
     "$VM_WRAPPER" -Command validate-prereqs -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -LogDir "$OUTPUT_ROOT/validate-prereqs"
 
@@ -148,8 +236,8 @@ run_step "create-partition" \
 run_step "create-idsig" \
     "$VM_WRAPPER" -Command create-idsig -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -LogDir "$OUTPUT_ROOT/create-idsig" -OutputPath "$OUTPUT_ROOT/create-idsig/app.idsig"
 
-run_step "run-microdroid" \
-    "$VM_WRAPPER" -Command run-microdroid -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -LogDir "$OUTPUT_ROOT/run-microdroid" -KeepTemp -TimeoutSecs 120 || [[ $? -eq 124 ]]
+run_step_allow_status 124 "run-microdroid" \
+    "$VM_WRAPPER" -Command run-microdroid -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -LogDir "$OUTPUT_ROOT/run-microdroid" -KeepTemp -TimeoutSecs 120
 run_step "check run-microdroid markers" \
     "$CHECK_MARKERS" run-microdroid "$OUTPUT_ROOT/run-microdroid"
 
@@ -157,8 +245,8 @@ run_step "cleanup transient host processes" \
     cleanup_transient_host_processes
 
 if [[ "$INCLUDE_RUN_APP" -eq 1 ]]; then
-    run_step "run-app" \
-        "$VM_WRAPPER" -Command run-app -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -LogDir "$OUTPUT_ROOT/run-app" -KeepTemp -TimeoutSecs 120 || [[ $? -eq 124 ]]
+    run_step_allow_status 124 "run-app" \
+        "$VM_WRAPPER" -Command run-app -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -LogDir "$OUTPUT_ROOT/run-app" -KeepTemp -TimeoutSecs 120
     run_step "check run-app markers" \
         "$CHECK_MARKERS" run-app "$OUTPUT_ROOT/run-app"
     run_step "cleanup run-app host processes" \
@@ -169,7 +257,7 @@ run_step "stop stale service" \
     "$VM_WRAPPER" -Command stop-service -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -ServiceRoot "$SERVICE_ROOT"
 
 run_step "persistent run-microdroid" \
-    "$VM_WRAPPER" -Command run-microdroid -RepoRoot "$REPO_ROOT" -DistRoot "$DIST_ROOT" -LogDir "$OUTPUT_ROOT/persistent-run-microdroid" -KeepTemp -PersistVirtmgr -ServiceRoot "$SERVICE_ROOT"
+    run_persistent_microdroid_with_retry "$OUTPUT_ROOT/persistent-run-microdroid"
 wait_for_payload_ready \
     "$OUTPUT_ROOT/persistent-run-microdroid/guest-log.txt" \
     "$SERVICE_TRACE" \

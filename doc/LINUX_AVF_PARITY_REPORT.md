@@ -184,6 +184,7 @@ Windows 当前对这些能力仍是 Partial / Unsupported；Linux 因为底层�
 - desktop-host crosvm control socket 改成短路径，规避 Unix `ENAMETOOLONG`
 - Linux `vm console` 改为内置 PTY attach，不再依赖外部 `microcom`
 - regression 会在 transient smoke 后清理由本轮新增的 repo-local host 进程，避免后续 persistent 场景撞上前一轮 transient VM
+- regression 入口会先清掉旧的 repo-local regression `virtmgr` / `crosvm` 残留，解决历史失败运行长期占住低位 CID / binder-rpc port 的问题
 - desktop host `create_vm_context()` 的重试窗口放大，避免共享环境里低位 CID / port 被占满时过早失败
 
 ## 7. 最新验证快照
