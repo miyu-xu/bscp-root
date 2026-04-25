@@ -9,7 +9,7 @@ This tree is a **trimmed AOSP layout** for host-side builds: **libbinder-rpc** (
 | RPC Binder (C++) | `frameworks/native/libs/binder` | Top-level `CMakeLists.txt` → `add_subdirectory(frameworks/native/libs/binder)` |
 | Binder Rust / RPC | `frameworks/native/libs/binder/rust` | `path` dependency from AVF crates |
 | AVF apps + libs | `packages/modules/Virtualization` | `virtmgr`, `vm`, `libs/*`, `virtualizationservice/aidl` (generated/stub crates) |
-| crosvm | `external/crosvm` | `cargo build -p crosvm --features whpx,composite-disk,android-sparse` |
+| crosvm | `external/crosvm` | `cargo build -p crosvm --features <host-hypervisor>,composite-disk,android-sparse` |
 
 **Minimum git repos** for the current `build_all.bat` / `build_all.sh` flow: the four **Layer 1** projects in `manifest.xml` (`Virtualization`, `crosvm`, `minijail`, `frameworks/native`). Layer 2 and `hardware/interfaces` are included for AOSP parity and future steps (e.g. building AIDL from source); they are not required for the default CMake + Cargo path in this workspace if you already have the checked-in layout.
 
@@ -53,7 +53,8 @@ Add Layer 2 / `hardware/interfaces` only if you need them (see `manifest.xml`).
 ## Host build after sync
 
 - **Windows**: install MinGW-w64 and CMake as in `build_all.bat`, then run `build_all.bat` from the repo root. Default `RUST_TARGET` is `x86_64-pc-windows-gnu`, and the script builds `crosvm` with the `whpx` feature enabled.
-- **Linux / macOS**: `chmod +x build_all.sh && ./build_all.sh`. The script picks `RUST_TARGET` from `uname` (Linux uses `uname -m` for gnu triple; macOS defaults to `aarch64-apple-darwin`).
+- **Linux**: install `cmake` and `ninja`, then run `chmod +x build_all.sh && ./build_all.sh`. The script picks `RUST_TARGET` from `uname -m` and preserves the Linux crosvm feature set on Linux.
+- **macOS**: install `cmake` and a real `ninja` binary, keep full Xcode selected (`sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`), then run `chmod +x build_all.sh && ./build_all.sh`. The script defaults to `RUST_TARGET=aarch64-apple-darwin`, resolves the active Xcode clang/SDK through `xcrun`, builds `crosvm` with `+nightly --no-default-features --features hvf,default-no-sandbox,config-file,qcow,balloon,android-sparse,composite-disk,tokio`, and ad-hoc signs the collected `out/dist/macos` binaries and libraries (with the Hypervisor entitlement applied to `crosvm`). If you already have an extracted **arm64** `com.android.virt` host APEX tree, set `MACOS_AVF_APEX_TREE_SOURCE=/path/to/apex_tree` while invoking `build_all.sh`; the build will stage it into `out/dist/apex_dir` through `scripts/prepare_host_apex_tree.sh` and validate that `microdroid_kernel` is arm64.
 
 ## Cross-check targets on Windows (no linker for foreign OS)
 

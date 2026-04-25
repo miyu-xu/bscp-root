@@ -4,3 +4,4 @@ external
 frameworks
 packages
 system
+.DS_Store
