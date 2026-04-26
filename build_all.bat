@@ -3,6 +3,8 @@ setlocal enabledelayedexpansion
 
 :: Single host build script:
 :: binder-rpc (CMake) -> copy libs for Rust -> cargo virtmgr+vm+crosvm -> dist\windows
+:: Usage: build_all.bat              (incremental build)
+::        build_all.bat --clean      (clean rebuild from scratch)
 :: Default Rust triple matches MinGW binder-rpc; override with: set RUST_TARGET=...
 
 set "REPO_ROOT=%~dp0"
@@ -11,6 +13,43 @@ set "OUT_ROOT=%REPO_ROOT%\out"
 set "CMAKE_BUILD_DIR=%OUT_ROOT%\build_windows"
 
 if not defined RUST_TARGET set "RUST_TARGET=x86_64-pc-windows-gnu"
+
+:: --clean option
+set "CLEAN_BUILD=0"
+:parse_args
+if "%~1"=="--clean" (
+    set "CLEAN_BUILD=1"
+    shift
+    goto parse_args
+)
+if "%~1"=="-c" (
+    set "CLEAN_BUILD=1"
+    shift
+    goto parse_args
+)
+if "%~1"=="--help" (
+    echo Usage: %~nx0 [--clean]
+    echo   --clean  Force clean rebuild (removes CMake cache and cargo target dir)
+    exit /b 0
+)
+
+if "%CLEAN_BUILD%"=="1" (
+    echo === Clean rebuild requested ===
+    if exist "%CMAKE_BUILD_DIR%" (
+        echo Removing CMake build dir: %CMAKE_BUILD_DIR%
+        rmdir /s /q "%CMAKE_BUILD_DIR%"
+    )
+    if exist "%OUT_ROOT%\target" (
+        echo Removing cargo target dir
+        rmdir /s /q "%OUT_ROOT%\target"
+    )
+    if exist "%OUT_ROOT%\dist" (
+        echo Removing dist dir
+        rmdir /s /q "%OUT_ROOT%\dist"
+    )
+    echo Clean done.
+    echo.
+)
 
 echo === Host build (Windows) ===
 echo REPO_ROOT=%REPO_ROOT%
@@ -32,11 +71,28 @@ rustc -V
 echo.
 echo [1/4] binder-rpc ^(CMake MinGW build^)
 cd /d "%REPO_ROOT%"
-set "MINGW_PATH=C:\workspace\mingw64"
+
+:: Auto-detect MinGW-w64 in common locations
+if not defined MINGW_PATH set "MINGW_PATH="
+if defined MINGW_PATH if not exist "%MINGW_PATH%\bin\g++.exe" set "MINGW_PATH="
+if not defined MINGW_PATH if exist "C:\workspace\mingw64\bin\g++.exe" set "MINGW_PATH=C:\workspace\mingw64"
+if not defined MINGW_PATH if exist "C:\tools\mingw64\bin\g++.exe" set "MINGW_PATH=C:\tools\mingw64"
+if not defined MINGW_PATH if exist "C:\msys64\mingw64\bin\g++.exe" set "MINGW_PATH=C:\msys64\mingw64"
+if not defined MINGW_PATH if exist "C:\mingw-w64\mingw64\bin\g++.exe" set "MINGW_PATH=C:\mingw-w64\mingw64"
+
 set "CMAKE_PATH=C:\Program Files\CMake\bin"
-if not exist "%MINGW_PATH%\bin\g++.exe" (
-    echo Error: MinGW-w64 not found at %MINGW_PATH%
+if not defined MINGW_PATH (
+    echo Error: MinGW-w64 (g++.exe) not found. Checked:
+    echo   C:\workspace\mingw64
+    echo   C:\tools\mingw64
+    echo   C:\msys64\mingw64
+    echo   C:\mingw-w64\mingw64
+    echo.
+    echo Install MinGW-w64 or set MINGW_PATH to the correct location, e.g.:
+    echo   set "MINGW_PATH=C:\your\mingw64"
     exit /b 1
+) else (
+    echo MinGW-w64 found at: %MINGW_PATH%
 )
 if not exist "%CMAKE_PATH%\cmake.exe" (
     echo Error: CMake not found at %CMAKE_PATH%
@@ -98,20 +154,22 @@ set "CARGO_TARGET_DIR=%OUT_ROOT%\target"
 echo [cargo] virtmgr --release --target %RUST_TARGET%
 cargo build --manifest-path "%REPO_ROOT%\packages\modules\Virtualization\android\virtmgr\Cargo.toml" --release --target "%RUST_TARGET%"
 if errorlevel 1 (
-    echo Error: virtmgr cargo build failed
+    echo Error: virtmgr cargo build failed ^(target=%RUST_TARGET%^) >&2
+    echo For MinGW toolchain issues, ensure gcc/g++ are on PATH and the 'binder' crate can compile. >&2
     exit /b 1
 )
 echo [cargo] vm --release --target %RUST_TARGET%
 cargo build --manifest-path "%REPO_ROOT%\packages\modules\Virtualization\android\vm\Cargo.toml" --release --target "%RUST_TARGET%"
 if errorlevel 1 (
-    echo Error: vm cargo build failed
+    echo Error: vm cargo build failed ^(target=%RUST_TARGET%^) >&2
     exit /b 1
 )
 echo [cargo] crosvm --release -p crosvm --target %RUST_TARGET% --features whpx,composite-disk,android-sparse
 cd /d "%REPO_ROOT%\external\crosvm"
 cargo build --release -p crosvm --target "%RUST_TARGET%" --features whpx,composite-disk,android-sparse
 if errorlevel 1 (
-    echo Error: crosvm cargo build failed
+    echo Error: crosvm cargo build failed ^(target=%RUST_TARGET%, features=whpx,composite-disk,android-sparse^) >&2
+    echo Check that Rust nightly toolchain is installed for the %RUST_TARGET% target. >&2
     exit /b 1
 )
 cd /d "%REPO_ROOT%"
@@ -150,6 +208,42 @@ echo RUST_TARGET=%RUST_TARGET% >> "%DIST%\README.txt"
 echo. >> "%DIST%\README.txt"
 echo bin: virtmgr.exe vm.exe crosvm.exe >> "%DIST%\README.txt"
 echo lib: libbinder-rpc.dll >> "%DIST%\README.txt"
+
+echo.
+echo [verify] Checking build artifacts...
+set "VERIFY_FAIL=0"
+
+if not exist "%DIST_BIN%\virtmgr.exe" (
+    echo   [FAIL] virtmgr.exe not found
+    set VERIFY_FAIL=1
+) else (
+    echo   [OK]   virtmgr.exe
+)
+if not exist "%DIST_BIN%\vm.exe" (
+    echo   [FAIL] vm.exe not found
+    set VERIFY_FAIL=1
+) else (
+    echo   [OK]   vm.exe
+)
+if not exist "%DIST_BIN%\crosvm.exe" (
+    echo   [FAIL] crosvm.exe not found
+    set VERIFY_FAIL=1
+) else (
+    echo   [OK]   crosvm.exe
+)
+if not exist "%DIST_LIB%\libbinder-rpc.dll" (
+    echo   [FAIL] libbinder-rpc.dll not found
+    set VERIFY_FAIL=1
+) else (
+    echo   [OK]   libbinder-rpc.dll
+)
+
+if "%VERIFY_FAIL%"=="1" (
+    echo   [FAIL] One or more artifacts are missing.
+    exit /b 1
+) else (
+    echo   [PASS] All artifacts present
+)
 
 cd /d "%REPO_ROOT%"
 echo.

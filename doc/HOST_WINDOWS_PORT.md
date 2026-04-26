@@ -2,6 +2,8 @@
 
 本文档描述在将 `virtmgr` 以 **MinGW 目标**（如 `x86_64-pc-windows-gnu`）交叉编译时所做的结构性修改，以及与 **Android 设备上真实行为** 的差异边界。
 
+> Phase 2 更新：三平台共用的 DesktopHost 抽象层已提取到 `libs/desktop_host/` crate。WindowsDesktopHost 通过统一的 `VsockConnector` trait 提供 named pipe vsock 连接器，使用与 Linux/macOS 同一套 `MockPermissionProvider` / `MockSelinuxProvider`。详见 `libs/desktop_host/src/`。
+
 快速导航：
 - **全模块主机移植总览（含 `libvmclient` / `vm` / 环境变量 / 排错）**：`packages/modules/Virtualization/HOST_WINDOWS_PORTING_GUIDE.md`
 - 参数一致性矩阵：`android/virtmgr/WINDOWS_PARITY_MATRIX.md`
@@ -75,6 +77,8 @@
 **Windows 上仍会在校验阶段 `bail!` 的配置**：**VFIO**、**TAP**（`cfg(network)` 且 `networkSupported` 时与 Linux `run` 的 `--net`/tap-fd 不对齐）、**`boost_uclamp`**。  
 **已支持**：composite 磁盘所需的 **`indirect_files`**（分区句柄保存在 `VmInstance::keepalive_indirect_files`，路径已写入 composite spec，crosvm 按路径打开）；在启用 **`paravirtualized_devices`** 构建配置时，**GPU/display/input** 通过 `--gpu` / `--gpu-display` / `--input` 传递（与 Unix 侧 crosvm 参数形状一致；是否可用取决于本机 **Windows crosvm** 构建特性）。
 
+**Phase 2 更新**：ADB bridge 的双向 io::copy 核心逻辑已从 `crosvm_windows.rs` 和 `crosvm_unix.rs` 抽取到共享 `src/bridge.rs`。Windows 的 `bridge_tcp_client_to_guest_vsock()` 现委托 `bridge::bridge_connection()`，并由 `crosvm_unix.rs` 复用相同入口。
+
 这样在 Windows 上 **不再编译** Unix 专用实现；在已安装/指定 **可运行的 Windows crosvm** 的前提下，可以 **真实拉起** VM 进程。
 
 ---
@@ -99,12 +103,12 @@
   - Windows：支持 `VIRTMGR_DT_OVERLAY_JSON` 作为替代输入；未设置时默认 `Ok(None)`；`VIRTMGR_STRICT_PARITY=1` 下若未提供替代输入则报错。
 - **`check_permission`**：
   - Unix：走 `binder::wait_for_interface("permission")` 与 `IPermissionController`。
-  - Windows：支持 mock allowlist（`VIRTMGR_MOCK_PERMISSION_ALLOWLIST{,_FILE}`）；无 mock 时默认 warning+bypass；`VIRTMGR_STRICT_PARITY=1` 下报错。
+  - Windows：使用统一的 `MockPermissionProvider`（`libs/desktop_host/src/mock_permission.rs`）；支持 JSON 配置（`VIRTMGR_MOCK_PERMISSION_JSON`）和旧版 CSV（`VIRTMGR_MOCK_PERMISSION_ALLOWLIST{,_FILE}`）；无 mock 时默认 bypass；`VIRTMGR_STRICT_PARITY=1` 下报错。
 - **`check_label_for_partition` / `check_label_for_file`**：
   - Unix：使用 `getfilecon` 进行 SELinux 检查。
-  - Windows：支持 mock allowlist（`VIRTMGR_MOCK_SELINUX_LABEL_ALLOWLIST{,_FILE}`）；无 mock 时默认 warning+bypass；`VIRTMGR_STRICT_PARITY=1` 下报错。
+  - Windows：使用统一的 `MockSelinuxProvider`（`libs/desktop_host/src/mock_selinux.rs`）；支持 JSON 配置（`VIRTMGR_MOCK_SELINUX_JSON`）和旧版 CSV（`VIRTMGR_MOCK_SELINUX_LABEL_ALLOWLIST{,_FILE}`）；无 mock 时默认 bypass；`VIRTMGR_STRICT_PARITY=1` 下报错。
 - **`clone_or_prepare_logger_fd`**：无继承 fd 时 Windows 返回 `Status::new_exception_str(..., Some("..."))`；Unix 使用 `pipe` + 读线程。
-- **`connectVsock`**：实现位于 **`src/vsock_transport.rs`**。Unix 使用 **`vsock`**（`VsockStream::connect_with_cid_port`）。Windows 使用 **命名管道**：路径与 C++ `frameworks/native/libs/binder/platform/namedpipe_vsock.h` 中 `NamedPipeVsockAddress` 一致，为 **`\\.\pipe\binder_rpc_vsock_{cid}_{port}`**（`CreateFileW` 客户端，结果封装为 `ParcelFileDescriptor`）。服务端须监听同名管道（例如 `NamedPipeVsockServer` / binder-rpc 主机示例）。
+- **`connectVsock`**：实现位于 **`src/vsock_transport.rs`**（Phase 2 统一通过 `desktop_host::VsockConnector` trait 转发）。Unix 使用 **`vsock`**（`VsockStream::connect_with_cid_port`）。Windows 使用 **命名管道**：路径与 C++ `frameworks/native/libs/binder/platform/namedpipe_vsock.h` 中 `NamedPipeVsockAddress` 一致，为 **`\\.\pipe\binder_rpc_vsock_{cid}_{port}`**（`CreateFileW` 客户端，结果封装为 `ParcelFileDescriptor`）。服务端须监听同名管道（例如 `NamedPipeVsockServer` / binder-rpc 主机示例）。
 - **`load_app_config` 的 VM JSON 路径**：
   - Unix/Android：`/apex/com.android.virt/etc/{os_name}.json`
   - Windows：优先读取环境变量 **`VIRTMGR_MICRODROID_JSON`**；未设置时回退到 `C:/workspace/aosp/packages/modules/Virtualization/build/microdroid/{os_name}.json`
@@ -232,7 +236,7 @@ $env:VIRTMGR_DT_OVERLAY_JSON="C:/workspace/aosp/packages/modules/Virtualization/
 | DT overlay / 调试策略 overlay | 支持 JSON 替代源（`VIRTMGR_DT_OVERLAY_JSON` / `VIRTMGR_DEBUG_POLICY_JSON`）；严格模式下缺失则报错 |
 | SELinux 标签检查 | 支持 mock allowlist；严格模式下无 mock 则报错 |
 | `prefer_staged` APEX | Windows 本地替代（`VIRTMGR_STAGED_APEX_DIR` + 可选 `staged_apexes.json` + 可选 **`VIRTMGR_MOCK_STAGED_APEX_JSON`**） |
-| 权限服务 `permission` | **`IPermissionController`**：Windows 上无服务；支持 **`VIRTMGR_MOCK_PERMISSION_ALLOWLIST{,_FILE}`** mock；严格模式下无 mock 则报错 |
+| 权限服务 `permission` | **`IPermissionController`**：Windows 上无服务；通过 `desktop_host::MockPermissionProvider` 统一 mock，支持 JSON（**`VIRTMGR_MOCK_PERMISSION_JSON`**）或旧版 CSV（**`VIRTMGR_MOCK_PERMISSION_ALLOWLIST{,_FILE}`**）；严格模式下无 mock 则报错 |
 | UID / PID | 桩值，仅用于编译与有限逻辑 |
 | `connectVsock` | 使用命名管道 `\\.\pipe\binder_rpc_vsock_{cid}_{port}`；需对端监听；VM 未运行时仍返回 “VM is not running” |
 | Microdroid JSON 配置路径 | Windows 支持 `VIRTMGR_MICRODROID_JSON` 覆盖，默认回退到 `build/microdroid/{os}.json` |

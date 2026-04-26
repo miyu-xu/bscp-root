@@ -1,0 +1,134 @@
+name: Cross-platform regression
+
+on:
+  push:
+    branches: [main, 'bscp-*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      scenario:
+        description: 'Regression scenario (smoke or full)'
+        required: true
+        default: 'smoke'
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Linux regression (requires KVM — only runs on self-hosted or KVM-enabled
+  # runners; on standard GitHub runners this step is skipped).
+  # ---------------------------------------------------------------------------
+  regression-linux:
+    name: Regression (Linux / KVM)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check KVM availability
+        id: kvm_check
+        run: |
+          if [ -e /dev/kvm ] && [ -r /dev/kvm ] && [ -w /dev/kvm ]; then
+            echo "kvm=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "kvm=0" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Build
+        if: steps.kvm_check.outputs.kvm == '1'
+        run: chmod +x build_all.sh && ./build_all.sh
+      - name: Run smoke regression
+        if: steps.kvm_check.outputs.kvm == '1'
+        run: |
+          bash scripts/run_linux_avf_regression.sh \
+            --scenario-mode ${{ github.event.inputs.scenario || 'smoke' }} \
+            --step-timeout 120
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-logs-linux
+          path: out/dist/linux/logs/
+      - name: Skip notice
+        if: steps.kvm_check.outputs.kvm == '0'
+        run: echo "::notice::KVM not available — skipping Linux VM regression"
+
+  # ---------------------------------------------------------------------------
+  # macOS regression (requires HVF — Apple Silicon runner).
+  # ---------------------------------------------------------------------------
+  regression-macos:
+    name: Regression (macOS / HVF)
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check HVF availability
+        id: hvf_check
+        run: |
+          HV_SUPPORT=$(sysctl -n kern.hv_support 2>/dev/null || echo 0)
+          echo "hvf=$HV_SUPPORT" >> "$GITHUB_OUTPUT"
+      - name: Build
+        if: steps.hvf_check.outputs.hvf == '1'
+        run: chmod +x build_all.sh && ./build_all.sh
+      - name: Run smoke regression
+        if: steps.hvf_check.outputs.hvf == '1'
+        run: |
+          bash scripts/run_macos_avf_regression.sh \
+            --scenario-mode ${{ github.event.inputs.scenario || 'smoke' }} \
+            --step-timeout 120
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-logs-macos
+          path: out/dist/macos/logs/
+      - name: Skip notice
+        if: steps.hvf_check.outputs.hvf == '0'
+        run: echo "::notice::HVF not available — skipping macOS VM regression"
+
+  # ---------------------------------------------------------------------------
+  # Windows regression (requires WHPX).
+  # ---------------------------------------------------------------------------
+  regression-windows:
+    name: Regression (Windows / WHPX)
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check WHPX availability
+        id: whpx_check
+        shell: pwsh
+        run: |
+          $whpx = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty HypervisorPresent
+          "whpx=$whpx" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+      - name: Build
+        if: steps.whpx_check.outputs.whpx == 'true'
+        run: .\build_all.bat
+      - name: Run smoke regression
+        if: steps.whpx_check.outputs.whpx == 'true'
+        shell: pwsh
+        run: |
+          .\scripts\run_windows_avf_regression.ps1 `
+            -ScenarioMode ${{ github.event.inputs.scenario || 'smoke' }} `
+            -StepTimeout 120
+      - name: Upload failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-logs-windows
+          path: out\dist\windows\logs\
+      - name: Skip notice
+        if: steps.whpx_check.outputs.whpx == 'false'
+        run: echo "::notice::WHPX not available — skipping Windows VM regression"
+
+  # ---------------------------------------------------------------------------
+  # Results summary
+  # ---------------------------------------------------------------------------
+  regression-summary:
+    name: Regression summary
+    needs: [regression-linux, regression-macos, regression-windows]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo "## Regression Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Platform | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Linux (KVM)   | ${{ needs.regression-linux.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| macOS (HVF)   | ${{ needs.regression-macos.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Windows (WHPX) | ${{ needs.regression-windows.result }} |" >> $GITHUB_STEP_SUMMARY

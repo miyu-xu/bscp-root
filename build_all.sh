@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Single host build script: binder-rpc (CMake) -> copy libs for Rust -> cargo virtmgr+vm+crosvm -> dist/<platform>
 # Usage: from repo root:  chmod +x build_all.sh && ./build_all.sh
+#        ./build_all.sh --clean   (force clean rebuild from scratch)
 # Override triple: RUST_TARGET=aarch64-unknown-linux-gnu ./build_all.sh
 
 set -euo pipefail
@@ -9,6 +10,30 @@ REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$REPO_ROOT"
 OUT_ROOT="$REPO_ROOT/out"
 CMAKE_BUILD_DIR="$OUT_ROOT/build"
+CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-$OUT_ROOT/target}"
+
+# --- CLI options ---
+CLEAN_BUILD=0
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --clean|-c) CLEAN_BUILD=1; shift ;;
+        --help|-h)
+            echo "Usage: $0 [--clean]"
+            echo "  --clean  Force clean rebuild (removes CMake cache and cargo target dir)"
+            exit 0 ;;
+        *) echo "Unknown option: $1 (use --clean for clean rebuild)" >&2; exit 2 ;;
+    esac
+done
+
+if [[ "$CLEAN_BUILD" -eq 1 ]]; then
+    echo "=== Clean rebuild requested ==="
+    echo "Removing CMake build dir: $CMAKE_BUILD_DIR"
+    rm -rf "$CMAKE_BUILD_DIR"
+    echo "Removing cargo target dir: $CARGO_TARGET_DIR"
+    rm -rf "$CARGO_TARGET_DIR"
+    echo "Removing dist dir"
+    rm -rf "$OUT_ROOT/dist"
+fi
 
 resolve_working_ninja() {
     local candidate=""
@@ -166,7 +191,7 @@ fi
 
 echo
 echo "[3/4] Rust (virtmgr + vm + crosvm)"
-export CARGO_TARGET_DIR="$OUT_ROOT/target"
+export CARGO_TARGET_DIR
 CROSVM_FEATURES="${CROSVM_FEATURES:-$DEFAULT_CROSVM_FEATURES}"
 echo "[cargo] virtmgr --release --target $RUST_TARGET"
 cargo build --manifest-path "$REPO_ROOT/packages/modules/Virtualization/android/virtmgr/Cargo.toml" --release --target "$RUST_TARGET"
@@ -251,11 +276,66 @@ elif [[ -d "$DIST_APEX_TREE" && -x "$PREPARE_APEX_TREE_SCRIPT" ]]; then
   if [[ "$OS_NAME" == "Darwin" ]]; then
     GUEST_KERNEL_INFO="$(file -b "$DIST_APEX_TREE/apex/com.android.virt/etc/fs/microdroid_kernel" 2>/dev/null || true)"
     if [[ -n "$GUEST_KERNEL_INFO" ]] && ! grep -Eiq 'ARM aarch64|ARM64|arm64' <<<"$GUEST_KERNEL_INFO"; then
-      echo "[apex] warning: macOS HVF requires an arm64 Microdroid guest kernel, but the staged tree contains:"
+      echo "[apex] WARNING: macOS HVF requires an arm64 Microdroid guest kernel, but the staged tree contains:"
       echo "[apex]   $GUEST_KERNEL_INFO"
-      echo "[apex]   Set MACOS_AVF_APEX_TREE_SOURCE to an arm64 apex tree before running macOS guest commands."
+      echo "[apex]"
+      echo "[apex]   To fix, run:"
+      echo "[apex]     scripts/fetch_arm64_guest_artifacts.sh --apex-tree $DIST_APEX_TREE --help"
+      echo "[apex]   Or set MACOS_AVF_APEX_TREE_SOURCE to an arm64 apex tree."
+      echo "[apex]   Or run: scripts/fetch_arm64_guest_artifacts.sh --skip-download (shows manual steps)"
     fi
   fi
+fi
+
+if [[ "$OS_NAME" == "Darwin" && -d "$DIST_APEX_TREE" ]]; then
+  FETCH_SCRIPT="$REPO_ROOT/scripts/fetch_arm64_guest_artifacts.sh"
+  if [[ -x "$FETCH_SCRIPT" ]]; then
+    "$FETCH_SCRIPT" --apex-tree "$DIST_APEX_TREE" --skip-download 2>/dev/null || true
+  fi
+fi
+
+# --- Artifact verification ---
+echo
+echo "[verify] Checking build artifacts..."
+VERIFY_FAIL=0
+verify_file() {
+  local path="$1" label="$2"
+  if [[ -f "$path" ]]; then
+    if [[ -s "$path" ]]; then
+      echo "  [OK]   $label: $path ($(stat -f%z "$path" 2>/dev/null || stat -c%s "$path" 2>/dev/null || echo "?") bytes)"
+    else
+      echo "  [FAIL] $label: $path exists but is empty" >&2
+      VERIFY_FAIL=1
+    fi
+  else
+    echo "  [FAIL] $label: $path not found" >&2
+    VERIFY_FAIL=1
+  fi
+}
+
+verify_file "$DIST_BIN/virtmgr" "virtmgr binary"
+verify_file "$DIST_BIN/vm" "vm binary"
+verify_file "$DIST_BIN/crosvm" "crosvm binary"
+verify_file "$(compgen -G "$DIST_LIB/libbinder-rpc*.$LIB_EXT" | head -1)" "binder-rpc library"
+
+for bin in virtmgr vm crosvm; do
+  bin_path="$DIST_BIN/$bin"
+  if [[ -f "$bin_path" ]]; then
+    file_type="$(file -b "$bin_path" 2>/dev/null || true)"
+    if ! grep -Eiq 'Mach-O|ELF' <<<"$file_type"; then
+      echo "  [WARN] $bin: unexpected file type: $file_type" >&2
+    fi
+  fi
+done
+
+if [[ $VERIFY_FAIL -eq 1 ]]; then
+  echo "  [FAIL] One or more artifacts are missing or empty." >&2
+  if [[ "$CLEAN_BUILD" -eq 1 ]]; then
+    echo "  Hint: A --clean rebuild was performed. Check build output for errors." >&2
+  fi
+  exit 1
+else
+  echo "  [PASS] All artifacts present"
 fi
 
 {

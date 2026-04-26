@@ -7,6 +7,8 @@ OUTPUT_ROOT=""
 ADB_PORT=8035
 INCLUDE_RUN_APP=0
 INCLUDE_ADB_SCENARIO=0
+SCENARIO_MODE="smoke"
+STEP_TIMEOUT=300
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -16,6 +18,8 @@ while [[ $# -gt 0 ]]; do
         -AdbPort|--adb-port) ADB_PORT="$2"; shift 2 ;;
         -IncludeRunApp|--include-run-app) INCLUDE_RUN_APP=1; shift ;;
         -IncludeAdbScenario|--include-adb-scenario) INCLUDE_ADB_SCENARIO=1; shift ;;
+        --scenario-mode) SCENARIO_MODE="$2"; shift 2 ;;
+        --step-timeout) STEP_TIMEOUT="$2"; shift 2 ;;
         *) echo "Unknown argument: $1" >&2; exit 2 ;;
     esac
 done
@@ -47,6 +51,29 @@ run_step() {
     shift
     echo "=== $label ==="
     "$@"
+}
+
+step_timeout() {
+    local duration="$1"
+    shift
+    local label="$1"
+    shift
+    if ! command -v timeout &>/dev/null; then
+        run_step "$label" "$@"
+        return $?
+    fi
+    if ! timeout "$duration" "$@"; then
+        echo "STEP TIMEOUT: '$label' exceeded ${duration}s" >&2
+        collect_failure_logs
+        return 1
+    fi
+}
+
+collect_failure_logs() {
+    local archive="$OUTPUT_ROOT/failure-logs.tar.gz"
+    find "$OUTPUT_ROOT" -type f \( -name "*.log" -o -name "*.txt" -o -name "vm-console*" \) 2>/dev/null \
+        | tar czf "$archive" -T - 2>/dev/null || true
+    echo "Failure logs collected: $archive"
 }
 
 run_step_allow_status() {

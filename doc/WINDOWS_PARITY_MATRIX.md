@@ -2,6 +2,8 @@
 
 本文档将 `virtmgr` 在 Windows 主机与 Android 设备上的参数一致性拆分为可执行矩阵，便于任务拆解与跟踪。
 
+> Phase 2 更新：三平台共用的 DesktopHost 抽象层已提取到 `libs/desktop_host/` crate。Windows 权限检查通过 `MockPermissionProvider`（bypass/allowlist/strict 三模式，支持 JSON 配置文件）统一，SELinux 标签检查通过 `MockSelinuxProvider` 统一。ADB bridge 的双向 io::copy 核心已抽取到 `src/bridge.rs` 共享模块。
+
 快速导航：
 - **全模块主机移植总览**：`packages/modules/Virtualization/HOST_WINDOWS_PORTING_GUIDE.md`
 - 架构与移植背景：`android/virtmgr/HOST_WINDOWS_PORT.md`
@@ -59,10 +61,13 @@
 - Debug policy overlay 替代源：`VIRTMGR_DEBUG_POLICY_JSON`（JSON: `log`, `ramdump`, `adb`）
 - DT overlay 替代源：`VIRTMGR_DT_OVERLAY_JSON`（Windows 下写入临时 overlay 文件供后续链路使用）
 - **crosvm 可执行文件**：`VIRTMGR_CROSVM_PATH`（完整路径）；未设置时在 `PATH` 中查找 **`crosvm.exe`**（与 `crosvm_windows`、`libs/vm_control` 的 Windows 实现一致）
-- 可插拔 mock provider（用于测试一致语义）：
-  - `VIRTMGR_MOCK_PERMISSION_ALLOWLIST`（逗号分隔）或 `VIRTMGR_MOCK_PERMISSION_ALLOWLIST_FILE`（逐行）
-  - `VIRTMGR_MOCK_SELINUX_LABEL_ALLOWLIST`（逗号分隔）或 `VIRTMGR_MOCK_SELINUX_LABEL_ALLOWLIST_FILE`（逐行）
+- 可插拔 mock provider（用于测试一致语义，Phase 2 由 `desktop_host` crate 统一提供）：
+  - JSON 配置（推荐）：`VIRTMGR_MOCK_PERMISSION_JSON` → `{"mode": "bypass|allowlist|strict", "allowlist": [...]}`
+  - JSON 配置（推荐）：`VIRTMGR_MOCK_SELINUX_JSON` → `{"mode": "bypass|allowlist|strict", "allowlist": [...]}`
+  - 旧版 CSV（向后兼容）：`VIRTMGR_MOCK_PERMISSION_ALLOWLIST`（逗号分隔）或 `VIRTMGR_MOCK_PERMISSION_ALLOWLIST_FILE`（逐行）
+  - 旧版 CSV（向后兼容）：`VIRTMGR_MOCK_SELINUX_LABEL_ALLOWLIST`（逗号分隔）或 `VIRTMGR_MOCK_SELINUX_LABEL_ALLOWLIST_FILE`（逐行）
   - 当 mock 生效时，`permission`（**`IPermissionController`** 替代）/SELinux 检查按 allowlist 判定；未命中则拒绝。
+  - `VIRTMGR_STRICT_PARITY=1` 时切换到 strict 模式（所有检查均拒绝，无 silent bypass）
   - **`VIRTMGR_MOCK_STAGED_APEX_JSON`**：mock **`IPackageManagerNative`** 的 staged APEX 列表（见上文 `prefer_staged`）。
 
 `staged_apexes.json` 示例：

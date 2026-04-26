@@ -44,7 +44,7 @@ usage() {
 Usage: vm_macos.sh [options] [-- extra vm args]
 
 Commands:
-  validate-prereqs | run-microdroid | run-app | run | info | list | console
+  validate-prereqs | diagnose | cleanup | run-microdroid | run-app | run | info | list | console
   check-feature-enabled | create-partition | create-idsig | service-status | stop-service
 EOF
 }
@@ -343,9 +343,10 @@ COMMAND_ARGS=()
 case "$COMMAND" in
     validate-prereqs)
         host_arch="$(uname -m)"
-        hv_support="$(sysctl -n kern.hv_support 2>/dev/null || true)"
+        hv_support="$(sysctl -n kern.hv_support 2>/dev/null || echo "0")"
         hypervisor_entitlement=0
         guest_kernel_arm64=0
+        com_android_adbd_found=0
         guest_kernel_info="$(guest_kernel_file_info)"
         if crosvm_has_hypervisor_entitlement; then
             hypervisor_entitlement=1
@@ -353,17 +354,219 @@ case "$COMMAND" in
         if guest_kernel_is_arm64; then
             guest_kernel_arm64=1
         fi
+        if [[ -f "$APEX_ROOT/com.android.virt/app/com.android.adbd/com.android.adbd.apk" || \
+              -f "$APEX_ROOT/com.android.virt/app/com.android.adbd/apex-0000.adbd" ]]; then
+            com_android_adbd_found=1
+        fi
+        ALL_PASS=1
         {
             echo "Host OS    : $(uname -s)"
             echo "Host arch  : $host_arch"
-            echo "HVF support: ${hv_support:-unknown}"
+            echo "HVF support: ${hv_support}"
             echo "HVF entitlement: $hypervisor_entitlement"
             echo "Guest kernel arm64: $guest_kernel_arm64"
             echo "Guest kernel info : ${guest_kernel_info:-unknown}"
+            echo "com.android.adbd  : $com_android_adbd_found"
             echo "crosvm     : $CROSVM_EXE"
+            echo "virtmgr    : $VIRTMGR_EXE"
+            echo "apex tree  : $APEX_TREE_ROOT"
+        } > "$RUN_LOG_FILE"
+
+        # Check 1: Host architecture
+        if [[ "$host_arch" == "arm64" ]]; then
+            echo "  [OK]   Host architecture: arm64" | tee -a "$RUN_LOG_FILE"
+        else
+            echo "  [FAIL] Host architecture: $host_arch (requires arm64 for HVF)" | tee -a "$RUN_LOG_FILE"
+            echo "         Intel Macs are not supported (see doc/HVF_X86_64_FEASIBILITY.md)" | tee -a "$RUN_LOG_FILE"
+            ALL_PASS=0
+        fi
+
+        # Check 2: HVF support
+        if [[ "$hv_support" == "1" ]]; then
+            echo "  [OK]   HVF (kern.hv_support): enabled" | tee -a "$RUN_LOG_FILE"
+        else
+            echo "  [FAIL] HVF (kern.hv_support): not enabled" | tee -a "$RUN_LOG_FILE"
+            echo "         Fix: Ensure you are on Apple Silicon and run:" | tee -a "$RUN_LOG_FILE"
+            echo "           sudo nvram boot-args=\"-arm64e_preview_abi\" && reboot" | tee -a "$RUN_LOG_FILE"
+            ALL_PASS=0
+        fi
+
+        # Check 3: crosvm Hypervisor entitlement
+        if [[ "$hypervisor_entitlement" -eq 1 ]]; then
+            echo "  [OK]   crosvm HVF entitlement: present" | tee -a "$RUN_LOG_FILE"
+        else
+            echo "  [FAIL] crosvm HVF entitlement: MISSING" | tee -a "$RUN_LOG_FILE"
+            echo "         Fix: Rebuild with build_all.sh or manually sign:" | tee -a "$RUN_LOG_FILE"
+            echo "           codesign --force --sign - --entitlements $REPO_ROOT/scripts/macos_crosvm.entitlements --timestamp=none $CROSVM_EXE" | tee -a "$RUN_LOG_FILE"
+            ALL_PASS=0
+        fi
+
+        # Check 4: Guest kernel architecture
+        if [[ "$guest_kernel_arm64" -eq 1 ]]; then
+            echo "  [OK]   Guest kernel: arm64" | tee -a "$RUN_LOG_FILE"
+        else
+            echo "  [WARN] Guest kernel: NOT arm64" | tee -a "$RUN_LOG_FILE"
+            echo "         Info: ${guest_kernel_info:-unknown}" | tee -a "$RUN_LOG_FILE"
+            echo "         Fix: Run scripts/fetch_arm64_guest_artifacts.sh --apex-tree $APEX_TREE_ROOT" | tee -a "$RUN_LOG_FILE"
+            echo "         Or provide arm64 APEX tree via MACOS_AVF_APEX_TREE_SOURCE" | tee -a "$RUN_LOG_FILE"
+            ALL_PASS=0
+        fi
+
+        # Check 5: com.android.adbd availability
+        if [[ "$com_android_adbd_found" -eq 1 ]]; then
+            echo "  [OK]   com.android.adbd: found in APEX tree" | tee -a "$RUN_LOG_FILE"
+        else
+            echo "  [WARN] com.android.adbd: NOT found" | tee -a "$RUN_LOG_FILE"
+            echo "         ADB bridge will fail. Provide a complete com.android.virt APEX tree." | tee -a "$RUN_LOG_FILE"
+        fi
+
+        echo "" | tee -a "$RUN_LOG_FILE"
+        if [[ "$ALL_PASS" -eq 1 ]]; then
+            echo "Result: PASS — all prerequisites satisfied" | tee -a "$RUN_LOG_FILE"
+        else
+            echo "Result: FAIL — one or more prerequisites not met (see above for fixes)" | tee -a "$RUN_LOG_FILE"
+        fi
+
+        # Write structured JSON diagnostic
+        cat > "$LOG_DIR/diagnostic.json" <<- JSONEOF
+		{
+		  "host_os": "$(uname -s)",
+		  "host_arch": "$host_arch",
+		  "hv_support": "$hv_support",
+		  "hypervisor_entitlement": $hypervisor_entitlement,
+		  "guest_kernel_arm64": $guest_kernel_arm64,
+		  "com.android.adbd": $com_android_adbd_found,
+		  "crosvm": "$CROSVM_EXE",
+		  "virtmgr": "$VIRTMGR_EXE",
+		  "apex_tree": "$APEX_TREE_ROOT",
+		  "result": "$([[ $ALL_PASS -eq 1 ]] && echo PASS || echo FAIL)"
+		}
+		JSONEOF
+        RUN_VM=0
+        [[ "$ALL_PASS" -eq 1 ]]
+        ;;
+    diagnose)
+        {
+            echo "=== macOS VM Diagnostic ==="
+            echo ""
+
+            echo "[1/6] Checking build artifacts..."
+            missing_artifacts=0
+            for f in "$VM_EXE" "$VIRTMGR_EXE" "$CROSVM_EXE"; do
+                if [[ -f "$f" ]]; then
+                    echo "  OK: $(basename "$f")"
+                else
+                    echo "  MISSING: $f"
+                    missing_artifacts=1
+                fi
+            done
+            if [[ $missing_artifacts -eq 1 ]]; then
+                echo "  Fix: Run build_all.sh from repo root."
+            fi
+
+            echo ""
+            echo "[2/6] Checking APEX tree..."
+            if [[ -d "$APEX_ROOT/com.android.virt" ]]; then
+                echo "  OK: com.android.virt found at $APEX_ROOT/com.android.virt"
+            else
+                echo "  MISSING: com.android.virt APEX tree"
+                echo "  Fix: Set MACOS_AVF_APEX_TREE_SOURCE and run build_all.sh"
+            fi
+
+            echo ""
+            echo "[3/6] Checking HVF availability..."
+            hv="$(sysctl -n kern.hv_support 2>/dev/null || echo "0")"
+            if [[ "$hv" == "1" ]]; then
+                echo "  OK: HVF is enabled (kern.hv_support = 1)"
+            else
+                echo "  FAIL: HVF is not enabled (kern.hv_support = $hv)"
+                echo "  Fix: Run on Apple Silicon or check Virtualization.framework availability."
+            fi
+
+            echo ""
+            echo "[4/6] Checking crosvm Hypervisor entitlement..."
+            if crosvm_has_hypervisor_entitlement; then
+                echo "  OK: crosvm has HVF entitlement"
+            else
+                echo "  FAIL: crosvm is missing HVF entitlement"
+                echo "  Fix: codesign --force --sign - --entitlements $REPO_ROOT/scripts/macos_crosvm.entitlements --timestamp=none $CROSVM_EXE"
+            fi
+
+            echo ""
+            echo "[5/6] Checking guest kernel..."
+            kernel="$(guest_kernel_path)"
+            if [[ -f "$kernel" ]]; then
+                kinfo="$(guest_kernel_file_info)"
+                if guest_kernel_is_arm64; then
+                    echo "  OK: Guest kernel is arm64"
+                    echo "  Info: $kinfo"
+                else
+                    echo "  WARN: Guest kernel is not arm64"
+                    echo "  Info: $kinfo"
+                    echo "  Fix: scripts/fetch_arm64_guest_artifacts.sh"
+                fi
+            else
+                echo "  MISSING: No guest kernel at $kernel"
+                echo "  Fix: Provide a complete APEX tree with arm64 microdroid_kernel."
+            fi
+
+            echo ""
+            echo "[6/6] Checking virtmgr service state..."
+            if [[ -f "$(service_state_path)" ]]; then
+                echo "  Service state file exists: $(service_state_path)"
+                show_service_status | sed 's/^/  /'
+            else
+                echo "  No persistent virtmgr service is registered."
+            fi
+
+            echo ""
+            echo "=== Diagnostic complete ==="
+            echo "Logs saved to: $LOG_DIR"
         } | tee "$RUN_LOG_FILE"
         RUN_VM=0
-        [[ "$host_arch" == "arm64" && "$hv_support" == "1" && "$hypervisor_entitlement" == "1" && "$guest_kernel_arm64" == "1" ]]
+        ;;
+    cleanup)
+        echo "=== Cleaning up macOS virtmgr/crosvm resources ===" | tee "$RUN_LOG_FILE"
+        cleaned=0
+
+        state_file="$(service_state_path)"
+        if [[ -f "$state_file" ]]; then
+            pid="$(read_service_value pid || true)"
+            socket="$(read_service_value socket_path || true)"
+            if [[ -n "${pid:-}" ]] && kill -0 "$pid" 2>/dev/null; then
+                echo "  Stopping virtmgr service (PID $pid)..." | tee -a "$RUN_LOG_FILE"
+                kill "$pid" 2>/dev/null || true
+                wait "$pid" 2>/dev/null || true
+                echo "  Stopped." | tee -a "$RUN_LOG_FILE"
+                cleaned=1
+            fi
+            rm -f "$state_file"
+            [[ -n "${socket:-}" ]] && rm -f "$socket" 2>/dev/null || true
+        fi
+
+        for proc_name in virtmgr crosvm; do
+            while IFS= read -r line; do
+                proc_pid="$(echo "$line" | awk '{print $2}')"  # ps aux: PID is column 2
+                exe="$(echo "$line" | awk '{for(i=11;i<=NF;i++) printf "%s ", $i; print ""}')"
+                if [[ "$exe" == *"$BIN_DIR/$proc_name"* ]]; then
+                    echo "  Killing $proc_name (PID $proc_pid)" | tee -a "$RUN_LOG_FILE"
+                    kill "$proc_pid" 2>/dev/null || true
+                    cleaned=1
+                fi
+            done < <(ps aux | grep -E "[v]irtmgr|[c]rosvm" | head -20 || true)
+        done
+
+        echo "  Cleaning temp root: $TEMP_ROOT" | tee -a "$RUN_LOG_FILE"
+        rm -rf "$TEMP_ROOT"/* 2>/dev/null || true
+        rm -f /tmp/binder_rpc_vsock_*.sock 2>/dev/null || true
+        rm -f /tmp/binder_rpc_test_* 2>/dev/null || true
+
+        if [[ $cleaned -eq 1 ]]; then
+            echo "  Cleanup complete." | tee -a "$RUN_LOG_FILE"
+        else
+            echo "  Nothing to clean up." | tee -a "$RUN_LOG_FILE"
+        fi
+        RUN_VM=0
         ;;
     run-microdroid)
         require_arm64_guest_kernel
@@ -466,6 +669,32 @@ fi
     echo
 } | tee "$RUN_LOG_FILE"
 
+# Generate run-summary.txt
+{
+    echo "=== Run Summary ==="
+    echo "Command     : $COMMAND"
+    echo "Date        : $(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+    echo "RepoRoot    : $REPO_ROOT"
+    echo "DistRoot    : $DIST_ROOT"
+    echo "ApexTree    : $APEX_TREE_ROOT"
+    echo "WorkDir     : $WORK_DIR"
+    echo "LogDir      : $LOG_DIR"
+    echo "PersistVirtmgr : $PERSIST_VIRTMGR"
+    echo "vm          : $VM_EXE"
+    echo "virtmgr     : $VIRTMGR_EXE"
+    echo "crosvm      : $CROSVM_EXE"
+    if [[ ${#COMMAND_ARGS[@]} -gt 0 ]]; then
+        echo "Args        : ${COMMAND_ARGS[*]}"
+    fi
+    if [[ -n "${GUEST_LOG:-}" ]]; then
+        echo "GuestLog    : $GUEST_LOG"
+    fi
+    echo "TraceFile   : $TRACE_FILE"
+} > "$LOG_DIR/run-summary.txt"
+
 if [[ "$RUN_VM" -eq 1 ]]; then
     run_logged
+    rc=$?
+    echo "ExitCode    : $rc" >> "$LOG_DIR/run-summary.txt"
+    exit $rc
 fi

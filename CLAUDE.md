@@ -95,6 +95,9 @@ The workspace also includes external dependencies:
 
 - **Location**: `packages/modules/Virtualization/android/virtmgr/` (Rust; cross-compile with e.g. `cargo check --target x86_64-pc-windows-gnu`).
 - **`VIRTMGR_CROSVM_PATH`**: Optional. Sets the full path to **`crosvm.exe`** when `virtmgr` on Windows launches or controls the VMM. If unset, the code looks for **`crosvm.exe` on `PATH`** (same variable is used by the Windows `vm_control` shim for `suspend` / `resume` / `balloon` CLI delegation).
+- **DesktopHost abstraction**: Platform-specific operations are abstracted via `libs/desktop_host/` crate. Contains `PermissionProvider`, `SelinuxProvider`, `VsockConnector` traits with platform impls.
+- **Mock providers**: `VIRTMGR_MOCK_PERMISSION_JSON` / `VIRTMGR_MOCK_SELINUX_JSON` for JSON config (bypass/allowlist/strict modes). Backward-compatible CSV env vars also supported.
+- **Console (Windows)**: Phase A named pipe console via `\\.\pipe\virtmgr_console_{cid}`. `VmInstance::read_console()` for real-time console output. Full ConPTY (Phase B) requires crosvm changes.
 - **Details**: `packages/modules/Virtualization/android/virtmgr/HOST_WINDOWS_PORT.md` (architecture, env vars, limitations). Parameter parity: `android/virtmgr/WINDOWS_PARITY_MATRIX.md`.
 
 ## External Dependencies
@@ -102,6 +105,10 @@ The workspace also includes external dependencies:
 - **crosvm**: Prebuilt binaries are included in the APEX; source is in `external/crosvm`. Building crosvm separately requires Rust toolchain and ChromeOS build environment.
 - **minijail**: Source in `external/minijail`. Used for sandboxing crosvm processes.
 - **Rust binder-rpc**: `external/rust/crates/binder-rust` – Rust bindings for Binder RPC.
+
+## CI
+
+- **`.github/workflows/regression.yml`**: Cross-platform CI workflow (Linux/macOS/Windows) with HVF/KVM/WHPX detection, smoke/full scenario support, and failure log upload.
 
 ## Workspace Structure
 
@@ -119,7 +126,9 @@ The workspace also includes external dependencies:
 │   ├── CMakeLists.txt          # binder-rpc targets, examples, install rules
 │   ├── platform/               # Windows host implementations (named pipes, stubs)
 ├── system/core/libutils/       # Utilities
-├── packages/modules/Virtualization/ # AVF userspace components
+├── packages/modules/Virtualization/
+│   ├── libs/desktop_host/           # DesktopHost trait + platform impls (Linux/macOS/Windows)
+│   └── ...
 ├── external/crosvm/            # ChromeOS VMM
 └── external/minijail/          # Sandboxing library
 ```
