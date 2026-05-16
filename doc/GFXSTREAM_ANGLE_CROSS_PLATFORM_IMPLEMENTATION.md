@@ -451,7 +451,7 @@ than to a broad feature-flag promise.
 The implementation now works like this:
 
 1. **init-time probe**
-   - `probeCoherentHostMemory(...)`
+   - `CoherentMemoryBacking::createForPlatform(...)` (replaces the old `probeCoherentHostMemory()`, which is now a thin wrapper kept for compat)
    - probe a dummy aligned host pointer with `vkGetMemoryHostPointerPropertiesEXT()`
    - keep only host memory types that are:
      - import-compatible
@@ -732,53 +732,70 @@ unified enforcement, G6 infrastructure) have not been compiled on Windows.
 
 ### 10.4 Test infrastructure fix (Priority: Medium)
 
-**Status**: `CoherentMemoryBackingTests.cpp` is written and registered in CMakeLists.txt, but cannot
-be built because `ENABLE_VKCEREAL_TESTS=ON` triggers an lz4 dependency error during cmake
-regeneration. This is a pre-existing infrastructure issue, not caused by Phase C changes.
+**Status**: Partial fix applied. Two issues identified and resolved:
 
-**Error**:
-```
-CMake Error at hardware/google/aemu/third-party/CMakeLists.txt:4 (message):
-  lz4 is not provided.
-```
+1. **lz4 dependency (fixed)**: When `ENABLE_VKCEREAL_TESTS=ON`, `gfxstream/third-party/CMakeLists.txt`
+   forces `AEMU_BASE_USE_LZ4=ON`, but the AOSP path looks for `external/lz4/build/cmake` which doesn't
+   exist in this workspace. Fixed by adding a fallback to system lz4 via pkg-config when the AOSP path
+   is missing:
+   ```cmake
+   if(EXISTS ${LZ4_PATH})
+       add_subdirectory(${LZ4_PATH} lz4)
+   else()
+       # Fallback: use system lz4 via pkg-config
+       find_package(PkgConfig REQUIRED)
+       pkg_search_module(lz4 IMPORTED_TARGET GLOBAL liblz4)
+       ...
+   endif()
+   ```
+   CMake configuration now succeeds with `-DENABLE_VKCEREAL_TESTS=ON`.
 
-**What to do**:
-- Provide the lz4 library to the build (add `lz4_static` target to aemu's third-party cmake, or
-  install system lz4 and add `find_package` integration)
-- OR disable `AEMU_BASE_USE_LZ4` in the aemu build config used for test builds
-- Build `Vulkan_unittests` target and run `--gtest_filter='CoherentMemoryBacking*'`
+2. **Duplicate `AngleIndirect` in Features.h (fixed)**: Phase C commit `ff50ca8f6` added a second
+   `AngleIndirect` feature declaration at line 315 (duplicate of the one at line 136). This would
+   cause a compile error. Removed the duplicate. This went unnoticed because the build script used
+   a pre-existing backend binary via `GFXSTREAM_PATH`.
 
-**Risk**: Low (infrastructure only). Test code itself is correct.
+3. **Toolchain blocker (unresolved)**: Xcode SDK libc++ headers use C++20 builtins
+   (`__builtin_clzg`, `__builtin_ctzg`) inside `_LIBCPP_CONSTEXPR_SINCE_CXX14` functions, causing
+   substitution failures when compiling with `-std=c++17`. This is a pre-existing macOS SDK
+   incompatibility, not caused by Phase C changes. The full test suite cannot be built on this
+   macOS version until the toolchain issue is resolved (either by upgrading to a newer clang
+   that supports constexpr builtins, or using an older macOS SDK).
+
+**Risk**: Low (infrastructure only). Test code is correct; lz4 dependency and duplicate member are fixed.
 
 ### 10.5 G6 copy elimination — full implementation (Priority: Medium)
 
 **Status**: Infrastructure is in place (`coherentBacking` flag propagated through `MemoryInfo` →
-`BlobDescriptorInfo` → `PipeResEntry`; conditional `sync_iov` skip check in transfer functions). The
-optimization does not yet take effect because no resource currently has `coherentBacking=true` AND
-`linear=nullptr` simultaneously.
+`BlobDescriptorInfo` → `PipeResEntry`; conditional `sync_iov` skip check at
+`virtio-gpu-gfxstream-renderer.cpp:1731` and `1758`). The optimization does not yet take effect
+because no resource currently has `coherentBacking=true` AND `linear=nullptr` simultaneously.
 
 **What needs to change for the optimization to activate**:
 
-1. **Unify linear buffer with coherent VkDeviceMemory mapping**: Currently, `allocResource()` at
-   `virtio-gpu-gfxstream-renderer.cpp:2326` always `malloc()`s a separate linear buffer. For coherent
-   resources, this should instead use the VkDeviceMemory's mapped pointer directly.
+1. **Modify `allocResource()` to skip malloc for coherent resources**: Currently,
+   `allocResource()` at line 2354 always `malloc()`s a separate linear buffer. For coherent
+   resources, this should instead use the VkDeviceMemory's mapped pointer (`MemoryInfo::ptr`)
+   directly as the linear buffer, OR set `linear = nullptr` and verify the guest iov pages
+   are mapped to the same coherent VkDeviceMemory pages.
 
-2. **Alternative**: Instead of modifying the PIPE resource path (which is intentionally separate from
-   GPU memory), focus on BUFFER/COLOR_BUFFER resources. When a coherent-backed buffer's guest iov
-   pages map directly to the host VkDeviceMemory pointer, the iov → linear copy can be skipped because
-   GPU and CPU see the same coherent memory.
+2. **Bridge virtio-gpu resource management with Vulkan memory info**: The VkDeviceMemory
+   mapped pointer is managed in `VkDecoderGlobalState` (Vulkan side), while `allocResource()`
+   is in the renderer. A cross-layer lookup is needed to retrieve the `VkDeviceMemory` mapped
+   address for a given resource ID during resource allocation.
 
 **Architectural considerations**:
-- PIPE resources are communication channels, not GPU data buffers — their `malloc()`'d linear buffer
-  is intentionally separate from GPU memory. Skipping `sync_iov` for pipes may not be semantically
-  correct.
+- PIPE resources are communication channels, not GPU data buffers — their `malloc()`'d linear
+  buffer is intentionally separate from GPU memory. Skipping `sync_iov` for pipes may not be
+  semantically correct.
 - BUFFER/COLOR_BUFFER resources backed by coherent memory are the primary candidates for copy
   elimination.
-- The optimization may require the guest to map its iov to the same physical pages as the
-  VkDeviceMemory allocation, which is a guest-side change.
+- The optimization requires the guest to map its iov to the same physical pages as the
+  VkDeviceMemory allocation — this is the fundamental guarantee provided by coherent memory.
+- Requires runtime testing on a real Linux or macOS guest with HOST_COHERENT allocations.
 
-**Risk**: Medium. Requires understanding the exact relationship between guest iov pages and host
-VkDeviceMemory mappings in the virtio-gpu address space path.
+**Risk**: Medium. Cross-layer coupling between renderer and Vulkan state management. Requires
+runtime integration testing (10.1 / 10.2) for validation.
 
 ### 10.6 Documentation cleanup (Priority: Low)
 
@@ -805,14 +822,14 @@ VkDeviceMemory mappings in the virtio-gpu address space path.
 
 ### 10.8 Task priority summary
 
-| # | Task | Priority | Complexity | Dependencies |
-| --- | --- | --- | --- | --- |
-| 10.1 | Linux runtime validation | High | Low | Linux host |
-| 10.2 | macOS runtime integration test | High | Medium | Guest image |
-| 10.3 | Windows build verification | Medium | Low | Windows host |
-| 10.4 | Test infrastructure fix | Medium | Low | lz4 library |
-| 10.5 | G6 copy elimination (full) | Medium | High | 10.1 + 10.2 for validation |
-| 10.6 | Documentation cleanup | Low | Low | None |
+| # | Task | Priority | Complexity | Status | Dependencies |
+| --- | --- | --- | --- | --- | --- |
+| 10.1 | Linux runtime validation | High | Low | Pending | Linux host |
+| 10.2 | macOS runtime integration test | High | Medium | Pending | Guest image |
+| 10.3 | Windows build verification | Medium | Low | Pending | Windows host |
+| 10.4 | Test infrastructure fix | Medium | Low | Partial (lz4 fixed, duplicate AngleIndirect fixed, toolchain blocked) | macOS SDK compat |
+| 10.5 | G6 copy elimination (full) | Medium | High | Pending (infra in place) | 10.1 + 10.2 for validation |
+| 10.6 | Documentation cleanup | Low | Low | Complete | None |
 
 ## 11. Remaining caveats
 
@@ -820,8 +837,8 @@ VkDeviceMemory mappings in the virtio-gpu address space path.
    is functionally correct.
 2. Linux and macOS still require native-host validation for the coherent-memory story.
 3. `ExternalBlob` remains intentionally outside the current coherent-memory implementation path.
-4. The current implementation is intentionally Phase-A-scoped; it does not solve macOS coherent
-   backing yet.
+4. The current implementation (Phase C) uses a unified `VK_EXT_external_memory_host` probe path on all
+   platforms including macOS via MoltenVK. The macOS `#ifdef __APPLE__` fallback has been removed.
 
 ## 12. File-by-file change index
 
@@ -851,11 +868,12 @@ VkDeviceMemory mappings in the virtio-gpu address space path.
 - `Cargo.toml` (applevisor-sys local patch for yanked crate)
 - `rust-toolchain` (updated to 1.83.0 for lock file v4 support)
 - `third_party/applevisor-sys/` (local copy of yanked crate, edition downgraded to 2021)
+- `devices/src/virtio/vhost/user/device/gpu/sys/macos.rs` **(NEW — macOS HVF GPU sys backend)**
 
 ### `hardware/google/gfxstream`
 
 - `CMakeLists.txt`
-- `third-party/CMakeLists.txt`
+- `third-party/CMakeLists.txt` (cross-platform external deps, lz4 fallback for test builds)
 - `host/BorrowedImage.h`
 - `host/CMakeLists.txt`
 - `host/compressedTextureFormats/AstcCpuDecompressor.h`
