@@ -103,11 +103,138 @@ esac
 DIST="$OUT_ROOT/dist/$DIST_DIR_NAME"
 DIST_BIN="$DIST/bin"
 DIST_LIB="$DIST/lib"
+DIST_GFX_ANGLE="$DIST/gfx/angle"
 BINDER_LIB="libbinder-rpc.$LIB_EXT"
+GFXSTREAM_BUILD_DIR="$OUT_ROOT/gfxstream_build_$DIST_DIR_NAME"
+GFXSTREAM_LIB="libgfxstream_backend.$LIB_EXT"
+ANGLE_ROOT="${ANGLE_ROOT:-$REPO_ROOT/../angle}"
+AEMU_COMMON_PATH="${AEMU_COMMON_PATH:-$REPO_ROOT/../aemu}"
+FLATBUFFERS_PATH="${FLATBUFFERS_PATH:-$REPO_ROOT/external/flatbuffers}"
+ANGLE_RUNTIME_DIR="${ANGLE_RUNTIME_DIR:-}"
+ENABLE_GFXSTREAM_ANGLE="${ENABLE_GFXSTREAM_ANGLE:-0}"
+GFXSTREAM_PATH="${GFXSTREAM_PATH:-}"
+MOLTENVK_ROOT="${MOLTENVK_ROOT:-$REPO_ROOT/../MoltenVK}"
+MOLTENVK_RUNTIME_DIR="${MOLTENVK_RUNTIME_DIR:-}"
 MACOS_CROSVM_ENTITLEMENTS="$REPO_ROOT/scripts/macos_crosvm.entitlements"
 PREPARE_APEX_TREE_SCRIPT="$REPO_ROOT/scripts/prepare_host_apex_tree.sh"
 DIST_APEX_TREE="$OUT_ROOT/dist/apex_dir"
 HOST_APEX_TREE_SOURCE="${HOST_APEX_TREE_SOURCE:-}"
+TOTAL_STEPS=4
+RUST_STEP=3
+DIST_STEP=4
+if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
+    TOTAL_STEPS=5
+    RUST_STEP=4
+    DIST_STEP=5
+fi
+
+append_csv_feature() {
+    local list="$1"
+    local feature="$2"
+    case ",$list," in
+        *",$feature,"*) printf '%s\n' "$list" ;;
+        *)
+            if [[ -z "$list" ]]; then
+                printf '%s\n' "$feature"
+            else
+                printf '%s\n' "$list,$feature"
+            fi
+            ;;
+    esac
+}
+
+find_angle_runtime_dir() {
+    local angle_lib="libEGL.$LIB_EXT"
+
+    if [[ -n "$ANGLE_RUNTIME_DIR" && -f "$ANGLE_RUNTIME_DIR/$angle_lib" ]]; then
+        printf '%s\n' "$ANGLE_RUNTIME_DIR"
+        return 0
+    fi
+
+    if [[ ! -d "$ANGLE_ROOT/out" ]]; then
+        return 1
+    fi
+
+    local match=""
+    match="$(find "$ANGLE_ROOT/out" -type f -name "$angle_lib" 2>/dev/null | head -n 1 || true)"
+    if [[ -n "$match" ]]; then
+        dirname "$match"
+        return 0
+    fi
+
+    return 1
+}
+
+find_moltenvk_runtime_dir() {
+    if [[ -n "$MOLTENVK_RUNTIME_DIR" && -f "$MOLTENVK_RUNTIME_DIR/libMoltenVK.dylib" ]]; then
+        printf '%s\n' "$MOLTENVK_RUNTIME_DIR"
+        return 0
+    fi
+
+    local candidate="$MOLTENVK_ROOT/Package/Latest/MoltenVK/dynamic/dylib/macOS"
+    if [[ -f "$candidate/libMoltenVK.dylib" ]]; then
+        printf '%s\n' "$candidate"
+        return 0
+    fi
+
+    return 1
+}
+
+stage_angle_runtime() {
+    local angle_dir="$1"
+    mkdir -p "$DIST_GFX_ANGLE"
+
+    cp -f "$angle_dir/libEGL.$LIB_EXT" "$DIST_GFX_ANGLE/"
+    cp -f "$angle_dir/libGLESv2.$LIB_EXT" "$DIST_GFX_ANGLE/"
+    if [[ -f "$angle_dir/libGLESv1_CM.$LIB_EXT" ]]; then
+        cp -f "$angle_dir/libGLESv1_CM.$LIB_EXT" "$DIST_GFX_ANGLE/"
+    fi
+
+    if [[ "$OS_NAME" == "Darwin" ]]; then
+        local moltenvk_dir=""
+        moltenvk_dir="$(find_moltenvk_runtime_dir || true)"
+        if [[ -n "$moltenvk_dir" ]]; then
+            cp -f "$moltenvk_dir/libMoltenVK.dylib" "$DIST_GFX_ANGLE/"
+        fi
+        if [[ -f "$MOLTENVK_ROOT/MoltenVK/icd/MoltenVK_icd.json" ]]; then
+            cp -f "$MOLTENVK_ROOT/MoltenVK/icd/MoltenVK_icd.json" "$DIST_GFX_ANGLE/"
+        fi
+    fi
+}
+
+first_glob_match() {
+    local pattern="$1"
+    local match=""
+    while IFS= read -r match; do
+        printf '%s\n' "$match"
+        return 0
+    done < <(compgen -G "$pattern")
+    return 1
+}
+
+write_crosvm_angle_wrapper() {
+    local wrapper="$DIST_BIN/crosvm-angle"
+    cat >"$wrapper" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="\$(cd "\$(dirname "\${BASH_SOURCE[0]}")" && pwd)"
+DIST_ROOT="\$(cd "\$SCRIPT_DIR/.." && pwd)"
+ANGLE_ROOT="\$DIST_ROOT/gfx/angle"
+export GFXSTREAM_ANGLE_ROOT="\$ANGLE_ROOT"
+if [[ -d "\$DIST_ROOT/lib" ]]; then
+  if [[ "\$(uname -s)" == "Darwin" ]]; then
+    export DYLD_LIBRARY_PATH="\$DIST_ROOT/lib:\$ANGLE_ROOT\${DYLD_LIBRARY_PATH:+:\$DYLD_LIBRARY_PATH}"
+  else
+    export LD_LIBRARY_PATH="\$DIST_ROOT/lib:\$ANGLE_ROOT\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+  fi
+fi
+if [[ -f "\$ANGLE_ROOT/MoltenVK_icd.json" ]]; then
+  export VK_ICD_FILENAMES="\$ANGLE_ROOT/MoltenVK_icd.json"
+fi
+exec "\$SCRIPT_DIR/crosvm" "\$@"
+EOF
+    chmod +x "$wrapper"
+}
 
 echo "=== Host build (Unix) ==="
 echo "REPO_ROOT=$REPO_ROOT"
@@ -126,7 +253,7 @@ if ! cargo +"$CROSVM_CARGO_TOOLCHAIN" -V >/dev/null 2>&1; then
 fi
 
 echo
-echo "[1/4] binder-rpc (CMake)"
+echo "[1/$TOTAL_STEPS] binder-rpc (CMake)"
 if ! command -v cmake >/dev/null; then
   echo "Error: cmake not found"
   exit 1
@@ -171,7 +298,7 @@ cmake --build "$CMAKE_BUILD_DIR" --parallel
 BLIB="$CMAKE_BUILD_DIR/lib"
 
 echo
-echo "[2/4] Copy libbinder-rpc into binder rust/sys/libs"
+echo "[2/$TOTAL_STEPS] Copy libbinder-rpc into binder rust/sys/libs"
 SYS_LIBS="$REPO_ROOT/frameworks/native/libs/binder/rust/sys/libs"
 mkdir -p "$SYS_LIBS"
 if [[ -f "$BLIB/$BINDER_LIB" ]]; then
@@ -190,9 +317,64 @@ else
 fi
 
 echo
-echo "[3/4] Rust (virtmgr + vm + crosvm)"
+if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
+  echo "[3/$TOTAL_STEPS] gfxstream backend"
+  if [[ -n "$GFXSTREAM_PATH" && -f "$GFXSTREAM_PATH/$GFXSTREAM_LIB" ]]; then
+    echo "Using existing gfxstream backend: $GFXSTREAM_PATH"
+  else
+    if [[ ! -d "$ANGLE_ROOT" ]]; then
+      echo "Error: ANGLE_ROOT not found: $ANGLE_ROOT"
+      exit 1
+    fi
+    if [[ ! -d "$AEMU_COMMON_PATH" ]]; then
+      echo "Error: AEMU_COMMON_PATH not found: $AEMU_COMMON_PATH"
+      exit 1
+    fi
+    if [[ ! -d "$FLATBUFFERS_PATH" ]]; then
+      echo "Error: FLATBUFFERS_PATH not found: $FLATBUFFERS_PATH"
+      exit 1
+    fi
+    GFXSTREAM_CMAKE_ARGS=(
+      -S "$REPO_ROOT/hardware/google/gfxstream"
+      -B "$GFXSTREAM_BUILD_DIR"
+      -G "$CMAKE_GEN"
+      -DCMAKE_BUILD_TYPE=Release
+      "-DANGLE_PATH=$ANGLE_ROOT"
+      "-DAEMU_COMMON_PATH=$AEMU_COMMON_PATH"
+      "-DFLATBUFFERS_PATH=$FLATBUFFERS_PATH"
+    )
+
+    if [[ "$CMAKE_GEN" == "Ninja" ]]; then
+      GFXSTREAM_CMAKE_ARGS+=("-DCMAKE_MAKE_PROGRAM=$CMAKE_MAKE_PROGRAM_PATH")
+    fi
+
+    if [[ "$OS_NAME" == "Darwin" ]]; then
+      GFXSTREAM_CMAKE_ARGS+=(
+        "-DCMAKE_C_COMPILER=$MACOS_CLANG"
+        "-DCMAKE_CXX_COMPILER=$MACOS_CLANGXX"
+        "-DCMAKE_OSX_SYSROOT=$MACOS_SDKROOT"
+      )
+      rm -f "$GFXSTREAM_BUILD_DIR/CMakeCache.txt"
+    fi
+
+    mkdir -p "$GFXSTREAM_BUILD_DIR"
+    if ! cmake "${GFXSTREAM_CMAKE_ARGS[@]}"; then
+      echo "Error: gfxstream cmake configure failed. Set GFXSTREAM_PATH to a prebuilt backend or provide AEMU_COMMON_PATH and FLATBUFFERS_PATH."
+      exit 1
+    fi
+    cmake --build "$GFXSTREAM_BUILD_DIR" --target gfxstream_backend --parallel
+    GFXSTREAM_PATH="$GFXSTREAM_BUILD_DIR"
+  fi
+  export GFXSTREAM_PATH
+fi
+
+echo
+echo "[$RUST_STEP/$TOTAL_STEPS] Rust (virtmgr + vm + crosvm)"
 export CARGO_TARGET_DIR
 CROSVM_FEATURES="${CROSVM_FEATURES:-$DEFAULT_CROSVM_FEATURES}"
+if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
+  CROSVM_FEATURES="$(append_csv_feature "$CROSVM_FEATURES" "gfxstream")"
+fi
 echo "[cargo] virtmgr --release --target $RUST_TARGET"
 cargo build --manifest-path "$REPO_ROOT/packages/modules/Virtualization/android/virtmgr/Cargo.toml" --release --target "$RUST_TARGET"
 echo "[cargo] vm --release --target $RUST_TARGET"
@@ -205,7 +387,7 @@ echo "[cargo] crosvm +$CROSVM_CARGO_TOOLCHAIN --release -p crosvm --target $RUST
 )
 
 echo
-echo "[4/4] Collect artifacts into dist/$DIST_DIR_NAME"
+echo "[$DIST_STEP/$TOTAL_STEPS] Collect artifacts into dist/$DIST_DIR_NAME"
 mkdir -p "$DIST_BIN" "$DIST_LIB"
 TGT_OUT="$CARGO_TARGET_DIR/$RUST_TARGET/release"
 
@@ -216,6 +398,15 @@ else
   echo "Error: missing $BINDER_LIB under $BLIB"
   exit 1
 fi
+if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
+  if compgen -G "$GFXSTREAM_BUILD_DIR/*.$LIB_EXT" >/dev/null; then
+    cp -af "$GFXSTREAM_BUILD_DIR"/*."$LIB_EXT" "$DIST_LIB/" 2>/dev/null || true
+  fi
+  if [[ ! -f "$DIST_LIB/$GFXSTREAM_LIB" ]]; then
+    echo "Error: missing $GFXSTREAM_LIB under $GFXSTREAM_BUILD_DIR"
+    exit 1
+  fi
+fi
 if [[ -f "$TGT_OUT/virtmgr" ]]; then
   cp -f "$TGT_OUT/virtmgr" "$DIST_BIN/"
 fi
@@ -224,6 +415,15 @@ if [[ -f "$TGT_OUT/vm" ]]; then
 fi
 if [[ -f "$TGT_OUT/crosvm" ]]; then
   cp -f "$TGT_OUT/crosvm" "$DIST_BIN/"
+fi
+
+if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
+  if ! angle_runtime_dir="$(find_angle_runtime_dir)"; then
+    echo "Error: ANGLE runtime libraries not found. Set ANGLE_RUNTIME_DIR or build ANGLE under $ANGLE_ROOT/out."
+    exit 1
+  fi
+  stage_angle_runtime "$angle_runtime_dir"
+  write_crosvm_angle_wrapper
 fi
 
 if [[ "$OS_NAME" == "Darwin" ]]; then
@@ -316,7 +516,8 @@ verify_file() {
 verify_file "$DIST_BIN/virtmgr" "virtmgr binary"
 verify_file "$DIST_BIN/vm" "vm binary"
 verify_file "$DIST_BIN/crosvm" "crosvm binary"
-verify_file "$(compgen -G "$DIST_LIB/libbinder-rpc*.$LIB_EXT" | head -1)" "binder-rpc library"
+binder_lib_match="$(first_glob_match "$DIST_LIB/libbinder-rpc*.$LIB_EXT" || true)"
+verify_file "$binder_lib_match" "binder-rpc library"
 
 for bin in virtmgr vm crosvm; do
   bin_path="$DIST_BIN/$bin"
@@ -338,17 +539,16 @@ else
   echo "  [PASS] All artifacts present"
 fi
 
-{
-  echo "build_all: OK"
-  echo "RUST_TARGET=$RUST_TARGET"
-  echo "BINDER_LIB=$BINDER_LIB"
-  echo
-  echo "bin: virtmgr vm crosvm (as built)"
-  echo "lib: $BINDER_LIB"
-  if [[ -d "$DIST_APEX_TREE" ]]; then
-    echo "apex: $DIST_APEX_TREE"
-  fi
-} > "$DIST/README.txt"
+README_FILE="$DIST/README.txt"
+echo "build_all: OK" > "$README_FILE"
+echo "RUST_TARGET=$RUST_TARGET" >> "$README_FILE"
+echo "BINDER_LIB=$BINDER_LIB" >> "$README_FILE"
+echo >> "$README_FILE"
+echo "bin: virtmgr vm crosvm (as built)" >> "$README_FILE"
+echo "lib: $BINDER_LIB" >> "$README_FILE"
+if [[ -d "$DIST_APEX_TREE" ]]; then
+  echo "apex: $DIST_APEX_TREE" >> "$README_FILE"
+fi
 
 echo
 echo "Build completed successfully."
