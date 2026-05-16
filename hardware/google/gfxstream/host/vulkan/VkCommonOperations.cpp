@@ -18,7 +18,9 @@
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
 #include <cstdlib>
+#ifdef _WIN32
 #include <malloc.h>
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <vulkan/vk_enum_string_helper.h>
@@ -4292,12 +4294,12 @@ CoherentHostMemoryProbeResult probeCoherentHostMemory(
         const VkMemoryPropertyFlags flags = hostMemoryProperties.memoryTypes[i].propertyFlags;
         if ((flags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
             (flags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
-            result.coherentImportableHostTypeBits |= (1u << i);
+            result.coherentHostMemoryTypeMask |= (1u << i);
         }
     }
 
     VERBOSE("Coherent host memory probe result: typeBits=0x%x",
-            result.coherentImportableHostTypeBits);
+            result.coherentHostMemoryTypeMask);
     return result;
 }
 

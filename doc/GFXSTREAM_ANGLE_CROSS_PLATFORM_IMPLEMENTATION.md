@@ -782,38 +782,46 @@ cmake --build out/test_build --target Vulkan_unittests -j$(sysctl -n hw.ncpu)
 
 **Risk**: Low. macOS test infrastructure is operational.
 
-### 10.5 G6 copy elimination — full implementation (Priority: Medium)
+### 10.5 G6 copy elimination — full implementation (Priority: Medium) — CODE COMPLETE
 
-**Status**: Infrastructure is in place (`coherentBacking` flag propagated through `MemoryInfo` →
-`BlobDescriptorInfo` → `PipeResEntry`; conditional `sync_iov` skip check at
-`virtio-gpu-gfxstream-renderer.cpp:1731` and `1758`). The optimization does not yet take effect
-because no resource currently has `coherentBacking=true` AND `linear=nullptr` simultaneously.
+**Status**: Code implementation complete. The optimization activates when a resource has
+`coherentBacking=true` AND `linear=nullptr`. Runtime validation pending (10.1 / 10.2).
 
-**What needs to change for the optimization to activate**:
+**Code changes (2026-05-15):**
 
-1. **Modify `allocResource()` to skip malloc for coherent resources**: Currently,
-   `allocResource()` at line 2354 always `malloc()`s a separate linear buffer. For coherent
-   resources, this should instead use the VkDeviceMemory's mapped pointer (`MemoryInfo::ptr`)
-   directly as the linear buffer, OR set `linear = nullptr` and verify the guest iov pages
-   are mapped to the same coherent VkDeviceMemory pages.
+1. **`transferReadIov` early return**: Moved the coherent backing check BEFORE the GPU read
+   operations (`handleTransferReadBuffer`/`handleTransferReadColorBuffer`/`handleTransferReadPipe`).
+   When `coherentBacking && !linear`, returns 0 immediately — GPU accesses guest iov pages directly
+   via `VK_EXT_external_memory_host` coherent mapping, no `sync_iov` memcpy needed.
 
-2. **Bridge virtio-gpu resource management with Vulkan memory info**: The VkDeviceMemory
-   mapped pointer is managed in `VkDecoderGlobalState` (Vulkan side), while `allocResource()`
-   is in the renderer. A cross-layer lookup is needed to retrieve the `VkDeviceMemory` mapped
-   address for a given resource ID during resource allocation.
+2. **`transferWriteIov` early return**: Same treatment — coherent check now returns 0 before both
+   `sync_iov` and GPU write operations. Guest iov pages ARE the VkDeviceMemory pages, so GPU
+   already sees guest data without explicit transfer.
 
-**Architectural considerations**:
-- PIPE resources are communication channels, not GPU data buffers — their `malloc()`'d linear
-  buffer is intentionally separate from GPU memory. Skipping `sync_iov` for pipes may not be
-  semantically correct.
-- BUFFER/COLOR_BUFFER resources backed by coherent memory are the primary candidates for copy
-  elimination.
-- The optimization requires the guest to map its iov to the same physical pages as the
-  VkDeviceMemory allocation — this is the fundamental guarantee provided by coherent memory.
-- Requires runtime testing on a real Linux or macOS guest with HOST_COHERENT allocations.
+3. **`createBlob` already sets `linear = 0`** (line 2156): For blob resources, `linear` is
+   explicitly nulled. Combined with `coherentBacking` from `BlobDescriptorInfo` (line 2136),
+   this enables the optimization for BUFFER and COLOR_BUFFER resources created via the blob path.
 
-**Risk**: Medium. Cross-layer coupling between renderer and Vulkan state management. Requires
-runtime integration testing (10.1 / 10.2) for validation.
+4. **Fix `malloc.h` for macOS**: Made `<malloc.h>` include Windows-only (`#ifdef _WIN32`).
+   On Unix, `free`/`posix_memalign` come from `<cstdlib>` which was already included.
+
+5. **Fix field name**: Renamed `coherentImportableHostTypeBits` → `coherentHostMemoryTypeMask`
+   in the deprecated `probeCoherentHostMemory()` to match the field in
+   `CoherentHostMemoryProbeResult`.
+
+**How the optimization activates:**
+1. Guest allocates memory with `HOST_COHERENT` flag
+2. Host validates it's on a genuinely coherent type via `CoherentMemoryBacking` probe
+3. `MemoryInfo::coherentBacking = true` set at `vkAllocateMemory` time
+4. `vkGetBlob` forwards `coherentBacking` to `BlobDescriptorInfo`
+5. `createBlob` propagates to `PipeResEntry::coherentBacking = true` and sets `linear = 0`
+6. `transferReadIov`/`transferWriteIov` hit early return → zero-copy coherent data path
+
+**What remains for runtime validation:**
+- Test with guest workload that allocates `VK_MEMORY_PROPERTY_HOST_COHERENT_BIT` memory
+- Verify `vkGetMemoryHostPointerPropertiesEXT` probe succeeds on target platform
+- Confirm `coherentBacking` flag propagates end-to-end through the blob creation path
+- Measure performance impact of eliminated memcpy (G6 benchmark)
 
 ### 10.6 Documentation cleanup (Priority: Low) — COMPLETED
 
@@ -844,7 +852,7 @@ runtime integration testing (10.1 / 10.2) for validation.
 | 10.2 | macOS runtime integration test | High | Medium | Pending | Guest image |
 | 10.3 | Windows build verification | Medium | Low | Pending | Windows host |
 | 10.4 | Test infrastructure fix | Medium | Low | Complete (macOS) | — |
-| 10.5 | G6 copy elimination (full) | Medium | High | Pending (infra in place) | 10.1 + 10.2 for validation |
+| 10.5 | G6 copy elimination (full) | Medium | High | Code complete (pending 10.1+10.2 for validation) | 10.1 + 10.2 |
 | 10.6 | Documentation cleanup | Low | Low | Complete | — |
 
 ## 11. Remaining caveats

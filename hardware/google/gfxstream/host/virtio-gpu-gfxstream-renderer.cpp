@@ -1708,6 +1708,15 @@ class PipeVirglRenderer {
         int ret = 0;
 
         auto& entry = it->second;
+
+        // If the backing memory is genuinely coherent and there is no separate
+        // linear buffer, skip GPU read and sync_iov entirely — the GPU accesses
+        // guest iov pages directly via VK_EXT_external_memory_host coherent
+        // mapping. The guest iov pages ARE the VkDeviceMemory pages.
+        if (entry.coherentBacking && !entry.linear) {
+            return 0;
+        }
+
         switch (entry.type) {
             case ResType::BLOB:
                 return -EINVAL;
@@ -1724,12 +1733,6 @@ class PipeVirglRenderer {
 
         if (ret != 0) {
             return ret;
-        }
-
-        // Skip the iov→linear copy if the backing memory is genuinely coherent
-        // and there is no separate linear buffer.
-        if (entry.coherentBacking && !entry.linear) {
-            return 0;
         }
 
         if (iovec_cnt) {
@@ -1753,11 +1756,15 @@ class PipeVirglRenderer {
 
         int ret = 0;
 
-        // Skip the iov→linear copy if the backing memory is genuinely coherent
-        // and there is no separate linear buffer.
+        // If the backing memory is genuinely coherent and there is no separate
+        // linear buffer, skip GPU write and sync_iov entirely — the GPU accesses
+        // guest iov pages directly via VK_EXT_external_memory_host coherent
+        // mapping. The guest iov pages ARE the VkDeviceMemory pages.
         if (entry.coherentBacking && !entry.linear) {
-            // No copy needed — guest iov already maps coherent host memory.
-        } else if (iovec_cnt) {
+            return 0;
+        }
+
+        if (iovec_cnt) {
             PipeResEntry e = {
                 entry.args, iov, (uint32_t)iovec_cnt, entry.linear, entry.linearSize,
             };
