@@ -1,12 +1,22 @@
 # Cross-platform `gfxstream + ANGLE(Vulkan)` integration
 
 This document records the implemented cross-platform plan and the exact code changes made to wire
-`gfxstream + ANGLE(Vulkan backend)` across Linux, Windows, and macOS, with special focus on a
-uniform guest-visible `HOST_VISIBLE | HOST_COHERENT` memory contract.
+`gfxstream + ANGLE(Vulkan backend)` across Linux, Windows, and macOS.
 
-It also captures the final architecture decisions, the reasons certain alternatives were rejected,
-the external dependency layout, the Windows bring-up work needed to close the host build chain, and
-the current validation status.
+It also captures two coherent-memory phases:
+
+1. the original `angle=true` integration phase, which enabled the host-memory path and established
+   coherent memory as a first-class requirement
+2. the current **runtime-gated coherent-memory phase**, which tightens guest `HOST_COHERENT`
+   exposure so it is only shown when the host backing is both import-compatible and genuinely
+   coherent
+
+So this document now covers:
+
+- the original cross-platform ANGLE + gfxstream integration work
+- the current coherent-memory implementation strategy
+- the current implementation / validation status
+- the remaining follow-up tasks
 
 ## 1. Goals
 
@@ -79,19 +89,20 @@ So the enforced policy is:
 - `ExternalBlob:disabled`
 - `VulkanAllocateHostMemory:enabled`
 
-### 3.3 Guest-visible coherent memory is treated as a contract layer
+### 3.3 Guest-visible coherent memory is now gated by runtime probe results
 
-The project requirement was not "only expose coherent if the host driver reports it naturally".
-The requirement was to give the guest a stable coherent contract across platforms.
+The original integration phase broadly treated coherent memory as a guest contract goal.
 
-Accordingly, the implementation makes the guest-visible memory type contract an emulated policy at
-the `gfxstream` physical-device-memory layer:
+The current implementation is stricter:
 
-- if `VulkanAllocateHostMemory` is active and the guest-visible type is `HOST_VISIBLE`,
-- the guest-visible type is exposed as `HOST_VISIBLE | HOST_COHERENT`.
+- guest `HOST_COHERENT` is **not** exposed simply because `VulkanAllocateHostMemory` is enabled
+- it is exposed only when runtime probing proves that the selected host memory type is:
+  1. import-compatible through `VK_EXT_external_memory_host`
+  2. `HOST_VISIBLE`
+  3. genuinely `HOST_COHERENT`
 
-This is an intentional guest ABI policy and not a claim that every host Vulkan driver reports the
-same native memory flags.
+This means guest coherent memory is now tied to the real backing used by the host allocation path
+instead of being inferred only from feature policy.
 
 ## 4. Configuration and feature flow
 
@@ -172,15 +183,56 @@ This gives `crosvm` a stable named feature to request the ANGLE-backed host GL/E
 
 #### `host/vulkan/VkEmulatedPhysicalDeviceMemory.cpp`
 
-- Implemented the guest-visible coherent memory policy.
-- When `VulkanAllocateHostMemory` is enabled, guest-visible `HOST_VISIBLE` memory types are exposed
-  to the guest as `HOST_VISIBLE | HOST_COHERENT`.
+- Replaced the previous unconditional `HOST_VISIBLE -> HOST_COHERENT` upgrade.
+- Guest-visible `HOST_COHERENT` is now exposed **per memory type** and only when the mapped host
+  memory type appears in the runtime probe result.
+- Removed the old split coherent-gating decision from this file so the final decision is centralized
+  here.
 
-This is the central implementation for the requested cross-platform coherent contract.
+This file is now the guest-capability gating layer for coherent memory.
+
+#### `host/vulkan/VkEmulatedPhysicalDeviceMemory.h`
+
+- Added `CoherentHostMemoryProbeResult`.
+- Extended `EmulatedPhysicalDeviceMemoryProperties` so the runtime probe result is an explicit
+  constructor input and stored member.
+- Added accessor support so the allocation path can reuse the same coherent-compatible host type
+  mask.
+
+#### `host/vulkan/VkCommonOperations.h`
+
+- Declared `probeCoherentHostMemory(...)`.
+
+#### `host/vulkan/VkCommonOperations.cpp`
+
+- Implemented `probeCoherentHostMemory(...)`.
+- Added an init-time dummy host-pointer probe using `vkGetMemoryHostPointerPropertiesEXT()`.
+- Filters import-compatible memory type bits down to host types that are both `HOST_VISIBLE` and
+  `HOST_COHERENT`.
+- Uses platform-appropriate aligned host allocations:
+  - `posix_memalign` on Linux / POSIX hosts
+  - `_aligned_malloc` on Windows
+
+This file is now the runtime-probe layer for Linux / Windows coherent gating.
+
+#### `host/vulkan/VkDecoderGlobalState.cpp`
+
+- Wired the coherent host-memory probe into physical-device memory helper construction.
+- Tightened the `VulkanAllocateHostMemory` allocation path:
+  - detects whether the guest requested coherent memory
+  - intersects import-compatible host types with the coherent probe mask
+  - rejects allocations that would otherwise fall back to non-coherent host memory
+
+This file is now the allocation-path enforcement layer.
 
 #### `host/vulkan/VkEmulatedPhysicalDeviceMemoryTests.cpp`
 
-- Added regression coverage for the coherent guest-memory exposure behavior.
+- Updated all helper construction sites to pass explicit probe results.
+- Replaced the original single coherent test with finer-grained coverage:
+  - probe succeeds -> guest sees coherent
+  - probe returns no coherent-compatible types -> guest does not see coherent
+  - partial coherent type mask -> only matching guest-visible types keep coherent
+  - empty probe -> coherent fully removed from guest-visible memory properties
 
 #### `third-party/CMakeLists.txt`
 
@@ -358,50 +410,123 @@ Important environment variables:
 
 ## 7. Coherent memory strategy in detail
 
-The coherent-memory plan is intentionally layered.
+The coherent-memory plan is now explicitly split into **Phase A / Phase B / Phase C**.
 
-### 7.1 Guest-visible capability layer
+### 7.1 Phase A: capability gating (implemented)
 
-Implemented in:
+This is the part that is now landed in code.
 
-- `hardware/google/gfxstream/host/vulkan/VkEmulatedPhysicalDeviceMemory.cpp`
+#### Scope
 
-Responsibility:
+- do not add guest ABI
+- do not introduce `ExternalBlob`
+- do not introduce shadow/staging
+- do not introduce non-coherent software flush/invalidate emulation
+- do not extract a new platform abstraction layer yet
 
-- decide what Vulkan memory flags the guest sees
-- present a stable guest contract independent of host-driver variability
+#### Linux / Windows coherent semantics
 
-Policy:
+For Linux and Windows, the coherent semantics path is the same class of implementation:
 
-- if a host-visible path is chosen for guest-accessible Vulkan memory, expose it to the guest as
-  coherent as well
+- `VK_EXT_external_memory_host`
+- direct imported host allocation
+- per-memory-type runtime probe
+- allocation-time coherent filtering
 
-### 7.2 Host allocation strategy layer
+The semantic contract is:
 
-Controlled by feature policy:
+1. gfxstream creates an aligned host allocation
+2. the allocation is imported via
+   `VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT`
+3. the selected host memory type must be both:
+   - import-compatible
+   - genuinely `HOST_COHERENT`
+4. only then is guest `HOST_COHERENT` exposed
 
-- `VulkanAllocateHostMemory:enabled`
-- `ExternalBlob:disabled`
+That means Linux / Windows coherent memory is now tied to a direct imported coherent backing rather
+than to a broad feature-flag promise.
 
-Responsibility:
+#### Gating flow
 
-- force the host-memory-backed Vulkan allocation path to be the primary path for the ANGLE-enabled
-  mode
-- avoid feature precedence that would bypass the guest-coherent contract
+The implementation now works like this:
 
-### 7.3 ANGLE usage layer
+1. **init-time probe**
+   - `probeCoherentHostMemory(...)`
+   - probe a dummy aligned host pointer with `vkGetMemoryHostPointerPropertiesEXT()`
+   - keep only host memory types that are:
+     - import-compatible
+     - `HOST_VISIBLE`
+     - `HOST_COHERENT`
+2. **guest capability exposure**
+   - `VkEmulatedPhysicalDeviceMemory.cpp`
+   - only guest memory types whose mapped host type is in the probe mask keep `HOST_COHERENT`
+3. **allocation-time enforcement**
+   - `VkDecoderGlobalState.cpp`
+   - if the guest requested coherent memory, the final host type selection is restricted to the same
+     coherent-compatible mask
 
-Relevant to:
+This closes the old gap where the guest could see coherent while the actual host allocation still
+landed on a non-coherent host memory type.
 
-- ANGLE Vulkan backend memory selection
-- coherent-preferred mapping
-- explicit flush/invalidate fallback when the underlying host requires it
+#### `ExternalBlob`
 
-Design intent:
+`ExternalBlob` remains intentionally excluded from Phase A.
 
-- the guest contract remains coherent
-- any host non-coherent maintenance is hidden behind the host implementation boundary instead of
-  being leaked as a guest-visible capability downgrade
+Reason:
+
+- it is a different backing/handle path
+- it does not participate in the `VK_EXT_external_memory_host` probe chain
+- introducing it here would split the coherent decision path again
+
+So for the current coherent-memory implementation:
+
+- `VulkanAllocateHostMemory` is the relevant backing path
+- `ExternalBlob` is not part of the coherent solution
+
+### 7.2 Phase B: macOS validation experiment (not implemented, environment-blocked)
+
+macOS is intentionally not forced into the Linux / Windows implementation path.
+
+The current rule is:
+
+- keep the same coherent goal
+- keep the same "avoid copy / avoid explicit sync" preference
+- but do **not** add a new guest ABI
+- and do **not** assume that MoltenVK can use the same host-pointer-import path as Linux / Windows
+
+So the current macOS work is reduced to a validation task:
+
+- under **pure crosvm** constraints
+- with **no guest kernel changes**
+- check whether the existing:
+  - `virtio-gpu`
+  - `rutabaga.map()`
+  - `SharedMemoryMapper`
+  - host-visible shared memory path
+  can lead to a real direct coherent backing
+
+The planned experiment is to export the backing as `MTLBuffer` and check `MTLStorageMode`.
+
+Acceptance rule:
+
+- `MTLStorageModeShared` -> macOS may have a viable coherent path
+- `MTLStorageModeManaged` or explicit flush requirements -> macOS is considered unsupported for this
+  phase
+
+The earlier `1.diff / 2.diff / 3.diff` GMD/HVF path remains a design reference only, not an
+implementation path, because it would require guest-kernel-visible interfaces and violates the
+current "pure crosvm, no kernel intrusion" constraint.
+
+### 7.3 Phase C: future abstraction (not started)
+
+Only after Linux / Windows / macOS all have validated coherent paths should the code introduce a
+shared abstraction such as:
+
+- coherent-backing probe interface
+- platform-specific backing selector
+
+Until then, abstraction is intentionally postponed so unverified platform differences do not get
+frozen into the code structure.
 
 ## 8. Windows build closure work
 
@@ -461,43 +586,72 @@ The final Windows dist tree currently contains:
 - `out\dist\windows\gfx\angle\libGLESv2.dll`
 - `out\dist\windows\lib\libbinder-rpc.dll`
 
-## 9. Validation status
+## 9. Current status
 
-### 9.1 Completed
+### 9.1 Completed in code
 
 - `crosvm` `angle=true` configuration path implemented
 - `gfxstream` `AngleIndirect` feature introduced
-- guest-visible coherent memory policy implemented and test added
+- `ExternalBlob` remains disabled for the `angle=true` path
 - external dependency path support added for ANGLE / `aemu` / `flatbuffers`
 - Windows `gfxstream_backend` build completed
 - Windows ANGLE runtime build completed
 - Windows `binder-rpc` build completed
 - Windows `virtmgr` / `vm` / `crosvm` release builds completed
 - Windows dist staging completed
-- staged `virtmgr.exe` and `vm.exe` help-path launch verified
-- staged `crosvm-angle.bat --help` launch verified
 
-### 9.2 Script-level ready but not fully host-validated in this environment
+### 9.2 Completed in the new coherent-memory Phase A
 
-- Linux `build_all.sh` external dependency path
-- macOS `build_all.sh` ANGLE + MoltenVK staging path
+- `CoherentHostMemoryProbeResult` added
+- `probeCoherentHostMemory(...)` added
+- guest `HOST_COHERENT` exposure converted from feature-flag policy to per-memory-type runtime
+  gating
+- `VkDecoderGlobalState.cpp` allocation path tightened so coherent requests cannot silently fall back
+  to non-coherent host memory types
+- old parallel coherent-gating branches removed from `VkEmulatedPhysicalDeviceMemory.cpp`
+- coherent-memory unit-test coverage updated in source
 
-These paths were updated in source, but could not be fully compiled and runtime-tested in the
-current Windows environment.
+### 9.3 Verified in the current Windows environment
 
-## 10. Remaining caveats
+- the modified gfxstream Vulkan/backend code compiles in the existing Windows MinGW build directory
+- `gfxstream_backend` rebuild completes successfully with the new gating changes
 
-1. The Windows path is now build-closed and staged, but that does not by itself prove every guest
-   runtime workload is functionally correct.
-2. Linux and macOS code paths are implemented at the configuration and staging level, but still
-   require native-host validation.
-3. macOS depends on an actual usable `MoltenVK` runtime directory for the staged wrapper path to be
-   complete at runtime.
-4. `ExternalBlob` remains intentionally disabled for the ANGLE-enabled path; if future work needs
-   external-handle export, it must be designed so it does not break the coherent guest-visible
-   contract.
+### 9.4 Still blocked or not yet validated
 
-## 11. File-by-file change index
+- Linux native end-to-end validation still requires a Linux host environment
+- macOS Phase B validation still requires Apple Silicon + MoltenVK
+- a standalone `ENABLE_VKCEREAL_TESTS=ON` Windows test-build path is still constrained by host-side
+  dependency availability in this environment, even though the test source updates are in place
+
+## 10. Next tasks
+
+1. **Linux native validation**
+   - run the updated coherent path on a Linux host
+   - confirm that guest `HOST_COHERENT` appears only when the probed imported host memory type is
+     genuinely coherent
+2. **Windows test-environment closure**
+   - provide the missing host-side dependencies required for the standalone gfxstream unit-test
+     configuration
+   - build and run the updated coherent-memory tests
+3. **macOS Phase B experiment**
+   - stay within pure-crosvm constraints
+   - validate whether the existing virtio-gpu / rutabaga / `SharedMemoryMapper` path can land on
+     `MTLStorageModeShared`
+   - if not, record macOS as unsupported for the current coherent phase
+4. **Future abstraction only after platform proof**
+   - do not extract a shared coherent-backing abstraction before Linux / Windows / macOS each have a
+     validated path
+
+## 11. Remaining caveats
+
+1. The Windows path is build-closed, but that does not by itself prove every guest runtime workload
+   is functionally correct.
+2. Linux and macOS still require native-host validation for the coherent-memory story.
+3. `ExternalBlob` remains intentionally outside the current coherent-memory implementation path.
+4. The current implementation is intentionally Phase-A-scoped; it does not solve macOS coherent
+   backing yet.
+
+## 12. File-by-file change index
 
 ### Root repo
 
@@ -529,7 +683,11 @@ current Windows environment.
 - `host/compressedTextureFormats/AstcCpuDecompressor.h`
 - `host/features/include/gfxstream/host/Features.h`
 - `host/gl/glestranslator/EGL/EglOsApi_wgl.cpp`
+- `host/vulkan/VkCommonOperations.cpp`
+- `host/vulkan/VkCommonOperations.h`
+- `host/vulkan/VkDecoderGlobalState.cpp`
 - `host/vulkan/VkEmulatedPhysicalDeviceMemory.cpp`
+- `host/vulkan/VkEmulatedPhysicalDeviceMemory.h`
 - `host/vulkan/VkEmulatedPhysicalDeviceMemoryTests.cpp`
 
 ### `hardware/google/aemu`
@@ -539,7 +697,7 @@ current Windows environment.
 - `base/System.cpp`
 - `build-config/gfxstream/CMakeLists.txt`
 
-## 12. Recommended operational usage
+## 13. Recommended operational usage
 
 For the Windows staged build, use:
 
