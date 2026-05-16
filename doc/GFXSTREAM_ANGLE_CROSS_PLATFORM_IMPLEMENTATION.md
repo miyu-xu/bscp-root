@@ -679,6 +679,8 @@ The final Windows dist tree currently contains:
 - Probe always runs (feature-flag guard removed)
 - Unit tests: `CoherentMemoryBackingTests.cpp` (6 test cases)
 - G6 copy elimination infrastructure: `coherentBacking` flag propagated through `MemoryInfo` → `BlobDescriptorInfo` → `PipeResEntry`; conditional `sync_iov` skip in place
+- `host/virtio-gpu-gfxstream-renderer.cpp` TODO comment replaced with completed solution documentation (commit `2f17f6251`)
+- Full Vulkan test suite: 38 passed, 0 failed, 17 skipped (integration tests require Vulkan runtime)
 
 ### 9.5 Remaining tasks
 
@@ -809,6 +811,11 @@ cmake --build out/test_build --target Vulkan_unittests -j$(sysctl -n hw.ncpu)
    in the deprecated `probeCoherentHostMemory()` to match the field in
    `CoherentHostMemoryProbeResult`.
 
+6. **Updated TODO comment** (commit `2f17f6251`): Replaced the 8-year-old `(TODO: see if we can use
+   host coherent memory to do away with the copy)` at `virtio-gpu-gfxstream-renderer.cpp:299` with a
+   documented explanation of the G6 solution — coherent resources skip `sync_iov` and GPU transfer ops
+   when `PipeResEntry::coherentBacking` is true and `linear` is null.
+
 **How the optimization activates:**
 1. Guest allocates memory with `HOST_COHERENT` flag
 2. Host validates it's on a genuinely coherent type via `CoherentMemoryBacking` probe
@@ -825,11 +832,14 @@ cmake --build out/test_build --target Vulkan_unittests -j$(sysctl -n hw.ncpu)
 
 ### 10.6 Documentation cleanup (Priority: Low) — COMPLETED
 
-**Status**: This document has been updated through Phase C. All sections current as of 2026-05-14.
+**Status**: This document has been updated through Phase C. All sections current as of 2026-05-15.
 - Section 12 file-by-file change index updated with Phase C files
 - macOS `#ifdef __APPLE__` fallback documented as removed in Phase C
 - Section 7.1 references `probeCoherentHostMemory()` noted as deprecated thin wrapper
 - Test infrastructure (10.4) updated with complete macOS build/test results
+- Section 10.5 updated with TODO comment cleanup and full test suite verification
+- G6 copy elimination code changes documented (6 items including TODO update)
+- Full Vulkan test suite verification recorded (38 pass, 0 fail, 17 skip)
 
 ### 10.7 Known limitations and non-goals
 

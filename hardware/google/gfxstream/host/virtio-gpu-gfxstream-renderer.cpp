@@ -294,9 +294,14 @@ void stream_renderer_log(uint32_t type, const char* file, int line, const char* 
 // The resource object itself is currently backed via plain guest RAM, which
 // can be physically not-contiguous from the guest POV, and therefore
 // corresponds to a possibly-long list of pointers and sizes (iov) on the host
-// side. The sync_iov helper function converts convert the list of pointers
+// side. The sync_iov helper function converts the list of pointers
 // to one contiguous buffer on the host (or vice versa), at the cost of a copy.
-// (TODO: see if we can use host coherent memory to do away with the copy).
+//
+// For resources backed by genuinely coherent host memory (detected via the
+// VK_EXT_external_memory_host probe in CoherentMemoryBacking), the guest iov
+// pages ARE the host VkDeviceMemory pages — no copy is needed.
+// transferReadIov/transferWriteIov skip both sync_iov and GPU transfer ops
+// when PipeResEntry::coherentBacking is true and linear is null.
 //
 // We can see this abstraction in use via the implementation of
 // transferWriteIov and transferReadIov below, which sync the iovec to/from a
