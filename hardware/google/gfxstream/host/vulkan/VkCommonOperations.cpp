@@ -17,6 +17,8 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES3/gl3.h>
+#include <cstdlib>
+#include <malloc.h>
 #include <stdio.h>
 #include <string.h>
 #include <vulkan/vk_enum_string_helper.h>
@@ -4204,14 +4206,99 @@ findRepresentativeColorBufferMemoryTypeIndexLocked() {
         return std::nullopt;
     }
 
+    const CoherentHostMemoryProbeResult coherentProbe = probeCoherentHostMemory(
+        sVkEmulation->physdev, sVkEmulation->device, sVkEmulation->dvk,
+        sVkEmulation->deviceInfo.memProps, sVkEmulation->deviceInfo.supportsExternalMemoryHostProps,
+        sVkEmulation->deviceInfo.externalMemoryHostProps.minImportedHostPointerAlignment,
+        sVkEmulation->features);
     EmulatedPhysicalDeviceMemoryProperties helper(sVkEmulation->deviceInfo.memProps,
-                                                  hostMemoryTypeIndex, sVkEmulation->features);
+                                                  hostMemoryTypeIndex, sVkEmulation->features,
+                                                  coherentProbe);
     uint32_t guestMemoryTypeIndex = helper.getGuestColorBufferMemoryTypeIndex();
 
     return VkEmulation::RepresentativeColorBufferMemoryTypeInfo{
         .hostMemoryTypeIndex = hostMemoryTypeIndex,
         .guestMemoryTypeIndex = guestMemoryTypeIndex,
     };
+}
+
+CoherentHostMemoryProbeResult probeCoherentHostMemory(
+    VkPhysicalDevice physicalDevice, VkDevice device, const VulkanDispatch* vk,
+    const VkPhysicalDeviceMemoryProperties& hostMemoryProperties,
+    bool supportsExternalMemoryHostProps, VkDeviceSize minImportedHostPointerAlignment,
+    const gfxstream::host::FeatureSet& features) {
+    CoherentHostMemoryProbeResult result;
+
+    if (!features.VulkanAllocateHostMemory.enabled) {
+        return result;
+    }
+    if (!sVkEmulation || physicalDevice == VK_NULL_HANDLE || physicalDevice != sVkEmulation->physdev) {
+        return result;
+    }
+    if (device == VK_NULL_HANDLE || !vk || !vk->vkGetMemoryHostPointerPropertiesEXT) {
+        ERR("VK_EXT_external_memory_host function not available, cannot probe coherent host memory");
+        return result;
+    }
+    if (!supportsExternalMemoryHostProps) {
+        return result;
+    }
+
+    VkDeviceSize alignment = minImportedHostPointerAlignment;
+    if (alignment == 0) {
+        alignment = 4096;
+    }
+
+    void* dummyPtr = nullptr;
+#ifdef _WIN32
+    dummyPtr = _aligned_malloc(static_cast<size_t>(alignment), static_cast<size_t>(alignment));
+#else
+    if (posix_memalign(&dummyPtr, static_cast<size_t>(alignment), static_cast<size_t>(alignment)) !=
+        0) {
+        dummyPtr = nullptr;
+    }
+#endif
+    if (!dummyPtr) {
+        ERR("Failed to allocate dummy pointer for coherent host memory probe");
+        return result;
+    }
+
+    VkMemoryHostPointerPropertiesEXT memoryHostPointerProperties = {
+        .sType = VK_STRUCTURE_TYPE_MEMORY_HOST_POINTER_PROPERTIES_EXT,
+        .pNext = nullptr,
+        .memoryTypeBits = 0,
+    };
+
+    const VkResult probeResult = vk->vkGetMemoryHostPointerPropertiesEXT(
+        device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT, dummyPtr,
+        &memoryHostPointerProperties);
+
+#ifdef _WIN32
+    _aligned_free(dummyPtr);
+#else
+    free(dummyPtr);
+#endif
+
+    if (probeResult != VK_SUCCESS) {
+        ERR("vkGetMemoryHostPointerPropertiesEXT failed during coherent host memory probe: %d",
+            probeResult);
+        return result;
+    }
+
+    for (uint32_t i = 0; i < hostMemoryProperties.memoryTypeCount; ++i) {
+        if ((memoryHostPointerProperties.memoryTypeBits & (1u << i)) == 0) {
+            continue;
+        }
+
+        const VkMemoryPropertyFlags flags = hostMemoryProperties.memoryTypes[i].propertyFlags;
+        if ((flags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) &&
+            (flags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
+            result.coherentImportableHostTypeBits |= (1u << i);
+        }
+    }
+
+    VERBOSE("Coherent host memory probe result: typeBits=0x%x",
+            result.coherentImportableHostTypeBits);
+    return result;
 }
 
 }  // namespace vk

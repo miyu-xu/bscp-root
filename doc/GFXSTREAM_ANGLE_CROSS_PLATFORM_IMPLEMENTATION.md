@@ -730,39 +730,57 @@ unified enforcement, G6 infrastructure) have not been compiled on Windows.
 
 **Risk**: Low. Windows `#ifdef` paths are already in place.
 
-### 10.4 Test infrastructure fix (Priority: Medium)
+### 10.4 Test infrastructure fix (Priority: Medium) — COMPLETED on macOS
 
-**Status**: Partial fix applied. Two issues identified and resolved:
+**Status**: Fixed. MacOSX26.4 SDK incompatibility worked around by using MacOSX15.sdk. All 6
+CoherentMemoryBacking tests build and pass on macOS.
+
+Fixes applied:
 
 1. **lz4 dependency (fixed)**: When `ENABLE_VKCEREAL_TESTS=ON`, `gfxstream/third-party/CMakeLists.txt`
-   forces `AEMU_BASE_USE_LZ4=ON`, but the AOSP path looks for `external/lz4/build/cmake` which doesn't
-   exist in this workspace. Fixed by adding a fallback to system lz4 via pkg-config when the AOSP path
-   is missing:
-   ```cmake
-   if(EXISTS ${LZ4_PATH})
-       add_subdirectory(${LZ4_PATH} lz4)
-   else()
-       # Fallback: use system lz4 via pkg-config
-       find_package(PkgConfig REQUIRED)
-       pkg_search_module(lz4 IMPORTED_TARGET GLOBAL liblz4)
-       ...
-   endif()
-   ```
-   CMake configuration now succeeds with `-DENABLE_VKCEREAL_TESTS=ON`.
+   forces `AEMU_BASE_USE_LZ4=ON`, but the AOSP path looks for `external/lz4/build/cmake`. The `lz4`
+   source already exists at `external/lz4` in this workspace — the cmake path works as-is.
 
 2. **Duplicate `AngleIndirect` in Features.h (fixed)**: Phase C commit `ff50ca8f6` added a second
-   `AngleIndirect` feature declaration at line 315 (duplicate of the one at line 136). This would
-   cause a compile error. Removed the duplicate. This went unnoticed because the build script used
-   a pre-existing backend binary via `GFXSTREAM_PATH`.
+   `AngleIndirect` feature declaration (duplicate of the one at line 136). Removed the duplicate.
 
-3. **Toolchain blocker (unresolved)**: Xcode SDK libc++ headers use C++20 builtins
-   (`__builtin_clzg`, `__builtin_ctzg`) inside `_LIBCPP_CONSTEXPR_SINCE_CXX14` functions, causing
-   substitution failures when compiling with `-std=c++17`. This is a pre-existing macOS SDK
-   incompatibility, not caused by Phase C changes. The full test suite cannot be built on this
-   macOS version until the toolchain issue is resolved (either by upgrading to a newer clang
-   that supports constexpr builtins, or using an older macOS SDK).
+3. **Googletest bridge (fixed)**: The AOSP googletest source is not present in `external/googletest`.
+   Created `external/googletest/CMakeLists.txt` as a bridge to Homebrew-installed googletest (1.17.0),
+   providing `gtest`, `gtest_main`, `gmock`, `gmock_main` IMPORTED targets.
 
-**Risk**: Low (infrastructure only). Test code is correct; lz4 dependency and duplicate member are fixed.
+4. **`CoherentHostMemoryProbeResult` struct (fixed)**: The struct was referenced but not defined in
+   `VkEmulatedPhysicalDeviceMemory.h`. Added definition (`bool success`, `uint32_t coherentHostMemoryTypeMask`).
+
+5. **Toolchain workaround**: MacOSX26.4 SDK libc++ headers use C++20 builtins incompatible with
+   `-std=c++17`. Worked around by configuring cmake with `-DCMAKE_OSX_SYSROOT=.../MacOSX15.sdk`.
+
+6. **Missing `.cpp` in CMakeLists.txt**: `CoherentMemoryBacking.cpp` was not listed in
+   `host/vulkan/CMakeLists.txt` sources. Added to `gfxstream-vulkan-server` library.
+
+**macOS build commands:**
+```sh
+cmake --fresh \
+  -S hardware/google/gfxstream \
+  -B out/test_build -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DANGLE_PATH=.../angle \
+  -DENABLE_VKCEREAL_TESTS=ON \
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+  -DCMAKE_OSX_SYSROOT=.../MacOSX15.sdk \
+  "-DCMAKE_EXE_LINKER_FLAGS=-L/opt/homebrew/Cellar/googletest/1.17.0/lib -Wl,-multiply_defined,suppress -framework OpenGL"
+cmake --build out/test_build --target Vulkan_unittests -j$(sysctl -n hw.ncpu)
+./out/test_build/Vulkan_unittests --gtest_filter='CoherentMemoryBacking*'
+```
+
+**Test results (all 6 pass):**
+- `validateAllocationPasses` — coherent type in mask → VK_SUCCESS
+- `validateAllocationRejects` — non-coherent type → VK_ERROR_INCOMPATIBLE_DRIVER
+- `validateAllocationNoCoherentReq` — guest didn't request coherent → always VK_SUCCESS
+- `isHostTypeCoherent` — bit checks correct
+- `hasCoherentTypes` — empty vs non-empty mask
+- `probeFailedHasNoTypes` — failed probe returns empty
+
+**Risk**: Low. macOS test infrastructure is operational.
 
 ### 10.5 G6 copy elimination — full implementation (Priority: Medium)
 
@@ -797,15 +815,13 @@ because no resource currently has `coherentBacking=true` AND `linear=nullptr` si
 **Risk**: Medium. Cross-layer coupling between renderer and Vulkan state management. Requires
 runtime integration testing (10.1 / 10.2) for validation.
 
-### 10.6 Documentation cleanup (Priority: Low)
+### 10.6 Documentation cleanup (Priority: Low) — COMPLETED
 
-**Status**: This document has been updated through Phase C. Minor cleanup remaining.
-
-**What to do**:
-- Add new files to the file-by-file change index (Section 12)
-- Remove references to the now-deleted macOS `#ifdef __APPLE__` fallback as an active code path
-- Update Section 7.1 references to `probeCoherentHostMemory()` to note it's now a thin wrapper
-  around `CoherentMemoryBacking`
+**Status**: This document has been updated through Phase C. All sections current as of 2026-05-14.
+- Section 12 file-by-file change index updated with Phase C files
+- macOS `#ifdef __APPLE__` fallback documented as removed in Phase C
+- Section 7.1 references `probeCoherentHostMemory()` noted as deprecated thin wrapper
+- Test infrastructure (10.4) updated with complete macOS build/test results
 
 ### 10.7 Known limitations and non-goals
 
@@ -827,9 +843,9 @@ runtime integration testing (10.1 / 10.2) for validation.
 | 10.1 | Linux runtime validation | High | Low | Pending | Linux host |
 | 10.2 | macOS runtime integration test | High | Medium | Pending | Guest image |
 | 10.3 | Windows build verification | Medium | Low | Pending | Windows host |
-| 10.4 | Test infrastructure fix | Medium | Low | Partial (lz4 fixed, duplicate AngleIndirect fixed, toolchain blocked) | macOS SDK compat |
+| 10.4 | Test infrastructure fix | Medium | Low | Complete (macOS) | — |
 | 10.5 | G6 copy elimination (full) | Medium | High | Pending (infra in place) | 10.1 + 10.2 for validation |
-| 10.6 | Documentation cleanup | Low | Low | Complete | None |
+| 10.6 | Documentation cleanup | Low | Low | Complete | — |
 
 ## 11. Remaining caveats
 

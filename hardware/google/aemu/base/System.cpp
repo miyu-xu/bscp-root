@@ -46,8 +46,10 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#if !defined(_WIN32)
 #include <sys/resource.h>
 #include <unistd.h>
+#endif
 #endif
 
 #include <string.h>

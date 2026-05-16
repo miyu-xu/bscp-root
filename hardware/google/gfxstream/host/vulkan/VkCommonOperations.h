@@ -30,6 +30,7 @@
 #include "DeviceOpTracker.h"
 #include "DisplayVk.h"
 #include "FrameworkFormats.h"
+#include "VkEmulatedPhysicalDeviceMemory.h"
 #include "aemu/base/ManagedDescriptor.hpp"
 #include "aemu/base/Optional.h"
 #include "aemu/base/synchronization/Lock.h"
@@ -474,6 +475,12 @@ void initVkEmulationFeatures(std::unique_ptr<VkEmulationFeatures>);
 
 VkEmulation* getGlobalVkEmulation();
 void teardownGlobalVkEmulation();
+
+CoherentHostMemoryProbeResult probeCoherentHostMemory(
+    VkPhysicalDevice physicalDevice, VkDevice device, const VulkanDispatch* vk,
+    const VkPhysicalDeviceMemoryProperties& hostMemoryProperties,
+    bool supportsExternalMemoryHostProps, VkDeviceSize minImportedHostPointerAlignment,
+    const gfxstream::host::FeatureSet& features);
 
 void onVkDeviceLost();
 

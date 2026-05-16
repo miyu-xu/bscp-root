@@ -133,6 +133,12 @@ struct FeatureSet {
         "for GL calls between the guest and host.",
         &map,
     };
+    FeatureInfo AngleIndirect = {
+        "AngleIndirect",
+        "If enabled, the host GL/EGL translator stack will resolve EGL/GLES through "
+        "ANGLE-provided libraries instead of the system GL implementation.",
+        &map,
+    };
     FeatureInfo GlesDynamicVersion = {
         "GlesDynamicVersion",
         "If enabled, attempts to detect and use the maximum supported GLES version "
@@ -304,12 +310,6 @@ struct FeatureSet {
         "If enabled, the host will enable the VK_NV_device_diagnostic_checkpoints extension "
         "when available, track command buffers with markers, and report unfinished command "
         "buffers on device lost. (TODO: VK_AMD_buffer_marker)",
-        &map,
-    };
-    FeatureInfo AngleIndirect = {
-        "AngleIndirect",
-        "If enabled, indicates that the host should use ANGLE with a Vulkan backend as the "
-        "host GL/EGL provider instead of a native GL driver.",
         &map,
     };
 };
