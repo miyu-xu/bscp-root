@@ -108,7 +108,7 @@ BINDER_LIB="libbinder-rpc.$LIB_EXT"
 GFXSTREAM_BUILD_DIR="$OUT_ROOT/gfxstream_build_$DIST_DIR_NAME"
 GFXSTREAM_LIB="libgfxstream_backend.$LIB_EXT"
 ANGLE_ROOT="${ANGLE_ROOT:-$REPO_ROOT/../angle}"
-AEMU_COMMON_PATH="${AEMU_COMMON_PATH:-$REPO_ROOT/../aemu}"
+AEMU_COMMON_PATH="${AEMU_COMMON_PATH:-$REPO_ROOT/hardware/google/aemu}"
 FLATBUFFERS_PATH="${FLATBUFFERS_PATH:-$REPO_ROOT/external/flatbuffers}"
 ANGLE_RUNTIME_DIR="${ANGLE_RUNTIME_DIR:-}"
 ENABLE_GFXSTREAM_ANGLE="${ENABLE_GFXSTREAM_ANGLE:-0}"
@@ -342,6 +342,8 @@ if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
       "-DANGLE_PATH=$ANGLE_ROOT"
       "-DAEMU_COMMON_PATH=$AEMU_COMMON_PATH"
       "-DFLATBUFFERS_PATH=$FLATBUFFERS_PATH"
+      "-DMOLTENVK_ROOT=$MOLTENVK_ROOT"
+      "-DMOLTENVK_RUNTIME_DIR=$MOLTENVK_RUNTIME_DIR"
     )
 
     if [[ "$CMAKE_GEN" == "Ninja" ]]; then
@@ -447,7 +449,8 @@ if [[ "$OS_NAME" == "Darwin" ]]; then
 
   if [[ -f "$DIST_BIN/crosvm" ]]; then
     echo "[codesign] ad-hoc signing crosvm with Hypervisor entitlement"
-    codesign --force --sign - --entitlements "$MACOS_CROSVM_ENTITLEMENTS" --timestamp=none \
+    codesign --force --sign - --entitlements "$MACOS_CROSVM_ENTITLEMENTS" \
+      --options runtime --timestamp=none \
       "$DIST_BIN/crosvm"
   else
     echo "Error: missing $DIST_BIN/crosvm"
