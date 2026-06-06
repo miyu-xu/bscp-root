@@ -258,8 +258,8 @@ if(NOT TARGET libdrm_headers)
         if(EXISTS ${LIBDRM_PATH})
             add_library(libdrm_headers INTERFACE)
             target_include_directories(libdrm_headers INTERFACE ${LIBDRM_PATH}/include/drm)
-        elseif(APPLE)
-            # macOS does not use DRM. Create a stub so the build can proceed.
+        elseif(APPLE OR WIN32)
+            # macOS/Windows host builds do not use DRM. Create a stub so the build can proceed.
             add_library(libdrm_headers INTERFACE)
         else()
             message(FATAL_ERROR "LIBDRM is not found at ${LIBDRM_PATH}.")
