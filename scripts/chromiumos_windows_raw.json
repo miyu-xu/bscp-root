@@ -1,0 +1,17 @@
+{
+  "memory_mib": 4096,
+  "console_input_device": "hvc0",
+  "protected": false,
+  "disks": [
+    {
+      "image": "C:/workspace/bscp/bscp/out/dist/img/amd64-generic_test_image.bin",
+      "writable": true,
+      "partitions": []
+    }
+  ],
+  "cpu_topology": "match_host",
+  "platform_version": "~1.0",
+  "params": "console=hvc0,ttyS0 loglevel=7 console_msg_format=syslog init=/sbin/init cros_secure drm.trace=0x106 root=/dev/dm-0 rootwait ro dm_verity.error_behavior=3 dm_verity.max_bios=-1 dm_verity.dev_wait=1 dm=\"1 vroot none ro 1,0 4096000 verity payload=PARTUUID=08b45a13-1772-fb81-55aa-7511d1e9730d/PARTNROFF=1 hashtree=PARTUUID=08b45a13-1772-fb81-55aa-7511d1e9730d/PARTNROFF=1 hashstart=4096000 alg=sha256 root_hexdigest=7b2cb11c221e3cb4394bd50eeb0d5116a42785dc2e76b70c31f5be485d84f0ca salt=d338ddebf01f291ef778d5159ce83cdf5ea451e824d8e44c4ebcc17644b08660\" noinitrd cros_debug vt.global_cursor_default=0 kern_guid=08b45a13-1772-fb81-55aa-7511d1e9730d cros_lsb_release_hash=R/M0OP+58IOpEUi7vrNd4WHPabvgNTgN+4FxW+w83uw= add_efi_memmap noresume i915.modeset=1 chromeos_pstore.ecc_size=4",
+  "kernel": "C:/workspace/bscp/bscp/out/dist/img/amd64-generic_kernel.bin",
+  "name": "cros"
+}

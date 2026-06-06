@@ -1,0 +1,36 @@
+# Build OVMF X64 DEBUG with serial debug (DEBUG_ON_SERIAL_PORT) for ChromeOS firmware visibility.
+name: Build OVMF DEBUG
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, 'bscp-*']
+    paths:
+      - '.github/workflows/build-ovmf-debug.yml'
+      - 'scripts/build_ovmf_debug.sh'
+      - 'scripts/fetch_ovmf_debug.ps1'
+
+jobs:
+  build-ovmf-debug:
+    name: OVMF DEBUG (serial)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build OVMF_DEBUG.fd
+        run: |
+          chmod +x scripts/build_ovmf_debug.sh
+          scripts/build_ovmf_debug.sh
+
+      - name: Upload OVMF_DEBUG.fd
+        uses: actions/upload-artifact@v4
+        with:
+          name: OVMF_DEBUG.fd
+          path: out/dist/firmware/OVMF_DEBUG.fd
+          if-no-files-found: error
+
+      - name: Summary
+        run: |
+          ls -la out/dist/firmware/OVMF_DEBUG.fd
+          sha256sum out/dist/firmware/OVMF_DEBUG.fd
