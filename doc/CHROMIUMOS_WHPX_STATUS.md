@@ -46,18 +46,24 @@ Linux 6.1.119-crosvm → earlycon @ COM1 (37KB dmesg)
 **AVF ferrochrome 是 ARM64 原生。WHPX 问题是 x86_64/Windows 特有的。**
 我们的 5 个修复填补了 Windows crosvm WHPX 的通用空白——在 Linux KVM 上这些问题不存在。
 
-## gfxstream GPU (部分完成)
+## gfxstream GPU ✅
 
-**编译**: crosvm 含 `gfxstream` feature，`rutabaga_gfx` 中 gfxstream 后端已链接。
+**启动命令**: `crosvm run-mp --gpu backend=gfxstream` (必须用 `run-mp` broker 路径)
 
-**运行时**: `crosvm device gpu` 子进程可正常启动。需满足：
+**验证结果**:
+```
+✅ gpu_display: Creating GUI window (16 scanouts)
+✅ WndProc thread entering message loop  
+✅ vhost-user gpu device ready, starting run loop
+✅ ChromeOS boot + GPU display rendered
+```
+
+**关键发现**: Windows 上 GPU 设备只能通过 broker 进程架构创建 (`run-mp`)。`run` 命令绕过 broker，因此 GPU 永远不会被接入 VM。
+
+**部署清单**:
 - `libgfxstream_backend.dll` + `gfxstream_backend.dll` 在 PATH 中
-- MinGW 运行时 DLL (`libgcc_s_seh-1.dll`, `libwinpthread-1.dll`, `libstdc++-6.dll`) 需在同目录或 PATH 中
-- ANGLE DLL 需在 PATH 中 (`C:\workspace\bscp\angle\out\Release-GfxAngle-Clang`)
-
-**当前阻塞**: `--gpu backend=gfxstream` 在 `--disable-sandbox` 模式下未将 GPU 设备接入 VM。crosvm Windows broker 进程架构可能需要 sandbox 模式才能正确创建 GPU child process。
-
-**下步**: 研究 crosvm Windows broker/sandbox GPU 设备创建流程，或使用 `--jail` 启用 sandbox 测试。
+- MinGW 运行时 DLL 在同目录 (`libgcc_s_seh-1.dll`, `libwinpthread-1.dll`, `libstdc++-6.dll`)
+- ANGLE DLL 在 PATH 中 (`C:\workspace\bscp\angle\out\Release-GfxAngle-Clang`)
 
 ## 修改文件 (crosvm)
 
