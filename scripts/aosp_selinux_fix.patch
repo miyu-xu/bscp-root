@@ -1,0 +1,44 @@
+# AOSP init SELinux Fix for WHPX/crosvm
+# File: system/core/init/selinux.cpp
+#
+# Changes:
+# 1. ReadPolicy() - when policy open fails AND we're permissive, 
+#    return empty policy instead of LOG(FATAL)
+# 2. ReadPolicy() - same for ReadFdToString failure
+# 3. LoadSelinuxPolicy() - skip loading if policy string is empty
+
+--- a/system/core/init/selinux.cpp
++++ b/system/core/init/selinux.cpp
+@@ ReadPolicy @@
+ void ReadPolicy(std::string* policy) {
++    PolicyFile policy_file;
+     bool ok = IsSplitPolicyDevice() ? OpenSplitPolicy(&policy_file)
+                                     : OpenMonolithicPolicy(&policy_file);
+     if (!ok) {
++        if (ALLOW_PERMISSIVE_SELINUX && !IsEnforcing()) {
++            LOG(WARNING) << "Unable to open SELinux policy, continuing permissive";
++            return;
++        }
+         LOG(FATAL) << "Unable to open SELinux policy";
+     }
+     if (!android::base::ReadFdToString(policy_file.fd, policy)) {
++        if (ALLOW_PERMISSIVE_SELINUX && !IsEnforcing()) {
++            LOG(WARNING) << "Failed to read policy file, continuing permissive";
++            return;
++        }
+         PLOG(FATAL) << "Failed to read policy file: " << policy_file.path;
+     }
+ }
+
+@@ LoadSelinuxPolicy @@
+ static void LoadSelinuxPolicy(std::string& policy) {
+     LOG(INFO) << "Loading SELinux policy";
+     set_selinuxmnt("/sys/fs/selinux");
++    if (policy.empty()) {
++        LOG(WARNING) << "Empty policy, skipping load (permissive)";
++        return;
++    }
+     if (security_load_policy(policy.data(), policy.size()) < 0) {
+         PLOG(FATAL) << "SELinux:  Could not load policy";
+     }
+ }

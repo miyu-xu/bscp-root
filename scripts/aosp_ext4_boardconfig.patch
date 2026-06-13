@@ -1,0 +1,14 @@
+# AOSP BoardConfig ext4 override for WHPX compatibility
+# File: device/google/cuttlefish/vsoc_x86_64/BoardConfig.mk
+#
+# Android 15 defaults to EROFS which is not compatible with all kernels.
+# Override to ext4 for broader compatibility.
+
+--- a/device/google/cuttlefish/vsoc_x86_64/BoardConfig.mk
++++ b/device/google/cuttlefish/vsoc_x86_64/BoardConfig.mk
+@@ -0,0 +1,5 @@
++# Force ext4 for WHPX compatibility
++BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
++BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
++BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
++BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
