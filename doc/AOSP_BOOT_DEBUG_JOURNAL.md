@@ -342,17 +342,57 @@ print('PATCHED')
      }
 ```
 
-**After patching**: The `init` binary must be rebuilt and the system image re-generated:
+### Init Binary Rebuild (Critical)
+
+After patching `selinux.cpp`, the `init` binary MUST be rebuilt and the new binary
+MUST be included in `system.img`. Simply running `m` is NOT sufficient — the build
+system caches intermediates and will reuse the old `init` binary.
+
+**Why `m` alone fails**: The Soong build system stores intermediate outputs in
+`out/target/product/<device>/obj/PACKAGING/system_intermediates/`. If the cached
+`init` binary in the intermediates is newer than the source files (or the timestamp
+comparison fails), `m` will skip rebuilding `init` and pack the old binary into
+`system.img`.
+
+**Correct rebuild procedure**:
 ```bash
 cd /opt/workspace/aosp
 source build/envsetup.sh
 lunch aosp_cf_x86_64_phone-trunk_staging-userdebug
 
-# Clean init intermediates to force rebuild
+# Step 1: Delete ALL cached init binaries (everywhere in out/)
 find out/ -name "init" -type f -delete 2>/dev/null
+
+# Step 2: Delete system image intermediates (forces rebuild + re-pack)
 rm -rf out/target/product/vsoc_x86_64/obj/PACKAGING/system_intermediates
 
+# Step 3: Remove stale lock file if present
+rm -f out/.lock
+
+# Step 4: Full rebuild (takes 20-40 minutes)
 m
+```
+
+**Verify the fix was applied** (run after build completes):
+```bash
+# Check the init binary inside the built system image
+mkdir -p /tmp/syscheck
+mount -t ext4 -o loop,ro \
+  out/target/product/vsoc_x86_64/obj/PACKAGING/system_intermediates/system.img \
+  /tmp/syscheck 2>/dev/null
+
+strings /tmp/syscheck/system/bin/init | grep -c "Skipping SELinux"
+# Expected output: 1
+
+umount /tmp/syscheck
+```
+
+If the output is `0`, the old init binary was packed — re-do the clean + rebuild.
+
+**Alternative verification** (check intermediate directly, doesn't require mount):
+```bash
+strings out/target/product/vsoc_x86_64/obj/EXECUTABLES/init_intermediates/init \
+  | grep -c "Skipping SELinux"
 ```
 
 ---
