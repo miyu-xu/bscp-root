@@ -258,6 +258,169 @@ This causes cascading failures:
 └────────────────────────────────────────────────────────────┘
 ```
 
+## AOSP Source Patches Required
+
+These two patches MUST be applied to the AOSP source tree before building.
+
+---
+
+### Patch 1: SELinux Permissive Mode (system/core/init)
+
+**File**: `system/core/init/selinux.cpp`
+**Why**: Without this patch, init calls `LOG(FATAL)` and reboots when SELinux policy cannot be opened or compiled. This is the default on WHPX/crosvm where the kernel may lack `property_service` class or CIL cross-partition compilation fails.
+
+**How to apply**:
+```bash
+cd /opt/workspace/aosp
+python3 fix_selinux.py system/core/init/selinux.cpp
+```
+
+**fix_selinux.py**:
+```python
+#!/usr/bin/env python3
+"""Fix selinux.cpp to skip SELinux policy loading in permissive mode."""
+import sys
+
+with open(sys.argv[1], 'r') as f:
+    c = f.read()
+
+# Patch 1: ReadPolicy() — return early when permissive
+# Insert early-return at the top of ReadPolicy() body, right after the opening brace
+old_rp = '''void ReadPolicy(std::string* policy) {
+    PolicyFile policy_file;'''
+new_rp = '''void ReadPolicy(std::string* policy) {
+    if (ALLOW_PERMISSIVE_SELINUX && !IsEnforcing()) {
+        LOG(WARNING) << "Skipping SELinux policy (permissive mode)";
+        return;
+    }
+    PolicyFile policy_file;'''
+c = c.replace(old_rp, new_rp, 1)
+
+# Patch 2: ReadPolicy() — same for ReadFdToString failure path
+# (Handled by Patch 1 since ReadFdToString failure also calls LOG(FATAL),
+#  and the early return skips the entire function body)
+
+# Patch 3: LoadSelinuxPolicy() — skip load if policy string is empty
+old_lp = '''    if (security_load_policy(policy.data(), policy.size()) < 0) {
+        PLOG(FATAL) << "SELinux:  Could not load policy";
+    }'''
+new_lp = '''    if (policy.empty()) {
+        LOG(WARNING) << "Empty policy, skipping load (permissive)";
+        return;
+    }
+    if (security_load_policy(policy.data(), policy.size()) < 0) {
+        PLOG(FATAL) << "SELinux:  Could not load policy";
+    }'''
+c = c.replace(old_lp, new_lp, 1)
+
+with open(sys.argv[1], 'w') as f:
+    f.write(c)
+print('PATCHED')
+```
+
+**Resulting source changes** (`git diff system/core/init/selinux.cpp`):
+
+```diff
+ void ReadPolicy(std::string* policy) {
++    if (ALLOW_PERMISSIVE_SELINUX && !IsEnforcing()) {
++        LOG(WARNING) << "Skipping SELinux policy (permissive mode)";
++        return;
++    }
+     PolicyFile policy_file;
+```
+
+```diff
+ static void LoadSelinuxPolicy(std::string& policy) {
+     LOG(INFO) << "Loading SELinux policy";
+     set_selinuxmnt("/sys/fs/selinux");
++    if (policy.empty()) {
++        LOG(WARNING) << "Empty policy, skipping load (permissive)";
++        return;
++    }
+     if (security_load_policy(policy.data(), policy.size()) < 0) {
+         PLOG(FATAL) << "SELinux:  Could not load policy";
+     }
+```
+
+**After patching**: The `init` binary must be rebuilt and the system image re-generated:
+```bash
+cd /opt/workspace/aosp
+source build/envsetup.sh
+lunch aosp_cf_x86_64_phone-trunk_staging-userdebug
+
+# Clean init intermediates to force rebuild
+find out/ -name "init" -type f -delete 2>/dev/null
+rm -rf out/target/product/vsoc_x86_64/obj/PACKAGING/system_intermediates
+
+m
+```
+
+---
+
+### Patch 2: Filesystem Type (device/google/cuttlefish)
+
+**File**: `device/google/cuttlefish/vsoc_x86_64/BoardConfig.mk`
+**Why**: Android 15 defaults to EROFS for read-only partitions. The GPP kernel (6.1.166) does not support EROFS. The AOSP 6.6 kernel does have EROFS support but lacks built-in virtio drivers (see Path A in Alternatives). Override to ext4 for GPP kernel compatibility.
+
+**Changes** — append to end of file:
+```makefile
+# Force ext4 for WHPX compatibility (override EROFS default)
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
+```
+
+**How to apply**:
+```bash
+cat >> device/google/cuttlefish/vsoc_x86_64/BoardConfig.mk << 'EOF'
+
+# Force ext4 for WHPX compatibility (override EROFS default)
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
+EOF
+```
+
+---
+
+### Full Rebuild Commands (after both patches)
+
+On the AOSP build VM:
+```bash
+cd /opt/workspace/aosp
+
+# Apply SELinux patch
+python3 fix_selinux.py system/core/init/selinux.cpp
+
+# Apply BoardConfig patch (if not already done)
+cat >> device/google/cuttlefish/vsoc_x86_64/BoardConfig.mk << 'EOF'
+
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_PRODUCTIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_SYSTEM_EXTIMAGE_FILE_SYSTEM_TYPE := ext4
+EOF
+
+# Clean and rebuild
+rm -f out/.lock
+source build/envsetup.sh
+lunch aosp_cf_x86_64_phone-trunk_staging-userdebug
+
+# Clean init to pick up SELinux fix
+find out/ -name "init" -type f -delete 2>/dev/null
+rm -rf out/target/product/vsoc_x86_64/obj/PACKAGING/system_intermediates
+
+# Build everything
+m
+
+# Copy super to shared folder for Windows
+cp out/target/product/vsoc_x86_64/super.img /media/sf_Desktop/super_vX.img
+```
+
+---
+
 ## Fix Required (Next Step)
 
 ### One-line summary
