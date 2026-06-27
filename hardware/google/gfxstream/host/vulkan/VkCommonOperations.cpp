@@ -127,12 +127,10 @@ VK_EXT_MEMORY_HANDLE dupExternalMemory(VK_EXT_MEMORY_HANDLE h) {
 CoherentHostMemoryProbeResult probeCoherentHostMemory(VulkanDispatch* vk,
                                                        VkPhysicalDevice physdev,
                                                        uint32_t /*compatibleMemoryTypeMask*/) {
-    (void)vk;
-    (void)physdev;
-    // VK_EXT_external_memory_host requires a VkDevice. This helper is called while
-    // enumerating physical devices, before a device exists, so probing here would
-    // pass an invalid handle to the host Vulkan loader.
-    return CoherentHostMemoryProbeResult{};
+    VkPhysicalDeviceMemoryProperties hostMemProps;
+    vk->vkGetPhysicalDeviceMemoryProperties(physdev, &hostMemProps);
+    auto backing = CoherentMemoryBacking::createForPlatform(vk, physdev, hostMemProps);
+    return backing ? backing->probeResult() : CoherentHostMemoryProbeResult{};
 }
 
 bool getStagingMemoryTypeIndex(VulkanDispatch* vk, VkDevice device,
