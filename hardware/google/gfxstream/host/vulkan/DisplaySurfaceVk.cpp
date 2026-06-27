@@ -18,6 +18,10 @@
 #include "host-common/logging.h"
 #include "vk_util.h"
 
+#ifdef __linux__
+#include <xcb/xcb.h>
+#endif
+
 namespace gfxstream {
 namespace vk {
 
@@ -28,6 +32,9 @@ std::unique_ptr<DisplaySurfaceVk> DisplaySurfaceVk::create(const VulkanDispatch&
                                                            VkInstance instance,
                                                            FBNativeWindowType window) {
     VkSurfaceKHR surface = VK_NULL_HANDLE;
+#ifdef __linux__
+    xcb_connection_t* xcbConnection = nullptr;
+#endif
 #ifdef _WIN32
     const VkWin32SurfaceCreateInfoKHR surfaceCi = {
         .sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR,
@@ -37,26 +44,61 @@ std::unique_ptr<DisplaySurfaceVk> DisplaySurfaceVk::create(const VulkanDispatch&
         .hwnd = window,
     };
     VK_CHECK(vk.vkCreateWin32SurfaceKHR(instance, &surfaceCi, nullptr, &surface));
-#else
-    GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
-        << "Unimplemented.";
+#elif defined(__linux__)
+    xcbConnection = xcb_connect(nullptr, nullptr);
+    if (!xcbConnection || xcb_connection_has_error(xcbConnection)) {
+        GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
+            << "Failed to connect to X server for Vulkan XCB surface.";
+    }
+
+    const VkXcbSurfaceCreateInfoKHR surfaceCi = {
+        .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
+        .pNext = nullptr,
+        .flags = 0,
+        .connection = xcbConnection,
+        .window = static_cast<xcb_window_t>(window),
+    };
+    VK_CHECK(vk.vkCreateXcbSurfaceKHR(instance, &surfaceCi, nullptr, &surface));
 #endif
     if (surface == VK_NULL_HANDLE) {
         GFXSTREAM_ABORT(FatalError(ABORT_REASON_OTHER))
             << "No VkSurfaceKHR created?";
     }
 
-    return std::unique_ptr<DisplaySurfaceVk>(new DisplaySurfaceVk(vk, instance, surface));
+    return std::unique_ptr<DisplaySurfaceVk>(new DisplaySurfaceVk(
+        vk, instance, surface
+#ifdef __linux__
+        ,
+        xcbConnection
+#endif
+        ));
 }
 
 DisplaySurfaceVk::DisplaySurfaceVk(const VulkanDispatch& vk, VkInstance instance,
-                                   VkSurfaceKHR surface)
-    : mVk(vk), mInstance(instance), mSurface(surface) {}
+                                   VkSurfaceKHR surface
+#ifdef __linux__
+                                   ,
+                                   xcb_connection_t* xcbConnection
+#endif
+                                   )
+    : mVk(vk),
+      mInstance(instance),
+      mSurface(surface)
+#ifdef __linux__
+      ,
+      mXcbConnection(xcbConnection)
+#endif
+{}
 
 DisplaySurfaceVk::~DisplaySurfaceVk() {
     if (mSurface != VK_NULL_HANDLE) {
         mVk.vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
     }
+#ifdef __linux__
+    if (mXcbConnection) {
+        xcb_disconnect(mXcbConnection);
+    }
+#endif
 }
 
 }  // namespace vk

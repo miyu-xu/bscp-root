@@ -21,6 +21,10 @@
 #include "render-utils/render_api_platform_types.h"
 #include "goldfish_vk_dispatch.h"
 
+#ifdef __linux__
+struct xcb_connection_t;
+#endif
+
 namespace gfxstream {
 namespace vk {
 
@@ -34,11 +38,19 @@ class DisplaySurfaceVk : public gfxstream::DisplaySurfaceImpl {
    VkSurfaceKHR getSurface() const { return mSurface; }
 
   private:
-   DisplaySurfaceVk(const VulkanDispatch& vk, VkInstance vkInstance, VkSurfaceKHR vkSurface);
+   DisplaySurfaceVk(const VulkanDispatch& vk, VkInstance vkInstance, VkSurfaceKHR vkSurface
+#ifdef __linux__
+                    ,
+                    xcb_connection_t* xcbConnection
+#endif
+   );
 
    const VulkanDispatch& mVk;
    VkInstance mInstance = VK_NULL_HANDLE;
    VkSurfaceKHR mSurface = VK_NULL_HANDLE;
+#ifdef __linux__
+   xcb_connection_t* mXcbConnection = nullptr;
+#endif
 };
 
 }  // namespace vk

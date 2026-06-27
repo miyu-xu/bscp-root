@@ -56,8 +56,8 @@ require_fixed "RenderEngine: version   : OpenGL ES" "$LOGCAT" "RenderEngine Open
 
 require_fixed "Gfxstream feature GuestVulkanOnly enabled" "$STDERR_LOG" \
     "gfxstream GuestVulkanOnly enabled"
-require_fixed "Gfxstream feature VulkanAllocateHostMemory disabled" "$STDERR_LOG" \
-    "gfxstream VulkanAllocateHostMemory disabled"
+require_regex "Gfxstream feature VulkanAllocateHostMemory (enabled|disabled)" "$STDERR_LOG" \
+    "gfxstream VulkanAllocateHostMemory state logged"
 require_fixed "stream_renderer_init Gfxstream initialized successfully!" "$STDERR_LOG" \
     "gfxstream initialized"
 require_fixed "Graphics Adapter" "$STDERR_LOG" "host graphics adapter selected"

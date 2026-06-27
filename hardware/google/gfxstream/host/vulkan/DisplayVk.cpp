@@ -417,8 +417,8 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
     VkImageMemoryBarrier acquireSwapchainImageBarrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
         .pNext = nullptr,
-        .srcAccessMask = VK_PIPELINE_STAGE_TRANSFER_BIT,
-        .dstAccessMask = VK_PIPELINE_STAGE_TRANSFER_BIT,
+        .srcAccessMask = 0,
+        .dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
         .oldLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         .newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -433,7 +433,7 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
                 .layerCount = 1,
             },
     };
-    m_vk.vkCmdPipelineBarrier(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT,
+    m_vk.vkCmdPipelineBarrier(cmdBuff, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
                               VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1,
                               &acquireSwapchainImageBarrier);
 
@@ -487,8 +487,8 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
 
     VkImageMemoryBarrier releaseSwapchainImageBarrier = {
         .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-        .srcAccessMask = VK_PIPELINE_STAGE_TRANSFER_BIT,
-        .dstAccessMask = VK_ACCESS_MEMORY_READ_BIT,
+        .srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT,
+        .dstAccessMask = 0,
         .oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         .newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
         .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
@@ -504,7 +504,7 @@ DisplayVk::PostResult DisplayVk::postImpl(const BorrowedImageInfo* sourceImageIn
             },
     };
     m_vk.vkCmdPipelineBarrier(cmdBuff, VK_PIPELINE_STAGE_TRANSFER_BIT,
-                              VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1,
+                              VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1,
                               &releaseSwapchainImageBarrier);
 
     VK_CHECK(m_vk.vkEndCommandBuffer(cmdBuff));

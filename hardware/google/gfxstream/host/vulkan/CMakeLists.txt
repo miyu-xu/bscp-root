@@ -52,6 +52,9 @@ target_link_libraries(gfxstream-vulkan-server PUBLIC
 
 if (WIN32)
 target_compile_definitions(gfxstream-vulkan-server PRIVATE -DVK_USE_PLATFORM_WIN32_KHR)
+elseif (LINUX)
+target_compile_definitions(gfxstream-vulkan-server PRIVATE -DVK_USE_PLATFORM_XCB_KHR)
+target_link_libraries(gfxstream-vulkan-server PRIVATE xcb)
 elseif (APPLE)
 target_compile_definitions(gfxstream-vulkan-server PRIVATE -DVK_USE_PLATFORM_METAL_EXT)
 elseif (QNX)

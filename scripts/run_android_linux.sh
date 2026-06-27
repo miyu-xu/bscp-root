@@ -20,6 +20,7 @@ DRY_RUN=0
 KEEP_GOING=0
 GPU_GUEST_ANGLE=0
 GPU_HOST_SWIFTSHADER=0
+GPU_HOST_VISIBLE_COHERENT="${CROSVM_ANDROID_HOST_VISIBLE_COHERENT:-0}"
 X11_GFXSTREAM_SUBWINDOW="${CROSVM_X11_GFXSTREAM_SUBWINDOW:-auto}"
 X_DISPLAY="${DISPLAY:-}"
 ENABLE_NETWORK=1
@@ -60,6 +61,8 @@ Options:
   --gpu-guest-angle     Use guest ANGLE EGL with gfxstream-vulkan contexts
   --gpu-host-swiftshader
                         Force ANGLE's staged SwiftShader Vulkan ICD in gpu mode
+  --gpu-host-visible-coherent
+                        Enable gfxstream VulkanAllocateHostMemory for guest host-visible coherent testing
   --x11-gfxstream-subwindow
                         Use gfxstream's native X11 subwindow instead of XShm readback
   --x-display DISPLAY   X11 display for the host GPU window (default: DISPLAY env)
@@ -98,6 +101,7 @@ while [[ $# -gt 0 ]]; do
         --bootconfig) EXTRA_BOOTCONFIG+=("$2"); shift 2 ;;
         --gpu-guest-angle) GPU_GUEST_ANGLE=1; shift ;;
         --gpu-host-swiftshader) GPU_HOST_SWIFTSHADER=1; shift ;;
+        --gpu-host-visible-coherent) GPU_HOST_VISIBLE_COHERENT=1; shift ;;
         --x11-gfxstream-subwindow) X11_GFXSTREAM_SUBWINDOW=1; shift ;;
         --x-display) X_DISPLAY="$2"; shift 2 ;;
         --no-network) ENABLE_NETWORK=0; shift ;;
@@ -177,11 +181,6 @@ require_file() {
 }
 
 require_file "$CROSVM_BIN" "crosvm"
-if [[ "$ENABLE_NETWORK" -eq 1 ]] && ! "$CROSVM_BIN" run --help 2>&1 | grep -q -- "--net"; then
-    echo "Error: $CROSVM_BIN was built without crosvm's net feature; rebuild with build_all.sh so direct Cuttlefish networking can create eth1." >&2
-    echo "       Use --no-network to keep the old no-network direct boot path." >&2
-    exit 1
-fi
 require_file "$KERNEL" "kernel"
 require_file "$RAMDISK" "ramdisk"
 require_file "$VENDOR_RAMDISK" "vendor ramdisk"
@@ -435,14 +434,26 @@ if [[ "$MODE" == "gpu" ]]; then
         if [[ "$X11_GFXSTREAM_SUBWINDOW" == "auto" ]]; then
             X11_GFXSTREAM_SUBWINDOW=1
         fi
+        GPU_EXTERNAL_BLOB="false"
+        GPU_RENDERER_FEATURES=""
+        if [[ "$GPU_HOST_VISIBLE_COHERENT" != "0" ]]; then
+            GPU_EXTERNAL_BLOB="true"
+            GPU_RENDERER_FEATURES=",renderer-features=VulkanAllocateHostMemory:enabled"
+        fi
         GPU_ARGS=(
-            --gpu "backend=gfxstream,displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk"
+            --gpu "backend=gfxstream,displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk,external-blob=${GPU_EXTERNAL_BLOB},udmabuf=true${GPU_RENDERER_FEATURES}"
         )
     else
         GPU_ARGS=(
             --gpu "backend=gfxstream,width=1280,height=720,angle=true,vulkan=true,wsi=vk"
         )
     fi
+fi
+
+if [[ "$ENABLE_NETWORK" -eq 1 ]] && ! env LD_LIBRARY_PATH="$(IFS=:; echo "${LD_PATHS[*]}")${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "$CROSVM_BIN" run --help 2>&1 | grep -q -- "--net"; then
+    echo "Error: $CROSVM_BIN was built without crosvm's net feature; rebuild with build_all.sh so direct Cuttlefish networking can create eth1." >&2
+    echo "       Use --no-network to keep the old no-network direct boot path." >&2
+    exit 1
 fi
 
 NET_ARGS=()

@@ -8,6 +8,8 @@ add_library(OpenglRender_vulkan_cereal
 target_compile_definitions(OpenglRender_vulkan_cereal PRIVATE -DVK_GOOGLE_gfxstream)
 if (WIN32)
     target_compile_definitions(OpenglRender_vulkan_cereal PRIVATE -DVK_USE_PLATFORM_WIN32_KHR)
+elseif (LINUX)
+    target_compile_definitions(OpenglRender_vulkan_cereal PUBLIC -DVK_USE_PLATFORM_XCB_KHR)
 endif()
 target_link_libraries(
     OpenglRender_vulkan_cereal
@@ -26,4 +28,3 @@ target_include_directories(OpenglRender_vulkan_cereal
                            ..
                            ../..
                            ../../../include)
-

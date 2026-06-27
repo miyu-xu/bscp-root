@@ -3,6 +3,8 @@
 This document records the implemented cross-platform plan and the exact code changes made to wire
 `gfxstream + ANGLE(Vulkan backend)` across Linux, Windows, and macOS.
 
+Last Linux runtime validation update: 2026-06-27.
+
 It also captures two coherent-memory phases:
 
 1. the original `angle=true` integration phase, which enabled the host-memory path and established
@@ -34,7 +36,38 @@ The target was not a single-platform workaround. The required end state was:
 5. Expose a consistent guest-visible `HOST_VISIBLE | HOST_COHERENT` memory contract across all
    three host platforms.
 
-## 2. Final architecture
+## 2. Current Linux direct-Android architecture
+
+The validated Linux direct-Android path is:
+
+- guest GLES/EGL: Android ANGLE renderer over guest Vulkan
+- transport: `virtio-gpu` + `gfxstream-vulkan:gfxstream-composer`
+- host decode/present: gfxstream Vulkan native swapchain
+- host window: X11 crosvm window with a gfxstream native child window
+
+The launch shape is:
+
+```bash
+DISPLAY=:1 ./scripts/run_android_linux.sh \
+  --mode gpu \
+  --gpu-guest-angle \
+  --mem 8192 \
+  --timeout-secs 420 \
+  --x-display :1
+```
+
+The default Linux guest-ANGLE policy is intentionally conservative:
+
+- `GuestVulkanOnly:enabled`
+- `ExternalBlob:disabled`
+- `VulkanAllocateHostMemory:disabled`
+- `CROSVM_X11_GFXSTREAM_SUBWINDOW=1`
+
+This is the path that currently boots Android, creates host `VkDevice` instances for
+`surfaceflinger`, `bootanimation`, `systemui`, and `launcher3`, shows a live X11 window, and passes
+`scripts/check_android_linux_gfx_markers.sh` plus screenshot validation.
+
+## 3. Cross-platform target architecture
 
 The implemented architecture is intentionally split by guest API surface:
 
@@ -62,71 +95,88 @@ On macOS, the last two layers become:
 - **MoltenVK**
 - Metal
 
-This means the solution is explicitly **not** `GuestVulkanOnly`.
+The original cross-platform target was explicitly **not** Vulkan-only. The current Linux direct
+Android route uses `GuestVulkanOnly:enabled` because the guest GLES/EGL path is Android ANGLE over
+Vulkan. Windows and macOS should copy the validated boot/present flow first, then re-enable broader
+host GL/EGL emulation only after the guest/host memory path is stable.
 
-## 3. Key decisions
+## 4. Key decisions
 
-### 3.1 `GuestVulkanOnly` was not used
+### 4.1 `GuestVulkanOnly` is enabled for Linux direct Android
 
-`GuestVulkanOnly` disables the host GL emulation initialization path. That would break the required
-guest EGL/GLES flow and reduce the solution to a Vulkan-only path, which was outside the requested
-scope.
+Linux direct Android now uses guest ANGLE over Vulkan. In that mode, `GuestVulkanOnly:enabled` is
+the stable route and avoids the incomplete host GL emulation path.
 
-### 3.2 `ExternalBlob` stays disabled for `angle=true`
+### 4.2 `ExternalBlob` stays disabled by default
 
-`ExternalBlob` was deliberately not used for the `angle=true` path.
+`ExternalBlob` is deliberately not used by default for the Linux guest-ANGLE path.
 
 Reasons:
 
-1. In `gfxstream`, the `ExternalBlob` path is selected before the
-   `VulkanAllocateHostMemory` path, which would bypass the host-memory path used for the coherent
-   guest-visible contract.
-2. macOS + MoltenVK already does not support `ExternalBlob` as the common cross-platform path.
-3. The requirement was coherent guest-visible semantics first, not external-handle export semantics.
+1. The current AOSP guest logs show that the virtgpu backend does not expose
+   `VIRTGPU_PARAM_CREATE_GUEST_HANDLE`, `VIRTGPU_PARAM_RESOURCE_SYNC`, or
+   `VIRTGPU_PARAM_GUEST_VRAM`.
+2. Enabling `ExternalBlob` forces guest userspace into blob mmap paths that fail with
+   `mmap64 failed with (Invalid argument)`.
+3. With `ExternalBlob` enabled, Android SystemUI repeatedly hits ANGLE
+   `VK_ERROR_OUT_OF_DEVICE_MEMORY` and then crashes in RenderThread.
 
-So the enforced policy is:
+So the default policy is:
 
 - `ExternalBlob:disabled`
-- `VulkanAllocateHostMemory:enabled`
+- `VulkanAllocateHostMemory:disabled`
 
-### 3.3 Guest-visible coherent memory is now gated by runtime probe results
+### 4.3 Host-visible coherent memory is implemented but runtime-gated
 
-The original integration phase broadly treated coherent memory as a guest contract goal.
+Host support exists and can be tested with:
 
-The current implementation is stricter:
+```bash
+DISPLAY=:1 ./scripts/run_android_linux.sh \
+  --mode gpu \
+  --gpu-guest-angle \
+  --gpu-host-visible-coherent \
+  --mem 8192 \
+  --timeout-secs 420 \
+  --x-display :1
+```
 
-- guest `HOST_COHERENT` is **not** exposed simply because `VulkanAllocateHostMemory` is enabled
-- it is exposed only when runtime probing proves that the selected host memory type is:
-  1. import-compatible through `VK_EXT_external_memory_host`
-  2. `HOST_VISIBLE`
-  3. genuinely `HOST_COHERENT`
+That switch enables:
 
-This means guest coherent memory is now tied to the real backing used by the host allocation path
-instead of being inferred only from feature policy.
+- `external-blob=true`
+- `renderer-features=VulkanAllocateHostMemory:enabled`
 
-## 4. Configuration and feature flow
+The host-side Vulkan probe works on the current Linux/NVIDIA host and reports coherent host memory
+type bits, for example `Coherent host memory probe result: typeBits=0x18`. This confirms that the
+host Vulkan device can support the backing type.
+
+The blocker is guest ABI exposure. Until the guest kernel/userspace path exposes the required
+virtgpu DRM params and the mmap path succeeds, this option is a diagnostic path, not the default
+display path.
+
+## 5. Configuration and feature flow
 
 The `angle` mode now flows through the stack as:
 
 `crosvm cmdline/config -> GpuParameters -> devices::virtio::gpu -> rutabaga builder -> gfxstream features`
 
-For `angle=true`, the policy enforced in `crosvm` is:
+For Linux `--gpu-guest-angle`, the policy enforced in `crosvm` is:
 
 - `backend=gfxstream`
 - `egl=true`
-- `gles=true`
+- `gles=false`
 - `glx=false`
 - `vulkan=true`
-- `external-blob=false`
+- `external-blob=false` by default
 
 And the renderer feature injection is:
 
 - `AngleIndirect:enabled`
-- `GuestVulkanOnly:disabled`
-- `ExternalBlob:disabled`
-- `VulkanAllocateHostMemory:enabled`
+- `GuestVulkanOnly:enabled`
+- `ExternalBlob:<matches external-blob>`
+- `VulkanAllocateHostMemory:enabled` only when explicitly requested through
+  `--gpu-host-visible-coherent`
 
-## 5. Detailed code changes
+## 6. Detailed code changes
 
 ### 5.1 `external/crosvm`
 
@@ -140,9 +190,10 @@ And the renderer feature injection is:
 - Added validation/fixup logic for `angle=true`.
 - Enforced the required backend shape:
   - `gfxstream`
-  - EGL/GLES enabled
+  - EGL enabled
   - Vulkan enabled
-  - `external-blob=false`
+- Linux no longer rejects `angle=true,external-blob=true`; that combination is reserved for
+  diagnostic coherent-memory runs.
 - Prevented incompatible option combinations from silently drifting into an unsupported runtime.
 
 #### `devices/src/virtio/gpu/mod.rs`
@@ -150,10 +201,10 @@ And the renderer feature injection is:
 - Added the `angle=true` renderer feature synthesis.
 - Injects:
   - `AngleIndirect`
-  - `VulkanAllocateHostMemory`
-- Explicitly disables:
   - `GuestVulkanOnly`
-  - `ExternalBlob`
+- Mirrors `ExternalBlob` from the parsed `external-blob` parameter.
+- Enables `VulkanAllocateHostMemory` only when the user explicitly requests
+  `renderer-features=VulkanAllocateHostMemory:enabled`; otherwise it is forced disabled.
 
 This file is the main policy choke point that converts user GPU config into the
 `rutabaga_gfx/gfxstream` renderer feature set.
@@ -470,7 +521,7 @@ landed on a non-coherent host memory type.
 
 #### `ExternalBlob`
 
-`ExternalBlob` remains intentionally excluded from Phase A.
+`ExternalBlob` remains intentionally excluded from the default Linux guest-ANGLE display path.
 
 Reason:
 
@@ -480,8 +531,9 @@ Reason:
 
 So for the current coherent-memory implementation:
 
-- `VulkanAllocateHostMemory` is the relevant backing path
-- `ExternalBlob` is not part of the coherent solution
+- `VulkanAllocateHostMemory` is the relevant host allocation feature
+- `ExternalBlob` is enabled only in the explicit diagnostic path because the current guest mmap path
+  is not stable without the required virtgpu DRM params
 
 ### 7.2 Phase B: macOS validation experiment (completed 2026-05-13)
 
@@ -645,7 +697,9 @@ The final Windows dist tree currently contains:
 
 - `crosvm` `angle=true` configuration path implemented
 - `gfxstream` `AngleIndirect` feature introduced
-- `ExternalBlob` remains disabled for the `angle=true` path
+- Linux guest-ANGLE default keeps `ExternalBlob` and `VulkanAllocateHostMemory` disabled
+- `--gpu-host-visible-coherent` enables the diagnostic external-blob +
+  `VulkanAllocateHostMemory` path
 - external dependency path support added for ANGLE / `aemu` / `flatbuffers`
 - Windows `gfxstream_backend` build completed
 - Windows ANGLE runtime build completed
@@ -843,14 +897,16 @@ cmake --build out/test_build --target Vulkan_unittests -j$(sysctl -n hw.ncpu)
 
 ### 10.7 Known limitations and non-goals
 
-1. **`ExternalBlob` remains outside coherent scope**: The `ExternalBlob` path does not participate in
-   the `VK_EXT_external_memory_host` probe chain. It is intentionally disabled for `angle=true` and
-   not part of the coherent solution.
+1. **`ExternalBlob` remains outside the default display path**: The explicit coherent diagnostic
+   mode enables it, but the current Linux guest cannot use that path reliably because mmap of the
+   created blob fails without the required guest virtgpu ABI support.
 2. **Non-coherent software emulation**: If the host has no genuinely coherent memory types, there is
    no software fallback (flush/invalidate emulation). Guest `HOST_COHERENT` is simply not exposed.
    This is by design.
-3. **Guest kernel modifications**: The current approach requires zero guest kernel changes. All
-   coherent memory decisions are host-side.
+3. **Guest ABI dependency**: The current Linux guest does not expose
+   `VIRTGPU_PARAM_CREATE_GUEST_HANDLE`, `VIRTGPU_PARAM_RESOURCE_SYNC`, or
+   `VIRTGPU_PARAM_GUEST_VRAM`. Full guest host-visible coherent operation requires that guest
+   kernel/userspace ABI path to work; forcing it from the host side currently causes mmap failures.
 4. **Snapshot/restore with coherent memory**: Not yet tested. Memory allocated via
    VulkanAllocateHostMemory with coherent backing may need special handling in the snapshot path.
 

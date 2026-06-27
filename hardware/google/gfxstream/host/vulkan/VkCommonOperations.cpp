@@ -1230,6 +1230,16 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     }
 #endif
 
+    if (sVkEmulation->features.VulkanAllocateHostMemory.enabled) {
+        if (sVkEmulation->deviceInfo.supportsExternalMemoryHostProps) {
+            selectedDeviceExtensionNames_.emplace(VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME);
+        } else {
+            WARN(
+                "VulkanAllocateHostMemory was requested but "
+                "VK_EXT_external_memory_host is not supported by the host Vulkan device.");
+        }
+    }
+
     // We need to always enable swapchain extensions to be able to use this device
     // to do VK_IMAGE_LAYOUT_PRESENT_SRC_KHR transition operations done
     // in releaseColorBufferForGuestUse for the apps using Vulkan swapchain
@@ -1317,11 +1327,13 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
             "VK_NV_device_diagnostic_checkpoints extension is not supported.");
     }
 
-    ivk->vkCreateDevice(sVkEmulation->physdev, &dCi, nullptr, &sVkEmulation->device);
+    VkResult deviceCreateRes =
+        ivk->vkCreateDevice(sVkEmulation->physdev, &dCi, nullptr, &sVkEmulation->device);
 
-    if (res != VK_SUCCESS) {
-        VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(res, "Failed to create Vulkan device. Error %s.",
-                                             string_VkResult(res));
+    if (deviceCreateRes != VK_SUCCESS) {
+        VK_EMU_INIT_RETURN_OR_ABORT_ON_ERROR(deviceCreateRes,
+                                             "Failed to create Vulkan device. Error %s.",
+                                             string_VkResult(deviceCreateRes));
     }
 
     // device created; populate dispatch table
@@ -2470,6 +2482,11 @@ bool initializeVkColorBufferLocked(
         vk->vkGetImageMemoryRequirements2KHR(sVkEmulation->device, &info, &reqs);
         useDedicated = dedicated_reqs.requiresDedicatedAllocation;
         infoPtr->memReqs = reqs.memoryRequirements;
+        if (infoPtr->memReqs.memoryTypeBits == 0) {
+            WARN("vkGetImageMemoryRequirements2KHR returned no memory types; falling back to vkGetImageMemoryRequirements.");
+            vk->vkGetImageMemoryRequirements(sVkEmulation->device, infoPtr->image,
+                                             &infoPtr->memReqs);
+        }
     } else {
         vk->vkGetImageMemoryRequirements(sVkEmulation->device, infoPtr->image, &infoPtr->memReqs);
     }
@@ -3487,11 +3504,15 @@ bool setupVkBuffer(uint64_t size, uint32_t bufferHandle, bool vulkanOnly, uint32
             VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS, nullptr};
         VkMemoryRequirements2 reqs{VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2, &dedicated_reqs};
 
-        VkBufferMemoryRequirementsInfo2 info{VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2,
+        VkBufferMemoryRequirementsInfo2 info{VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2,
                                              nullptr, res.buffer};
         vk->vkGetBufferMemoryRequirements2KHR(sVkEmulation->device, &info, &reqs);
         useDedicated = dedicated_reqs.requiresDedicatedAllocation;
         res.memReqs = reqs.memoryRequirements;
+        if (res.memReqs.memoryTypeBits == 0) {
+            WARN("vkGetBufferMemoryRequirements2KHR returned no memory types; falling back to vkGetBufferMemoryRequirements.");
+            vk->vkGetBufferMemoryRequirements(sVkEmulation->device, res.buffer, &res.memReqs);
+        }
     } else {
         vk->vkGetBufferMemoryRequirements(sVkEmulation->device, res.buffer, &res.memReqs);
     }
@@ -4300,8 +4321,7 @@ CoherentHostMemoryProbeResult probeCoherentHostMemory(
         }
     }
 
-    VERBOSE("Coherent host memory probe result: typeBits=0x%x",
-            result.coherentHostMemoryTypeMask);
+    INFO("Coherent host memory probe result: typeBits=0x%x", result.coherentHostMemoryTypeMask);
     return result;
 }
 
