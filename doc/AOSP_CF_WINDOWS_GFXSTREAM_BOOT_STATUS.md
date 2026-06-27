@@ -51,8 +51,9 @@ The Linux non-headless graphics route is now validated:
 
 ```bash
 ./scripts/build_angle_linux.sh
-./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 180
+./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 240
 ./scripts/check_android_linux_markers.sh out/dist/logs/android-linux
+./scripts/check_android_linux_gfx_markers.sh out/dist/logs/android-linux
 ```
 
 Validated Linux GPU markers:
@@ -66,11 +67,13 @@ Validated Linux GPU markers:
   `VulkanAllocateHostMemory: disabled`.
 - surfaceflinger, bootanimation, Settings, SystemUI, Launcher3, and system_server create
   `engine:ANGLE` Vulkan devices.
+- virtio-gpu receives scanout updates and resource flushes from the guest composition path.
 
 The passing Linux mode is guest ANGLE with gfxstream Vulkan-only contexts:
 
 ```text
-backend=gfxstream,width=1280,height=720,
+backend=gfxstream,
+displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],
 context-types=gfxstream-vulkan:gfxstream-composer,
 angle=true,gles=false,vulkan=true,wsi=vk
 ```
@@ -224,6 +227,7 @@ tracked, but it is not the fatal that kills the boot loop in run82.
    - `CROSVM_WHPX_BLOCK_QUEUES=1`
    - `clearcpuid=297`
    - `backend=gfxstream`
+   - `displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]]`
    - `context-types=gfxstream-vulkan:gfxstream-composer`
    - `angle=true`
    - `gles=false`

@@ -324,7 +324,7 @@ if [[ "$MODE" == "gpu" ]]; then
     fi
     if [[ "$GPU_GUEST_ANGLE" -eq 1 ]]; then
         GPU_ARGS=(
-            --gpu "backend=gfxstream,width=1280,height=720,context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk"
+            --gpu "backend=gfxstream,displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk"
         )
     else
         GPU_ARGS=(

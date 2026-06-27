@@ -282,8 +282,9 @@ GPU/gfxstream + ANGLE 路径：
 
 ```bash
 ./scripts/build_angle_linux.sh
-./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 180
+./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 240
 ./scripts/check_android_linux_markers.sh out/dist/logs/android-linux
+./scripts/check_android_linux_gfx_markers.sh out/dist/logs/android-linux
 ```
 
 当前验证结果：
@@ -295,6 +296,7 @@ GPU/gfxstream + ANGLE 路径：
 - gfxstream host 后端初始化成功：`stream_renderer_init Gfxstream initialized successfully!`。
 - gfxstream feature 中 `GuestVulkanOnly` 已启用，`VulkanAllocateHostMemory` 已禁用。
 - surfaceflinger、bootanimation、Settings、SystemUI、Launcher3、system_server 均创建了 `engine:ANGLE` 的 Vulkan device。
+- virtio-gpu 持续收到 scanout update 和 flush，说明 guest composition 产物已提交到 host GPU frontend。
 
 `--mode gpu` 要求 `ANGLE_RUNTIME_DIR` 指向包含 `libEGL.so` 和 `libGLESv2.so` 的 Linux ANGLE runtime；
 默认 staging 目录是 `out/dist/linux/gfx/angle`。`scripts/build_angle_linux.sh` 会从 `~/angle` 构建并
@@ -305,6 +307,7 @@ stage ANGLE runtime，同时复制可选的 `libvulkan.so*`、`libvk_swiftshader
 
 - guest bootconfig：`androidboot.hardware.egl=angle`
 - crosvm GPU：`backend=gfxstream`
+- display：`displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]]`
 - gfxstream contexts：`gfxstream-vulkan:gfxstream-composer`
 - `angle=true,gles=false,vulkan=true,wsi=vk`
 
@@ -323,6 +326,18 @@ stage ANGLE runtime，同时复制可选的 `libvulkan.so*`、`libvk_swiftshader
   `vkGetMemoryHostPointerPropertiesEXT` 时返回 `VK_ERROR_FEATURE_NOT_PRESENT`。
 
 这些改动只复用 `/opt/workspace/aosp` 已有 AOSP 产物，没有 clean 或全量重编 AOSP。
+
+`scripts/check_android_linux_gfx_markers.sh` 是 GPU 路径的更强验证入口。它会先运行基础
+Android boot marker 检查，再要求：
+
+- SurfaceFlinger boot finished
+- RenderEngine 是 ANGLE over Vulkan
+- gfxstream 初始化成功
+- `GuestVulkanOnly` / `VulkanAllocateHostMemory` feature 状态正确
+- surfaceflinger 和 Launcher3 都创建 ANGLE Vulkan device
+- host virtio-gpu 看到 scanout update 与 flush
+- 不出现已知的 gfxstream/ANGLE/Vulkan 失败：`eglMakeCurrent failed`、`null ctx`、
+  `vkGetMemoryHostPointerPropertiesEXT`、Vulkan loader invalid device、SIGSEGV 等
 
 ---
 
