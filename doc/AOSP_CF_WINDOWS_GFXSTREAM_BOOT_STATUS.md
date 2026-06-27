@@ -54,6 +54,7 @@ The Linux non-headless graphics route is now validated:
 ./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 240
 ./scripts/check_android_linux_markers.sh out/dist/logs/android-linux
 ./scripts/check_android_linux_gfx_markers.sh out/dist/logs/android-linux
+./scripts/check_android_linux_gfx_screenshot.sh --log-dir out/dist/logs/android-linux --cid 100
 ```
 
 Validated Linux GPU markers:
@@ -68,6 +69,8 @@ Validated Linux GPU markers:
 - surfaceflinger, bootanimation, Settings, SystemUI, Launcher3, and system_server create
   `engine:ANGLE` Vulkan devices.
 - virtio-gpu receives scanout updates and resource flushes from the guest composition path.
+- ADB over AF_VSOCK reaches guest `adbd`, and `screencap` pulls a nonblank 1280x720 RGBA PNG
+  from SurfaceFlinger.
 
 The passing Linux mode is guest ANGLE with gfxstream Vulkan-only contexts:
 
@@ -84,6 +87,17 @@ blocked on unavailable GL transport.
 
 No AOSP clean or full rebuild was used for this Linux validation. The run used the existing
 `~/aosp/out/target/product/vsoc_x86_64` artifacts.
+
+Latest Linux screenshot validation wrote:
+
+```text
+out/dist/logs/android-linux/adb/gfxstream-angle.png
+size=1280x720
+mode=RGBA
+bbox=(0, 0, 1280, 720)
+unique_colors=7020
+mean_rgba=[22.38, 24.0, 56.12, 255.0]
+```
 
 ## Current Windows result
 
@@ -235,7 +249,10 @@ tracked, but it is not the fatal that kills the boot loop in run82.
    - SwiftShader Vulkan ICD/DLLs beside `crosvm.exe`
 6. The success criterion for the next Windows run is matching the Linux markers:
    `sys.boot_completed=1`, `SurfaceFlinger: Boot is finished`, and RenderEngine
-   reporting ANGLE over Vulkan.
+   reporting ANGLE over Vulkan. After that, use the Windows localhost TCP ->
+   guest vsock bridge to run `adb shell screencap -p`, pull the PNG, and apply
+   the same nonblank 1280x720 image check used by
+   `scripts/check_android_linux_gfx_screenshot.sh`.
 
 ## Local runtime artifacts
 

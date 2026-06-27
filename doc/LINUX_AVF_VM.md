@@ -285,6 +285,7 @@ GPU/gfxstream + ANGLE 路径：
 ./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 240
 ./scripts/check_android_linux_markers.sh out/dist/logs/android-linux
 ./scripts/check_android_linux_gfx_markers.sh out/dist/logs/android-linux
+./scripts/check_android_linux_gfx_screenshot.sh --log-dir out/dist/logs/android-linux --cid 100
 ```
 
 当前验证结果：
@@ -297,6 +298,7 @@ GPU/gfxstream + ANGLE 路径：
 - gfxstream feature 中 `GuestVulkanOnly` 已启用，`VulkanAllocateHostMemory` 已禁用。
 - surfaceflinger、bootanimation、Settings、SystemUI、Launcher3、system_server 均创建了 `engine:ANGLE` 的 Vulkan device。
 - virtio-gpu 持续收到 scanout update 和 flush，说明 guest composition 产物已提交到 host GPU frontend。
+- ADB over AF_VSOCK 可连接 guest `adbd`，`screencap` 可拉回 1280x720 RGBA PNG，像素检查为非空帧。
 
 `--mode gpu` 要求 `ANGLE_RUNTIME_DIR` 指向包含 `libEGL.so` 和 `libGLESv2.so` 的 Linux ANGLE runtime；
 默认 staging 目录是 `out/dist/linux/gfx/angle`。`scripts/build_angle_linux.sh` 会从 `~/angle` 构建并
@@ -338,6 +340,31 @@ Android boot marker 检查，再要求：
 - host virtio-gpu 看到 scanout update 与 flush
 - 不出现已知的 gfxstream/ANGLE/Vulkan 失败：`eglMakeCurrent failed`、`null ctx`、
   `vkGetMemoryHostPointerPropertiesEXT`、Vulkan loader invalid device、SIGSEGV 等
+
+`scripts/check_android_linux_gfx_screenshot.sh` 是当前最强的可视化验证入口。它要求 VM 仍在运行，
+会临时启动 `127.0.0.1:<port> -> vsock:<cid>:5555` ADB bridge，执行：
+
+```bash
+adb shell screencap -p /data/local/tmp/gfxstream-angle.png
+adb pull /data/local/tmp/gfxstream-angle.png out/dist/logs/android-linux/adb/gfxstream-angle.png
+```
+
+然后用 Pillow 检查 PNG：
+
+- 尺寸必须为 1280x720
+- `bbox` 不能为空
+- 颜色数不能是单色
+- RGB extrema 不能全为 0
+
+最新通过结果：
+
+```text
+size=1280x720
+mode=RGBA
+bbox=(0, 0, 1280, 720)
+unique_colors=7020
+mean_rgba=[22.38, 24.0, 56.12, 255.0]
+```
 
 ---
 
