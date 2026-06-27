@@ -56,11 +56,23 @@ if [[ -z "$GN_BIN" || ! -x "$GN_BIN" ]]; then
     exit 1
 fi
 
-AUTONINJA_BIN="$ANGLE_ROOT/third_party/depot_tools/autoninja"
-if [[ ! -x "$AUTONINJA_BIN" ]]; then
-    AUTONINJA_BIN="/opt/workspace/depot_tools/autoninja"
+DEPOT_TOOLS_ROOT=""
+for candidate in /opt/workspace/depot_tools "$ANGLE_ROOT/third_party/depot_tools"; do
+    if [[ -x "$candidate/autoninja" && -f "$candidate/python3_bin_reldir.txt" ]]; then
+        DEPOT_TOOLS_ROOT="$candidate"
+        break
+    fi
+done
+if [[ -z "$DEPOT_TOOLS_ROOT" ]]; then
+    for candidate in "$ANGLE_ROOT/third_party/depot_tools" /opt/workspace/depot_tools; do
+        if [[ -x "$candidate/autoninja" ]]; then
+            DEPOT_TOOLS_ROOT="$candidate"
+            break
+        fi
+    done
 fi
-if [[ ! -x "$AUTONINJA_BIN" ]]; then
+AUTONINJA_BIN="${DEPOT_TOOLS_ROOT:+$DEPOT_TOOLS_ROOT/autoninja}"
+if [[ -z "$AUTONINJA_BIN" || ! -x "$AUTONINJA_BIN" ]]; then
     AUTONINJA_BIN="$(command -v autoninja || true)"
 fi
 if [[ -z "$AUTONINJA_BIN" || ! -x "$AUTONINJA_BIN" ]]; then
@@ -68,7 +80,7 @@ if [[ -z "$AUTONINJA_BIN" || ! -x "$AUTONINJA_BIN" ]]; then
     exit 1
 fi
 
-export PATH="$ANGLE_ROOT/buildtools/linux64:$ANGLE_ROOT/third_party/depot_tools:/opt/workspace/depot_tools:$PATH"
+export PATH="$ANGLE_ROOT/buildtools/linux64${DEPOT_TOOLS_ROOT:+:$DEPOT_TOOLS_ROOT}:$PATH"
 
 GN_ARGS='is_debug=false
 is_component_build=false
@@ -103,5 +115,10 @@ if [[ "$RUN_STAGE" -eq 1 ]]; then
     if compgen -G "$ANGLE_OUT_DIR/libGLESv1_CM.so*" >/dev/null; then
         cp -af "$ANGLE_OUT_DIR"/libGLESv1_CM.so* "$STAGE_DIR/"
     fi
+    for optional in libvulkan.so* libvk_swiftshader.so* libVkICD_mock_icd.so* vk_swiftshader_icd.json; do
+        if compgen -G "$ANGLE_OUT_DIR/$optional" >/dev/null; then
+            cp -af "$ANGLE_OUT_DIR"/$optional "$STAGE_DIR/"
+        fi
+    done
     echo "Staged ANGLE runtime: $STAGE_DIR"
 fi

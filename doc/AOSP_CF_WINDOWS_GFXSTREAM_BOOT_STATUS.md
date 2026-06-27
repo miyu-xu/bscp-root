@@ -47,18 +47,42 @@ ad-hoc aggregate disk. The Linux disk builder now creates a 1 MiB `frp` partitio
 This fixes the `PersistentDataBlockService init timeout` and the resulting system_server/zygote
 restart loop on Linux.
 
-The remaining active target for Linux is the non-headless graphics route:
+The Linux non-headless graphics route is now validated:
 
 ```bash
 ./scripts/build_angle_linux.sh
-./scripts/run_android_linux.sh --mode gpu --timeout-secs 180
+./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 180
+./scripts/check_android_linux_markers.sh out/dist/logs/android-linux
 ```
 
-Success criteria for this phase are Android boot completion plus evidence that the crosvm GPU path
-uses `backend=gfxstream` with ANGLE (`libEGL.so`/`libGLESv2.so`) instead of the temporary 2D
-headless path.
+Validated Linux GPU markers:
 
-## Current result
+- init processes `sys.boot_completed=1`.
+- `SurfaceFlinger: Boot is finished`.
+- RenderEngine reports guest ANGLE on Vulkan:
+  `ANGLE (NVIDIA, Vulkan 1.3.0 (... NVIDIA GeForce RTX 2060 ...))`.
+- gfxstream host reports `stream_renderer_init Gfxstream initialized successfully!`.
+- gfxstream features include `GuestVulkanOnly: enabled` and
+  `VulkanAllocateHostMemory: disabled`.
+- surfaceflinger, bootanimation, Settings, SystemUI, Launcher3, and system_server create
+  `engine:ANGLE` Vulkan devices.
+
+The passing Linux mode is guest ANGLE with gfxstream Vulkan-only contexts:
+
+```text
+backend=gfxstream,width=1280,height=720,
+context-types=gfxstream-vulkan:gfxstream-composer,
+angle=true,gles=false,vulkan=true,wsi=vk
+```
+
+This is the route Windows should borrow next. The older `gfxstream-gles` guest GL pipe route is
+not the passing direct-crosvm Linux path; it can reach host gfxstream init but leaves the guest
+blocked on unavailable GL transport.
+
+No AOSP clean or full rebuild was used for this Linux validation. The run used the existing
+`~/aosp/out/target/product/vsoc_x86_64` artifacts.
+
+## Current Windows result
 
 Latest useful diagnostic run before cleanup:
 
@@ -140,11 +164,11 @@ What should stay temporary:
 Do not revisit SMP, x2APIC, AVB, encryption, or cleanup until the single-vCPU
 gfxstream path reaches a stable UI boot.
 
-## Current blocker
+## Current Windows blocker
 
-The current blocker is not rutabaga/gfxstream.
+The current Windows blocker from the older WHPX run is not rutabaga/gfxstream.
 
-The current blocker is:
+The older Windows blocker is:
 
 ```text
 PersistentDataBlockService init timeout during SystemServer.startOtherServices()
@@ -159,6 +183,9 @@ in GPU or DisplayManagerService; it is:
 ```text
 com.android.server.pdb.PersistentDataBlockService.waitForInitDoneSignal()
 ```
+
+Linux has already fixed this class of blocker by adding an `frp` partition to the generated
+Cuttlefish aggregate disk. Port that disk layout to Windows before continuing WHPX UI runs.
 
 Two diagnostic details matter:
 
@@ -179,12 +206,10 @@ tracked, but it is not the fatal that kills the boot loop in run82.
 
 ## Next steps
 
-1. Keep the route unchanged: WHPX, crosvm, single vCPU, block queue 1,
-   `clearcpuid=297`, and rutabaga/gfxstream.
-2. Fix or bypass `PersistentDataBlockService` for this direct-kernel
-   Cuttlefish bring-up. The likely local fix is to make the service tolerate a
-   missing/slow persistent block backend on this path, or disable the service
-   while `force_normal_boot` Windows bring-up is active.
+1. Port the Linux aggregate disk layout to Windows, including the 1 MiB `frp`
+   partition backed by `factory_reset_protected.img`.
+2. Keep the route unchanged after the disk fix: WHPX, crosvm, single vCPU, block
+   queue 1, `clearcpuid=297`, and rutabaga/gfxstream.
 3. Preserve the `dd bs=900` logcat diagnostic if more Java stack traces are
    needed:
    ```text
@@ -194,15 +219,19 @@ tracked, but it is not the fatal that kills the boot loop in run82.
    `aosp_cf_x86_64_phone-trunk_staging-userdebug`, copy through
    `/media/sf_Desktop`, and inject the sparse super image into a fresh composite
    disk on `D:\bscp_run`.
-5. Boot with the same crosvm command:
+5. Boot with the Linux-proven gfxstream guest ANGLE shape adapted to Windows:
    - `--cpus 1`
    - `CROSVM_WHPX_BLOCK_QUEUES=1`
    - `clearcpuid=297`
    - `backend=gfxstream`
-   - `context-types=gfxstream-vulkan:gfxstream-gles:gfxstream-composer`
+   - `context-types=gfxstream-vulkan:gfxstream-composer`
+   - `angle=true`
+   - `gles=false`
+   - `vulkan=true`
    - SwiftShader Vulkan ICD/DLLs beside `crosvm.exe`
-6. The success criterion for the next run is passing boot phase 500 and reaching
-   `end_startOtherServices` or `sys.boot_completed=1`.
+6. The success criterion for the next Windows run is matching the Linux markers:
+   `sys.boot_completed=1`, `SurfaceFlinger: Boot is finished`, and RenderEngine
+   reporting ANGLE over Vulkan.
 
 ## Local runtime artifacts
 
@@ -230,8 +259,7 @@ C:\workspace\bscp\bscp\out\dist\img\cf_os_composite_run16_halboot_pre_run43.img
 
 ## Bottom line
 
-The route is sound and now better proven than the older run58 notes: the VM uses
-WHPX, crosvm, rutabaga, and gfxstream, and it reaches SystemServer
-`startOtherServices`. The immediate work is not more GPU surgery. The next
-targeted AOSP-side fix is `PersistentDataBlockService` timing out during boot
-phase 500.
+The Linux host route is now proven through Android boot completion with
+gfxstream + guest ANGLE rendering over Vulkan. For Windows, carry over the Linux
+disk layout fix and the guest ANGLE `gles=false` gfxstream mode before spending
+more time on AOSP-side service work.

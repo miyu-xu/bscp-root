@@ -282,11 +282,47 @@ GPU/gfxstream + ANGLE 路径：
 
 ```bash
 ./scripts/build_angle_linux.sh
-./scripts/run_android_linux.sh --mode gpu --timeout-secs 180
+./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 180
+./scripts/check_android_linux_markers.sh out/dist/logs/android-linux
 ```
 
-`--mode gpu` 要求 `ANGLE_RUNTIME_DIR` 指向包含 `libEGL.so` 和 `libGLESv2.so` 的 Linux ANGLE runtime。
-默认 staging 目录是 `out/dist/linux/gfx/angle`。
+当前验证结果：
+
+- `scripts/check_android_linux_markers.sh out/dist/logs/android-linux` 已通过。
+- init 触发 `sys.boot_completed=1`。
+- SurfaceFlinger 完成启动：`SurfaceFlinger: Boot is finished`。
+- RenderEngine 使用 guest ANGLE：`ANGLE (NVIDIA, Vulkan 1.3.0 (... NVIDIA GeForce RTX 2060 ...))`。
+- gfxstream host 后端初始化成功：`stream_renderer_init Gfxstream initialized successfully!`。
+- gfxstream feature 中 `GuestVulkanOnly` 已启用，`VulkanAllocateHostMemory` 已禁用。
+- surfaceflinger、bootanimation、Settings、SystemUI、Launcher3、system_server 均创建了 `engine:ANGLE` 的 Vulkan device。
+
+`--mode gpu` 要求 `ANGLE_RUNTIME_DIR` 指向包含 `libEGL.so` 和 `libGLESv2.so` 的 Linux ANGLE runtime；
+默认 staging 目录是 `out/dist/linux/gfx/angle`。`scripts/build_angle_linux.sh` 会从 `~/angle` 构建并
+stage ANGLE runtime，同时复制可选的 `libvulkan.so*`、`libvk_swiftshader.so*`、
+`libVkICD_mock_icd.so*` 和 `vk_swiftshader_icd.json`。
+
+`--gpu-guest-angle` 是当前通过验证的 Android 图形路径。该模式使用：
+
+- guest bootconfig：`androidboot.hardware.egl=angle`
+- crosvm GPU：`backend=gfxstream`
+- gfxstream contexts：`gfxstream-vulkan:gfxstream-composer`
+- `angle=true,gles=false,vulkan=true,wsi=vk`
+
+`gles=false` 会让 crosvm/gfxstream 进入 guest ANGLE 的 Vulkan-only 组合，避免 direct crosvm
+路径里 guest GL pipe 未就绪导致的 `eglMakeCurrent failed` / null context 问题。
+
+`--gpu-host-swiftshader` 只在需要强制使用 staged SwiftShader Vulkan ICD 时启用。默认不强制设置
+`VK_ICD_FILENAMES`；本机验证使用 NVIDIA host Vulkan ICD 正常通过。
+
+本轮还修复了两处 Linux direct crosvm + gfxstream guest ANGLE blocker：
+
+- `external/crosvm` 允许 `backend=gfxstream,angle=true,gles=false`，并在该组合下设置
+  `GuestVulkanOnly=true`、`VulkanAllocateHostMemory=false`。
+- gfxstream host Vulkan 不再在 physical-device probe 阶段用 `VkPhysicalDevice` 调用需要
+  `VkDevice` 的 `VK_EXT_external_memory_host` 查询；guest 发起
+  `vkGetMemoryHostPointerPropertiesEXT` 时返回 `VK_ERROR_FEATURE_NOT_PRESENT`。
+
+这些改动只复用 `/opt/workspace/aosp` 已有 AOSP 产物，没有 clean 或全量重编 AOSP。
 
 ---
 

@@ -19084,9 +19084,11 @@ size_t VkDecoder::Impl::decode(void* buf, size_t len, IOStream* ioStream,
                             (unsigned long long)pMemoryHostPointerProperties);
                 }
                 VkResult vkGetMemoryHostPointerPropertiesEXT_VkResult_return = (VkResult)0;
+                if (pMemoryHostPointerProperties) {
+                    pMemoryHostPointerProperties->memoryTypeBits = 0;
+                }
                 vkGetMemoryHostPointerPropertiesEXT_VkResult_return =
-                    vk->vkGetMemoryHostPointerPropertiesEXT(
-                        unboxed_device, handleType, pHostPointer, pMemoryHostPointerProperties);
+                    VK_ERROR_FEATURE_NOT_PRESENT;
                 if ((vkGetMemoryHostPointerPropertiesEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
                     m_state->on_DeviceLost();
                 m_state->on_CheckOutOfMemory(vkGetMemoryHostPointerPropertiesEXT_VkResult_return,

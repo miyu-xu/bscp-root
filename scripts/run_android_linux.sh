@@ -16,6 +16,8 @@ TIMEOUT_SECS="0"
 RUN_VM=1
 DRY_RUN=0
 KEEP_GOING=0
+GPU_GUEST_ANGLE=0
+GPU_HOST_SWIFTSHADER=0
 EXTRA_BOOTCONFIG=()
 EXTRA_CROSVM_ARGS=()
 
@@ -34,6 +36,9 @@ Options:
   --cid N               Guest vsock CID (default: $CID)
   --timeout-secs N      Kill crosvm after N seconds; 0 disables timeout
   --bootconfig K=V      Append a bootconfig key/value
+  --gpu-guest-angle     Use guest ANGLE EGL with gfxstream-vulkan contexts
+  --gpu-host-swiftshader
+                        Force ANGLE's staged SwiftShader Vulkan ICD in gpu mode
   --no-run              Prepare disk/initrd but do not launch crosvm
   --dry-run             Validate inputs and print command without preparing
   --help                Show this help
@@ -52,6 +57,8 @@ while [[ $# -gt 0 ]]; do
         --cid) CID="$2"; shift 2 ;;
         --timeout-secs) TIMEOUT_SECS="$2"; shift 2 ;;
         --bootconfig) EXTRA_BOOTCONFIG+=("$2"); shift 2 ;;
+        --gpu-guest-angle) GPU_GUEST_ANGLE=1; shift ;;
+        --gpu-host-swiftshader) GPU_HOST_SWIFTSHADER=1; shift ;;
         --no-run) RUN_VM=0; shift ;;
         --dry-run) DRY_RUN=1; RUN_VM=0; shift ;;
         --help|-h) usage; exit 0 ;;
@@ -135,13 +142,17 @@ build_bootconfig_args() {
             "androidboot.opengles.version=196609"
         )
     else
+        local egl_impl="emulation"
+        if [[ "$GPU_GUEST_ANGLE" -eq 1 ]]; then
+            egl_impl="angle"
+        fi
         BOOTCONFIG_ARGS+=(
             "androidboot.cpuvulkan.version=0"
             "androidboot.hardware.gralloc=minigbm"
             "androidboot.hardware.hwcomposer=ranchu"
             "androidboot.hardware.hwcomposer.display_finder_mode=drm"
             "androidboot.hardware.hwcomposer.display_framebuffer_format=rgba"
-            "androidboot.hardware.egl=angle"
+            "androidboot.hardware.egl=$egl_impl"
             "androidboot.hardware.vulkan=ranchu"
             "androidboot.hardware.gltransport=virtio-gpu-asg"
             "androidboot.opengles.version=196609"
@@ -308,7 +319,18 @@ if [[ "$MODE" == "gpu" ]]; then
     fi
     LD_PATHS+=("$ANGLE_RUNTIME_DIR")
     export GFXSTREAM_ANGLE_ROOT="$ANGLE_RUNTIME_DIR"
-    GPU_ARGS=(--gpu backend=gfxstream,width=1280,height=720,angle=true,vulkan=true,wsi=vk)
+    if [[ "$GPU_HOST_SWIFTSHADER" -eq 1 && -z "${VK_ICD_FILENAMES:-}" && -f "$ANGLE_RUNTIME_DIR/vk_swiftshader_icd.json" ]]; then
+        export VK_ICD_FILENAMES="$ANGLE_RUNTIME_DIR/vk_swiftshader_icd.json"
+    fi
+    if [[ "$GPU_GUEST_ANGLE" -eq 1 ]]; then
+        GPU_ARGS=(
+            --gpu "backend=gfxstream,width=1280,height=720,context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk"
+        )
+    else
+        GPU_ARGS=(
+            --gpu "backend=gfxstream,width=1280,height=720,angle=true,vulkan=true,wsi=vk"
+        )
+    fi
 fi
 
 BOOT_DEVICE="pci0000:00/0000:00:03.0"
@@ -358,6 +380,12 @@ CROSVM_CMD=(
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
     printf 'LD_LIBRARY_PATH=%s\n' "$(IFS=:; echo "${LD_PATHS[*]}")"
+    if [[ -n "${VK_ICD_FILENAMES:-}" ]]; then
+        printf 'VK_ICD_FILENAMES=%s\n' "$VK_ICD_FILENAMES"
+    fi
+    if [[ -n "${GFXSTREAM_ANGLE_ROOT:-}" ]]; then
+        printf 'GFXSTREAM_ANGLE_ROOT=%s\n' "$GFXSTREAM_ANGLE_ROOT"
+    fi
     printf 'BOOTCONFIG:\n'
     printf '  %s\n' "${BOOTCONFIG_ARGS[@]}"
     printf 'CROSVM:\n'
