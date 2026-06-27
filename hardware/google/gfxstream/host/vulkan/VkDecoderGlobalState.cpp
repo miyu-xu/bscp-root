@@ -5031,6 +5031,7 @@ class VkDecoderGlobalState::Impl {
                 vk_append_struct(&structChainIter, &*exportAllocateInfo);
             } else if (m_emu->features.VulkanAllocateHostMemory.enabled &&
                        localAllocInfo.pNext == nullptr) {
+#ifndef _WIN32
                 if (!m_emu || !m_emu->deviceInfo.supportsExternalMemoryHostProps) {
                     ERR("VK_EXT_EXTERNAL_MEMORY_HOST is not supported, cannot use "
                         "VulkanAllocateHostMemory");
@@ -5093,6 +5094,7 @@ class VkDecoderGlobalState::Impl {
                 }
 
                 vk_append_struct(&structChainIter, &*importHostInfo);
+#endif
             }
         }
 

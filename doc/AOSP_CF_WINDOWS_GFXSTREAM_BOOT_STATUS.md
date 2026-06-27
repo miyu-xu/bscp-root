@@ -1,7 +1,7 @@
 # AOSP Cuttlefish on Windows WHPX + crosvm + rutabaga/gfxstream boot status
 
 Date: 2026-06-13
-Last updated: 2026-06-25
+Last updated: 2026-06-26
 
 ## Goal
 
@@ -12,16 +12,108 @@ The active route is:
 
 - Windows host with WHPX.
 - Local crosvm build with `whpx,composite-disk,android-sparse,gfxstream`.
-- Direct-kernel Cuttlefish x86_64 phone boot from the composite disk.
-- `force_normal_boot=1`, AVB/verity/encryption disabled for bring-up.
-- Nonsecure Gatekeeper/KeyMint for the non-protected Windows host VM.
-- `rutabaga + gfxstream` with ANGLE/Vulkan; host Vulkan is currently provided by
-  SwiftShader loader/ICD DLLs beside `crosvm.exe`.
-- Single vCPU, block queues forced to 1, and `clearcpuid=297` until the UI boot
-  is stable.
+- Direct-kernel Cuttlefish x86_64 phone boot from the Linux-proven
+  `direct-linux` artifact package.
+- `run-mp`, 4 vCPU, 8192 MiB RAM, first block device pinned at PCI `00:03.0`,
+  and fixed HVC legacy virtio-console ports for console/logcat/HAL channels.
+- `rutabaga + gfxstream` with guest ANGLE over Vulkan:
+  `context-types=gfxstream-vulkan:gfxstream-composer`, `angle=true`,
+  `gles=false`, `vulkan=true`, `wsi=vk`.
+- Native host Vulkan is working on the tested NVIDIA Windows host; SwiftShader
+  remains only an optional fallback.
 
 This route is still correct. It is not a headless-only route and it is not
 switching away from rutabaga/gfxstream.
+
+## 2026-06-26 Windows parity update
+
+Linux has now booted both Microdroid and Android with visible
+`gfxstream + ANGLE` rendering. The Windows runner was aligned to that route:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File scripts\run_android_windows_gfxstream_angle.ps1 `
+  -FullHvc -TimeoutSecs 420
+```
+
+Inputs:
+
+```text
+D:\bscp-vm-artifacts\bscp-vm-artifacts-20260626-gfxstream-angle-visible\products\android\vsoc_x86_64\direct-linux
+D:\bscp-vm-debug-logs\bscp-vm-debug-logs-20260626-gfxstream-angle-visible\android-linux
+```
+
+Validated Windows graphics markers:
+
+- crosvm creates a GUI window for scanout 0.
+- gfxstream enables `AngleIndirect`, `GuestVulkanOnly`, and
+  `VulkanNativeSwapchain`.
+- `VulkanAllocateHostMemory` is disabled on Windows, avoiding the invalid host
+  pointer import path.
+- `stream_renderer_init Gfxstream initialized successfully!`.
+- virtio-gpu receives `update_scanout_resource` and creates a scanout surface.
+- Guest SurfaceFlinger starts, bootanimation starts, and RenderEngine reports
+  ANGLE over Vulkan on `NVIDIA GeForce MX450`.
+
+Representative log evidence:
+
+```text
+gpu_display_win::window: Creating GUI window for scanout 0
+Gfxstream feature GuestVulkanOnly enabled
+Gfxstream feature VulkanAllocateHostMemory disabled
+stream_renderer_init Gfxstream initialized successfully!
+GPU-FRONTEND: update_scanout_resource type=Scanout scanout_id=0 resource_id=6
+gpu_display_win create_surface: id=2 scanout=Some(0) type=Scanout
+SurfaceFlinger: SurfaceFlinger is starting
+ANGLE: Renderer (Vulkan 1.3.0 (NVIDIA NVIDIA GeForce MX450))
+RenderEngine: renderer  : ANGLE (NVIDIA, Vulkan 1.3.0 (...))
+SurfaceFlinger: Enter boot animation
+```
+
+The current Windows blocker is no longer GPU bring-up. Android does not yet
+reach `sys.boot_completed=1` because `vendor.threadnetwork_hal` crashes before
+boot completion:
+
+```text
+apexd: Successfully mounted package /vendor/apex/com.android.hardware.threadnetwork.apex
+init: Parsing file /apex/com.android.hardware.threadnetwork/etc/threadnetwork-service.rc
+init: starting service 'vendor.threadnetwork_hal'
+android.hardware.threadnetwork-service: Read() at hdlc_interface.cpp:206: I/O error
+init: process with updatable components 'vendor.threadnetwork_hal' exited 4 times before boot completed
+apexd: Native process 'vendor.threadnetwork_hal' is crashing. Attempting a revert
+init: processing action (sys.init.updatable_crashing=1) from (/system/etc/init/flags_health_check.rc:10)
+```
+
+Route assessment:
+
+- The crosvm/WHPX/rutabaga/gfxstream/ANGLE route is correct and should stay.
+- The remaining issue is an Android product/HAL policy problem exposed by
+  slower Windows boot timing: Linux reaches boot completion before this HAL can
+  trip rollback, while Windows does not.
+- A raw byte patch of `aggregate_android.img` against
+  `service vendor.threadnetwork_hal` is not a valid fix. It hits an inactive
+  outer copy/metadata area; the live rc is loaded from the mounted APEX path
+  `/apex/com.android.hardware.threadnetwork/etc/threadnetwork-service.rc`.
+- Appending a ramdisk `/system/etc/init/*.rc` overlay is also not a valid fix;
+  that path was not parsed in the direct boot layout.
+- Patching the first-stage initrd `/init` does not hit the rollback property
+  setter; the relevant strings are in the second-stage init inside the aggregate
+  image.
+
+Correct next fixes are AOSP-side and should be incremental:
+
+1. Prefer a product-level fix for this desktop/Cuttlefish direct-run target:
+   remove or disable the ThreadNetwork HAL/APEX for the Windows artifact, or
+   provide a harmless fake `ot-rcp`/Thread radio backend.
+2. If product removal is too broad, add a narrowly gated init/service policy
+   exemption for `vendor.threadnetwork_hal` on this host-only debug route rather
+   than disabling all APEX rollback globally.
+3. Rebuild incrementally for
+   `aosp_cf_x86_64_phone-trunk_staging-userdebug`, copy the new products through
+   `/media/sf_Desktop`, and refresh `D:\bscp-vm-artifacts`.
+4. Re-run the Windows runner and require all Linux parity markers:
+   `sys.boot_completed=1`, SurfaceFlinger boot finished, ANGLE/Vulkan
+   RenderEngine, and a nonblank 1280x720 window/screenshot.
 
 
 ## 2026-06-24 Linux host update
@@ -136,7 +228,7 @@ unique_colors=785
 mean_rgba=[243.38, 241.89, 248.12, 255.0]
 ```
 
-## Current Windows result
+## Historical Windows result
 
 Latest useful diagnostic run before cleanup:
 
@@ -188,9 +280,10 @@ After the fatal exception, zygote is killed and restarted. No
 `sys.boot_completed=1` or `BOOT_COMPLETED` evidence was found in the captured
 run82 log before cleanup.
 
-## Route assessment
+## Historical route assessment
 
-The route is correct.
+The older run82 route was useful for narrowing the problem, but it is now
+superseded by the Linux-parity Windows route above.
 
 What is now proven:
 
@@ -206,7 +299,7 @@ What is now proven:
 - The zygote/system_server restart loop now has a concrete first fatal:
   `PersistentDataBlockService` times out during boot phase 500.
 
-What should stay temporary:
+What was temporary diagnostic scaffolding:
 
 - APEX/apexd bind-mount workaround.
 - AVB/verity/encryption disablement.
@@ -215,10 +308,7 @@ What should stay temporary:
 - crosvm GPU and WHPX diagnostic log edits.
 - Single-vCPU and block-queue limits.
 
-Do not revisit SMP, x2APIC, AVB, encryption, or cleanup until the single-vCPU
-gfxstream path reaches a stable UI boot.
-
-## Current Windows blocker
+## Historical Windows blocker
 
 The current Windows blocker from the older WHPX run is not rutabaga/gfxstream.
 
@@ -260,36 +350,17 @@ tracked, but it is not the fatal that kills the boot loop in run82.
 
 ## Next steps
 
-1. Port the Linux aggregate disk layout to Windows, including the 1 MiB `frp`
-   partition backed by `factory_reset_protected.img`.
-2. Keep the route unchanged after the disk fix: WHPX, crosvm, single vCPU, block
-   queue 1, `clearcpuid=297`, and rutabaga/gfxstream.
-3. Preserve the `dd bs=900` logcat diagnostic if more Java stack traces are
-   needed:
-   ```text
-   /system/bin/logcat ... 2>&1 | /system/bin/dd bs=900 of=/dev/kmsg
-   ```
-4. Incrementally rebuild `systemimage superimage` for
-   `aosp_cf_x86_64_phone-trunk_staging-userdebug`, copy through
-   `/media/sf_Desktop`, and inject the sparse super image into a fresh composite
-   disk on `D:\bscp_run`.
-5. Boot with the Linux-proven gfxstream guest ANGLE shape adapted to Windows:
-   - `--cpus 1`
-   - `CROSVM_WHPX_BLOCK_QUEUES=1`
-   - `clearcpuid=297`
-   - `backend=gfxstream`
-   - `displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]]`
-   - `context-types=gfxstream-vulkan:gfxstream-composer`
-   - `angle=true`
-   - `gles=false`
-   - `vulkan=true`
-   - SwiftShader Vulkan ICD/DLLs beside `crosvm.exe`
-6. The success criterion for the next Windows run is matching the Linux markers:
-   `sys.boot_completed=1`, `SurfaceFlinger: Boot is finished`, and RenderEngine
-   reporting ANGLE over Vulkan. After that, use the Windows localhost TCP ->
-   guest vsock bridge to run `adb shell screencap -p`, pull the PNG, and apply
-   the same nonblank 1280x720 image check used by
-   `scripts/check_android_linux_gfx_screenshot.sh`.
+1. Keep the current Windows graphics route unchanged:
+   WHPX, `run-mp`, 4 vCPU, block PCI `00:03.0`, legacy virtio-console HVC, and
+   `rutabaga + gfxstream + guest ANGLE`.
+2. Fix the ThreadNetwork HAL at product/source level, then rebuild
+   incrementally for `aosp_cf_x86_64_phone-trunk_staging-userdebug`.
+3. Copy refreshed products through `/media/sf_Desktop` into
+   `D:\bscp-vm-artifacts`, run
+   `scripts\run_android_windows_gfxstream_angle.ps1 -FullHvc -RefreshImages`,
+   and require `sys.boot_completed=1`.
+4. After boot completion, capture the host window or guest screenshot and apply
+   the same nonblank 1280x720 validation used on Linux.
 
 ## Local runtime artifacts
 
@@ -317,7 +388,7 @@ C:\workspace\bscp\bscp\out\dist\img\cf_os_composite_run16_halboot_pre_run43.img
 
 ## Bottom line
 
-The Linux host route is now proven through Android boot completion with
-gfxstream + guest ANGLE rendering over Vulkan. For Windows, carry over the Linux
-disk layout fix and the guest ANGLE `gles=false` gfxstream mode before spending
-more time on AOSP-side service work.
+The Linux host route is proven through Android boot completion with gfxstream +
+guest ANGLE rendering over Vulkan. Windows now matches the graphics/rendering
+path and reaches bootanimation, but still needs an AOSP-side ThreadNetwork HAL
+fix before it can reach `sys.boot_completed=1`.

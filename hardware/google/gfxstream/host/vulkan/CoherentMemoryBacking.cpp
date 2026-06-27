@@ -21,6 +21,13 @@ std::unique_ptr<CoherentMemoryBacking> CoherentMemoryBacking::createForPlatform(
 
     CoherentHostMemoryProbeResult result;
 
+#ifdef _WIN32
+    // The Windows Vulkan loader aborts when this probe is issued without a real
+    // VkDevice. Treat coherent host memory as unavailable and fall back to the
+    // ordinary copied transfer path.
+    return std::unique_ptr<CoherentMemoryBacking>(new CoherentMemoryBacking(result));
+#endif
+
     // Allocate a single page-aligned probe buffer for
     // vkGetMemoryHostPointerPropertiesEXT.
     void* probePtr = nullptr;
