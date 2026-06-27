@@ -23,6 +23,9 @@ GPU_HOST_SWIFTSHADER=0
 GPU_HOST_VISIBLE_COHERENT="${CROSVM_ANDROID_HOST_VISIBLE_COHERENT:-0}"
 X11_GFXSTREAM_SUBWINDOW="${CROSVM_X11_GFXSTREAM_SUBWINDOW:-auto}"
 X_DISPLAY="${DISPLAY:-}"
+DISABLE_AVB=0
+DYNAMIC_FS_TYPE=""
+DATA_FS_TYPE="${CROSVM_ANDROID_DATA_FS_TYPE:-auto}"
 ENABLE_NETWORK=1
 MOBILE_TAP="${CROSVM_ANDROID_MOBILE_TAP:-}"
 ETHERNET_TAP="${CROSVM_ANDROID_ETHERNET_TAP:-}"
@@ -52,6 +55,11 @@ Options:
   --dist-root DIR       Built bscp dist root (default: $DIST_ROOT)
   --work-dir DIR        Runtime image/cache dir (default: $WORK_DIR)
   --log-dir DIR         Log dir (default: $LOG_DIR)
+  --kernel FILE         Kernel image override (default: PRODUCT_DIR/kernel)
+  --ramdisk FILE        Ramdisk image override (default: PRODUCT_DIR/ramdisk.img)
+  --vendor-ramdisk FILE Vendor ramdisk image override (default: PRODUCT_DIR/vendor_ramdisk.img)
+  --vendor-bootconfig FILE
+                        Vendor bootconfig override (default: PRODUCT_DIR/vendor-bootconfig.img)
   --mode MODE           headless or gpu (default: $MODE)
   --mem MiB             Guest memory (default: $MEM)
   --cpus N              Guest vCPU count (default: $CPUS)
@@ -66,6 +74,9 @@ Options:
   --x11-gfxstream-subwindow
                         Use gfxstream's native X11 subwindow instead of XShm readback
   --x-display DISPLAY   X11 display for the host GPU window (default: DISPLAY env)
+  --disable-avb         Strip avb/avb_keys flags from the generated direct-boot DT fstab
+  --dynamic-fs-type FS  Keep only this fs type for dynamic partition fstab duplicates
+  --data-fs-type FS     Keep only this fs type for /data fstab duplicates; auto uses userdata.img
   --no-network          Do not add Cuttlefish-compatible virtio-net devices
   --mobile-tap NAME     Existing first/mobile TAP to pass to crosvm
   --ethernet-tap NAME   Existing second/eth1 TAP to pass to crosvm
@@ -93,6 +104,10 @@ while [[ $# -gt 0 ]]; do
         --dist-root) DIST_ROOT="$2"; shift 2 ;;
         --work-dir) WORK_DIR="$2"; shift 2 ;;
         --log-dir) LOG_DIR="$2"; shift 2 ;;
+        --kernel) KERNEL_OVERRIDE="$2"; shift 2 ;;
+        --ramdisk) RAMDISK_OVERRIDE="$2"; shift 2 ;;
+        --vendor-ramdisk) VENDOR_RAMDISK_OVERRIDE="$2"; shift 2 ;;
+        --vendor-bootconfig) VENDOR_BOOTCONFIG_OVERRIDE="$2"; shift 2 ;;
         --mode) MODE="$2"; shift 2 ;;
         --mem) MEM="$2"; shift 2 ;;
         --cpus) CPUS="$2"; shift 2 ;;
@@ -104,6 +119,9 @@ while [[ $# -gt 0 ]]; do
         --gpu-host-visible-coherent) GPU_HOST_VISIBLE_COHERENT=1; shift ;;
         --x11-gfxstream-subwindow) X11_GFXSTREAM_SUBWINDOW=1; shift ;;
         --x-display) X_DISPLAY="$2"; shift 2 ;;
+        --disable-avb) DISABLE_AVB=1; shift ;;
+        --dynamic-fs-type) DYNAMIC_FS_TYPE="$2"; shift 2 ;;
+        --data-fs-type) DATA_FS_TYPE="$2"; shift 2 ;;
         --no-network) ENABLE_NETWORK=0; shift ;;
         --mobile-tap) MOBILE_TAP="$2"; shift 2 ;;
         --ethernet-tap) ETHERNET_TAP="$2"; shift 2 ;;
@@ -157,10 +175,10 @@ fi
 FIFO_DIR="$WORK_DIR/hvc"
 
 CROSVM_BIN="${CROSVM_BIN:-$DIST_ROOT/linux/bin/crosvm}"
-KERNEL="$PRODUCT_DIR/kernel"
-RAMDISK="$PRODUCT_DIR/ramdisk.img"
-VENDOR_RAMDISK="$PRODUCT_DIR/vendor_ramdisk.img"
-VENDOR_BOOTCONFIG="$PRODUCT_DIR/vendor-bootconfig.img"
+KERNEL="${KERNEL_OVERRIDE:-$PRODUCT_DIR/kernel}"
+RAMDISK="${RAMDISK_OVERRIDE:-$PRODUCT_DIR/ramdisk.img}"
+VENDOR_RAMDISK="${VENDOR_RAMDISK_OVERRIDE:-$PRODUCT_DIR/vendor_ramdisk.img}"
+VENDOR_BOOTCONFIG="${VENDOR_BOOTCONFIG_OVERRIDE:-$PRODUCT_DIR/vendor-bootconfig.img}"
 ANDROID_FSTAB="$PRODUCT_DIR/vendor/etc/fstab.cf.f2fs.hctr2"
 DISK_IMAGE="$WORK_DIR/aggregate_android.img"
 INITRD_IMAGE="$WORK_DIR/initrd_android.img"
@@ -374,12 +392,25 @@ prepare_disk() {
 }
 
 write_android_dt_fstab() {
-    python3 - "$ANDROID_FSTAB" "$ANDROID_DT_FSTAB" <<'PY'
+    local data_fs_type="$DATA_FS_TYPE"
+    if [[ "$data_fs_type" == "auto" ]]; then
+        if file "$PRODUCT_DIR/userdata.img" | grep -qi 'F2FS'; then
+            data_fs_type="f2fs"
+        elif file "$PRODUCT_DIR/userdata.img" | grep -qi 'ext[234]'; then
+            data_fs_type="ext4"
+        else
+            data_fs_type=""
+        fi
+    fi
+    python3 - "$ANDROID_FSTAB" "$ANDROID_DT_FSTAB" "$DISABLE_AVB" "$DYNAMIC_FS_TYPE" "$data_fs_type" <<'PY'
 import pathlib
 import sys
 
 src = pathlib.Path(sys.argv[1])
 dst = pathlib.Path(sys.argv[2])
+disable_avb = sys.argv[3] == "1"
+dynamic_fs_type = sys.argv[4]
+data_fs_type = sys.argv[5]
 dst.parent.mkdir(parents=True, exist_ok=True)
 
 lines = []
@@ -394,6 +425,20 @@ for raw_line in src.read_text(encoding="utf-8").splitlines():
         continue
     if "/" in columns[1].lstrip("/"):
         continue
+    fs_mgr_flags = set(columns[4].split(","))
+    if "recoveryonly" in fs_mgr_flags and "first_stage_mount" not in fs_mgr_flags:
+        continue
+    if dynamic_fs_type and columns[0] in {
+        "odm", "odm_dlkm", "product", "system", "system_ext", "system_dlkm", "vendor", "vendor_dlkm",
+    } and columns[2] != dynamic_fs_type:
+        continue
+    if data_fs_type and columns[1] == "/data" and columns[2] != data_fs_type:
+        continue
+    if disable_avb:
+        columns[4] = ",".join(
+            flag for flag in columns[4].split(",")
+            if flag != "avb" and not flag.startswith("avb=") and not flag.startswith("avb_keys=")
+        )
     lines.append("\t".join(columns))
 
 dst.write_text("\n".join(lines) + "\n", encoding="utf-8")

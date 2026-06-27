@@ -75,6 +75,7 @@ exist:
 DISPLAY=:1 ./scripts/run_android_linux.sh \
   --mode gpu \
   --gpu-guest-angle \
+  --gpu-host-visible-coherent \
   --mem 8192 \
   --timeout-secs 420 \
   --x-display :1
@@ -87,36 +88,43 @@ DISPLAY=:1 ./scripts/check_android_linux_host_window.sh \
 ./scripts/check_android_linux_gfx_screenshot.sh --log-dir out/dist/logs/android-linux
 ```
 
-The 2026-06-27 Linux run validated:
+The 2026-06-27 final Linux run validated:
 
 - X11 host window tree:
   - parent crosvm window `0x4200001`, `1280x720`
   - gfxstream native child window `0x4400001`, `1280x720`
-- Host window dumps:
-  - `out/dist/logs/android-linux/host-window/gfxstream-child-default.xwd`
-  - `out/dist/logs/android-linux/host-window/gfxstream-parent-default.xwd`
-- Host child-window 12-frame sampling: stable nonblack frames, about 73% nonzero pixels, about
-  0.3% white pixels, no all-white/all-black frame observed.
-- Guest screenshot: `out/dist/logs/android-linux/adb/gfxstream-angle.png`.
-- Screenshot metrics: 1280x720 RGBA, non-empty bbox, 6631 unique colors,
-  `mean_rgba=[27.15, 29.0, 39.67, 255.0]`.
+- Host child-window frame sampling:
+  - path:
+    `out/dist/logs/android-linux-final2-20260627-174502/xwd-check/series/frame*.png`
+  - 8 frames at 1280x720
+  - white pixel ratio about `0.0044`
+  - no all-white/all-black frame observed
+  - no frame-to-frame corruption after Android reached the lock screen
 - gfxstream host init and guest ANGLE Vulkan markers.
 - Runtime feature state:
   - `GuestVulkanOnly enabled`
-  - `ExternalBlob disabled`
-  - `VulkanAllocateHostMemory disabled`
+  - `ExternalBlob enabled`
+  - `VulkanAllocateHostMemory enabled`
+  - coherent host memory probe: `typeBits=0x18`
+- Guest boot markers:
+  - SurfaceFlinger boot finished in about 6.7 seconds
+  - ANGLE renderer: Vulkan 1.3.0 on NVIDIA GeForce RTX 2060
+- Negative checks:
+  - no `ErrUnspec`
+  - no `error processing gpu command`
+  - no `invalid gralloc`
+  - no `gralloc failed`
+  - no `ResourceMapBlob` failure
 
-`--gpu-host-visible-coherent` is available as a diagnostic option. It enables
-`external-blob=true` and `renderer-features=VulkanAllocateHostMemory:enabled`, but it is not the
-default Android display path because the current guest logs show missing
-`VIRTGPU_PARAM_CREATE_GUEST_HANDLE`, `VIRTGPU_PARAM_RESOURCE_SYNC`, and
-`VIRTGPU_PARAM_GUEST_VRAM`. Forcing that path currently leads to guest mmap failures and ANGLE
-allocation failures.
+The Linux display route is gfxstream `DisplayVk` native subwindow present. Crosvm's XShm framebuffer
+copy path is not used for that surface. If `ResourceFlush` cannot import or copy through crosvm's
+own display resource path, it returns success because gfxstream has already posted through
+`DisplayVk`.
 
 ## Build Notes
 
 Linux gfxstream+ANGLE crosvm must be built with the top-level `gpu`,
-`gfxstream`, and `x` features. `build_all.sh` appends these when
+`gfxstream`, `x`, `vulkan_display`, and `vulkano` features. `build_all.sh` appends these when
 `ENABLE_GFXSTREAM_ANGLE=1`. The direct Android launch script runs crosvm under
 `timeout --foreground` and redirects stdin from `/dev/null` so interactive
 shell job control cannot stop the VM before Android boots.

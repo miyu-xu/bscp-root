@@ -51,21 +51,27 @@ The launch shape is:
 DISPLAY=:1 ./scripts/run_android_linux.sh \
   --mode gpu \
   --gpu-guest-angle \
+  --gpu-host-visible-coherent \
   --mem 8192 \
   --timeout-secs 420 \
   --x-display :1
 ```
 
-The default Linux guest-ANGLE policy is intentionally conservative:
+The validated Linux guest-ANGLE policy is:
 
 - `GuestVulkanOnly:enabled`
-- `ExternalBlob:disabled`
-- `VulkanAllocateHostMemory:disabled`
+- `ExternalBlob:enabled`
+- `VulkanAllocateHostMemory:enabled`
 - `CROSVM_X11_GFXSTREAM_SUBWINDOW=1`
 
 This is the path that currently boots Android, creates host `VkDevice` instances for
 `surfaceflinger`, `bootanimation`, `systemui`, and `launcher3`, shows a live X11 window, and passes
 `scripts/check_android_linux_gfx_markers.sh` plus screenshot validation.
+
+The Linux present route is gfxstream's native `DisplayVk` subwindow. Crosvm's XShm framebuffer
+fallback is intentionally disabled for this surface, and a missing framebuffer during
+`VIRTIO_GPU_CMD_RESOURCE_FLUSH` is treated as success. The guest-visible frame is already posted by
+gfxstream, so reporting `ErrUnspec` here only creates false GPU command failures.
 
 ## 3. Cross-platform target architecture
 
@@ -107,28 +113,24 @@ host GL/EGL emulation only after the guest/host memory path is stable.
 Linux direct Android now uses guest ANGLE over Vulkan. In that mode, `GuestVulkanOnly:enabled` is
 the stable route and avoids the incomplete host GL emulation path.
 
-### 4.2 `ExternalBlob` stays disabled by default
+### 4.2 Gfxstream `DisplayVk` is the Linux scanout path
 
-`ExternalBlob` is deliberately not used by default for the Linux guest-ANGLE path.
+Do not route Android gfxstream scanout through crosvm's direct `VulkanDisplay` resource import as
+the primary Linux path. That import path is useful for resources that expose complete blob export
+metadata, but gfxstream 3D color buffers are posted by `FrameBuffer::postWithCallback()` through
+gfxstream's own `DisplayVk` pipeline.
 
-Reasons:
+The earlier direct-import attempt produced fallback churn because many scanout resources do not have
+the blob/export shape expected by crosvm's VulkanDisplay import. The stable route is:
 
-1. The current AOSP guest logs show that the virtgpu backend does not expose
-   `VIRTGPU_PARAM_CREATE_GUEST_HANDLE`, `VIRTGPU_PARAM_RESOURCE_SYNC`, or
-   `VIRTGPU_PARAM_GUEST_VRAM`.
-2. Enabling `ExternalBlob` forces guest userspace into blob mmap paths that fail with
-   `mmap64 failed with (Invalid argument)`.
-3. With `ExternalBlob` enabled, Android SystemUI repeatedly hits ANGLE
-   `VK_ERROR_OUT_OF_DEVICE_MEMORY` and then crashes in RenderThread.
+- gfxstream posts the color buffer with the original timeline callback completion semantics
+- `DisplayVk` owns the host child window and swapchain
+- crosvm does not XShm-copy over the child window
+- `ResourceFlush` without a crosvm framebuffer returns `OkNoData`
 
-So the default policy is:
+### 4.3 Host-visible coherent memory is supported on Linux
 
-- `ExternalBlob:disabled`
-- `VulkanAllocateHostMemory:disabled`
-
-### 4.3 Host-visible coherent memory is implemented but runtime-gated
-
-Host support exists and can be tested with:
+Host-visible coherent support is now part of the validated Linux path:
 
 ```bash
 DISPLAY=:1 ./scripts/run_android_linux.sh \
@@ -145,13 +147,19 @@ That switch enables:
 - `external-blob=true`
 - `renderer-features=VulkanAllocateHostMemory:enabled`
 
-The host-side Vulkan probe works on the current Linux/NVIDIA host and reports coherent host memory
-type bits, for example `Coherent host memory probe result: typeBits=0x18`. This confirms that the
-host Vulkan device can support the backing type.
+The Linux crosvm build must include the top-level `vulkano` feature so
+`VmMemorySource::Vulkan` can import and map opaque-fd blob memory through
+`RutabagaGralloc::import_and_map()`. Linux must not call `disable_vulkano()` when creating
+`RutabagaGralloc`; otherwise coherent host memory falls back to `invalid gralloc backend`.
 
-The blocker is guest ABI exposure. Until the guest kernel/userspace path exposes the required
-virtgpu DRM params and the mmap path succeeds, this option is a diagnostic path, not the default
-display path.
+The 2026-06-27 validation run reported:
+
+- `ExternalBlob: enabled`
+- `VulkanAllocateHostMemory: enabled`
+- `Coherent host memory probe result: typeBits=0x18`
+- no `ResourceMapBlob`, `invalid gralloc`, `gralloc failed`, `ErrUnspec`, or GPU command processing
+  errors after the flush fallback fix
+- Android booted with SurfaceFlinger and ANGLE Vulkan on the NVIDIA host driver
 
 ## 5. Configuration and feature flow
 
@@ -166,15 +174,14 @@ For Linux `--gpu-guest-angle`, the policy enforced in `crosvm` is:
 - `gles=false`
 - `glx=false`
 - `vulkan=true`
-- `external-blob=false` by default
+- `external-blob=true` when `--gpu-host-visible-coherent` is requested
 
 And the renderer feature injection is:
 
 - `AngleIndirect:enabled`
 - `GuestVulkanOnly:enabled`
 - `ExternalBlob:<matches external-blob>`
-- `VulkanAllocateHostMemory:enabled` only when explicitly requested through
-  `--gpu-host-visible-coherent`
+- `VulkanAllocateHostMemory:enabled` when explicitly requested through `--gpu-host-visible-coherent`
 
 ## 6. Detailed code changes
 

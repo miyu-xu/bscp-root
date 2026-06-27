@@ -379,6 +379,8 @@ if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
   CROSVM_FEATURES="$(append_csv_feature "$CROSVM_FEATURES" "gfxstream")"
   if [[ "$OS_NAME" == "Linux" ]]; then
     CROSVM_FEATURES="$(append_csv_feature "$CROSVM_FEATURES" "x")"
+    CROSVM_FEATURES="$(append_csv_feature "$CROSVM_FEATURES" "vulkan_display")"
+    CROSVM_FEATURES="$(append_csv_feature "$CROSVM_FEATURES" "vulkano")"
   fi
 fi
 echo "[cargo] virtmgr --release --target $RUST_TARGET"
