@@ -1,7 +1,7 @@
 # AOSP Cuttlefish on Windows WHPX + crosvm + rutabaga/gfxstream boot status
 
 Date: 2026-06-13
-Last updated: 2026-06-18
+Last updated: 2026-06-24
 
 ## Goal
 
@@ -22,6 +22,41 @@ The active route is:
 
 This route is still correct. It is not a headless-only route and it is not
 switching away from rutabaga/gfxstream.
+
+
+## 2026-06-24 Linux host update
+
+Linux host direct-kernel Android boot now reaches framework boot completion using the local
+Cuttlefish-style flow:
+
+```bash
+./scripts/run_android_linux.sh --timeout-secs 180
+./scripts/check_android_linux_markers.sh out/dist/logs/android-linux
+```
+
+Validated markers:
+
+- `PersistentDataBlockService.onStart` completes.
+- system_server reaches `OnBootPhase_1000`.
+- init processes `sys.boot_completed=1`.
+- `scripts/check_android_linux_markers.sh` passes.
+
+The previous phase-500 blocker was caused by a missing `/dev/block/by-name/frp` device in the
+ad-hoc aggregate disk. The Linux disk builder now creates a 1 MiB `frp` partition backed by
+`out/android-linux/factory_reset_protected.img`, matching Cuttlefish persistent disk semantics.
+This fixes the `PersistentDataBlockService init timeout` and the resulting system_server/zygote
+restart loop on Linux.
+
+The remaining active target for Linux is the non-headless graphics route:
+
+```bash
+./scripts/build_angle_linux.sh
+./scripts/run_android_linux.sh --mode gpu --timeout-secs 180
+```
+
+Success criteria for this phase are Android boot completion plus evidence that the crosvm GPU path
+uses `backend=gfxstream` with ANGLE (`libEGL.so`/`libGLESv2.so`) instead of the temporary 2D
+headless path.
 
 ## Current result
 

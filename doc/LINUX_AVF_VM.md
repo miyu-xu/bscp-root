@@ -240,6 +240,54 @@ Windows 侧已有 host path mapping；Linux host 现在也能使用同一套环�
 ./scripts/vm_shell_linux.sh -Command connect -AdbPort 8035
 ```
 
+## 4.5 Android Cuttlefish guest on Linux crosvm
+
+Linux host 现在也有直接启动 Android Cuttlefish x86_64 产物的脚本路径。该路径优先复用
+`/opt/workspace/aosp/out/target/product/vsoc_x86_64` 中已经编译好的 AOSP 输出，不要求清理或全量重编
+AOSP。
+
+新增脚本：
+
+- `scripts/create_cf_android_disk.py`
+- `scripts/run_android_linux.sh`
+- `scripts/check_android_linux_markers.sh`
+- `scripts/build_angle_linux.sh`
+
+基本 headless smoke：
+
+```bash
+./scripts/run_android_linux.sh --timeout-secs 180
+./scripts/check_android_linux_markers.sh out/dist/logs/android-linux
+```
+
+当前验证结果：
+
+- Linux `crosvm run` 可启动 Android guest。
+- first-stage mount 可找到 Cuttlefish fstab 和聚合 GPT disk。
+- system_server 到达 `OnBootPhase_1000`。
+- init 触发 `sys.boot_completed=1`。
+- `scripts/check_android_linux_markers.sh` 已通过。
+
+关键差异：
+
+- 脚本生成 Cuttlefish 风格 GPT 聚合盘：`misc`、A/B boot/vendor_boot/vbmeta、`super`、`userdata`、
+  `frp`、`metadata`。
+- `frp` 使用 1 MiB `factory_reset_protected.img`，与 Cuttlefish persistent composite disk 中的
+  FRP 分区语义一致。没有该分区时，`PersistentDataBlockService` 会因
+  `/dev/block/by-name/frp` 不存在而在 boot phase 500 超时，继而触发 system_server/zygote 重启。
+- `external/crosvm/arch/src/android.rs` 需要为 Android DT string properties 写入 trailing NUL；
+  AOSP `ReadDtFile()` 会去掉最后一个字节，缺少 NUL 会导致 fstab DT 字符串被截断。
+
+GPU/gfxstream + ANGLE 路径：
+
+```bash
+./scripts/build_angle_linux.sh
+./scripts/run_android_linux.sh --mode gpu --timeout-secs 180
+```
+
+`--mode gpu` 要求 `ANGLE_RUNTIME_DIR` 指向包含 `libEGL.so` 和 `libGLESv2.so` 的 Linux ANGLE runtime。
+默认 staging 目录是 `out/dist/linux/gfx/angle`。
+
 ---
 
 ## 5. 日志与产物
