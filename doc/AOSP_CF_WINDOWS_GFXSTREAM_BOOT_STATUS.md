@@ -386,6 +386,47 @@ The known-good base composite disk to preserve is:
 C:\workspace\bscp\bscp\out\dist\img\cf_os_composite_run16_halboot_pre_run43.img
 ```
 
+## 2026-06-26 Linux host scanout validation
+
+The latest root-side Windows status commit (`e43d0b7`) does not change Linux
+runtime behavior. Its gfxstream C++ changes are guarded by `_WIN32`. The latest
+`external/crosvm` Windows device-layout commit (`721296366`) changes the Windows
+runner path and feature plumbing only; Linux does not execute `src/sys/windows.rs`.
+
+The Linux host still shows the same scanout symptom in
+`out/dist/logs/android-linux/stderr.txt`:
+
+```text
+GpuFlush: import failed, trying framebuffer copy for surface=1
+```
+
+This means the Linux X11 route is not presenting via imported/native scanout. It
+falls back to CPU readback into XShm buffers. Guest rendering itself is healthy:
+SurfaceFlinger, Launcher, Settings, and SystemServer create Vulkan devices
+through ANGLE, and `scripts/check_android_linux_gfx_screenshot.sh` passes with a
+nonblank 1280x720 guest screenshot.
+
+Observed host-window risk:
+
+- The problem is not Windows-only; Linux can hit the same fallback-copy class of
+  flicker, deformed frames, or discontinuous updates.
+- XWD captures during interactive Settings/Home/rotation changes stayed
+  structurally valid: 1280x720, 32 bpp, 5120-byte stride, full expected frame
+  payload.
+- Static host-window captures were byte-identical across repeated samples, so
+  no random repaint noise was observed after the XShm sync fix.
+
+Current mitigation in `external/crosvm`:
+
+- Add the `XSync` binding to the generated Xlib wrapper and generator allowlist.
+- Make `gpu_display_x.rs` submit fallback XShm frames synchronously: after
+  `XShmPutImage`, block until the X server has processed the request, then mark
+  the shared-memory buffer reusable.
+
+This is intentionally conservative. It favors a stable Linux baseline over
+maximum fallback-copy throughput. The longer-term fix is still to avoid this
+path by making gfxstream scanout import succeed on the host display backend.
+
 ## Bottom line
 
 The Linux host route is proven through Android boot completion with gfxstream +
