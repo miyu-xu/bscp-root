@@ -1,7 +1,7 @@
 # AOSP Cuttlefish on Windows WHPX + crosvm + rutabaga/gfxstream boot status
 
 Date: 2026-06-13
-Last updated: 2026-06-24
+Last updated: 2026-06-25
 
 ## Goal
 
@@ -88,6 +88,30 @@ blocked on unavailable GL transport.
 No AOSP clean or full rebuild was used for this Linux validation. The run used the existing
 `~/aosp/out/target/product/vsoc_x86_64` artifacts.
 
+The 2026-06-25 Linux run additionally validates that the host opens a real X11
+window and that the guest renders into it. This is now the minimum accepted
+Linux Android graphics validation: host window plus nonblank guest screenshot.
+
+```bash
+DISPLAY=:1 ./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 420 --x-display :1
+DISPLAY=:1 ./scripts/check_android_linux_host_window.sh --log-dir out/dist/logs/android-linux --x-display :1
+./scripts/check_android_linux_gfx_screenshot.sh --log-dir out/dist/logs/android-linux
+```
+
+The passing host window evidence is:
+
+```text
+display=:1
+window_id=0x4600001
+window_line=0x4600001 "crosvm": () 1280x720+14+49 +50+119
+```
+
+The host dump is saved as:
+
+```text
+out/dist/logs/android-linux/host-window/crosvm-window.xwd
+```
+
 Latest Linux screenshot validation wrote:
 
 ```text
@@ -95,8 +119,8 @@ out/dist/logs/android-linux/adb/gfxstream-angle.png
 size=1280x720
 mode=RGBA
 bbox=(0, 0, 1280, 720)
-unique_colors=7020
-mean_rgba=[22.38, 24.0, 56.12, 255.0]
+unique_colors=6637
+mean_rgba=[19.73, 21.65, 33.93, 255.0]
 ```
 
 ## Current Windows result

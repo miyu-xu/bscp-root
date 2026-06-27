@@ -199,6 +199,15 @@ Windows 侧已有 host path mapping；Linux host 现在也能使用同一套环�
 ./build_all.sh
 ```
 
+Android gfxstream+ANGLE 窗口模式需要带 X11 display backend 的 crosvm：
+
+```bash
+ENABLE_GFXSTREAM_ANGLE=1 ./build_all.sh
+```
+
+该路径会启用顶层 `gpu,gfxstream,x` crosvm features。Linux host 通常需要
+`libx11-dev`、`libxext-dev`、`libwayland-dev`、`wayland-protocols` 等构建依赖。
+
 运行前至少应满足：
 
 - `/dev/kvm` 存在
@@ -211,6 +220,41 @@ Windows 侧已有 host path mapping；Linux host 现在也能使用同一套环�
 ```bash
 ./scripts/vm_linux.sh -Command validate-prereqs
 ```
+
+## 4.3 Android gfxstream+ANGLE 实时窗口
+
+启动 Android GPU 模式时必须提供可用 X11 display；如果没有 `DISPLAY`，显式传
+`--x-display`：
+
+```bash
+DISPLAY=:1 ./scripts/run_android_linux.sh \
+  --mode gpu \
+  --gpu-guest-angle \
+  --mem 8192 \
+  --timeout-secs 420 \
+  --x-display :1
+```
+
+验证分三步：
+
+```bash
+DISPLAY=:1 ./scripts/check_android_linux_host_window.sh \
+  --log-dir out/dist/logs/android-linux \
+  --x-display :1
+
+./scripts/check_android_linux_gfx_markers.sh out/dist/logs/android-linux
+./scripts/check_android_linux_gfx_screenshot.sh --log-dir out/dist/logs/android-linux
+```
+
+2026-06-25 验证结果：
+
+- X11 host 窗口存在：`0x4600001 "crosvm" 1280x720+14+49`
+- host window dump：`out/dist/logs/android-linux/host-window/crosvm-window.xwd`
+- guest 截图：`out/dist/logs/android-linux/adb/gfxstream-angle.png`
+- 截图指标：1280x720 RGBA，6637 unique colors，非空 bbox
+- Android boot markers、gfxstream host init、guest ANGLE Vulkan markers 全部通过
+
+只看到 guest screencap 不算完整通过；必须同时有 host 实时窗口证据。
 
 ## 4.2 基本命令
 

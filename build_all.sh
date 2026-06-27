@@ -375,7 +375,11 @@ echo "[$RUST_STEP/$TOTAL_STEPS] Rust (virtmgr + vm + crosvm)"
 export CARGO_TARGET_DIR
 CROSVM_FEATURES="${CROSVM_FEATURES:-$DEFAULT_CROSVM_FEATURES}"
 if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
+  CROSVM_FEATURES="$(append_csv_feature "$CROSVM_FEATURES" "gpu")"
   CROSVM_FEATURES="$(append_csv_feature "$CROSVM_FEATURES" "gfxstream")"
+  if [[ "$OS_NAME" == "Linux" ]]; then
+    CROSVM_FEATURES="$(append_csv_feature "$CROSVM_FEATURES" "x")"
+  fi
 fi
 echo "[cargo] virtmgr --release --target $RUST_TARGET"
 cargo build --manifest-path "$REPO_ROOT/packages/modules/Virtualization/android/virtmgr/Cargo.toml" --release --target "$RUST_TARGET"

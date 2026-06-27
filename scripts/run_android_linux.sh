@@ -18,6 +18,7 @@ DRY_RUN=0
 KEEP_GOING=0
 GPU_GUEST_ANGLE=0
 GPU_HOST_SWIFTSHADER=0
+X_DISPLAY="${DISPLAY:-}"
 EXTRA_BOOTCONFIG=()
 EXTRA_CROSVM_ARGS=()
 
@@ -39,6 +40,7 @@ Options:
   --gpu-guest-angle     Use guest ANGLE EGL with gfxstream-vulkan contexts
   --gpu-host-swiftshader
                         Force ANGLE's staged SwiftShader Vulkan ICD in gpu mode
+  --x-display DISPLAY   X11 display for the host GPU window (default: DISPLAY env)
   --no-run              Prepare disk/initrd but do not launch crosvm
   --dry-run             Validate inputs and print command without preparing
   --help                Show this help
@@ -59,6 +61,7 @@ while [[ $# -gt 0 ]]; do
         --bootconfig) EXTRA_BOOTCONFIG+=("$2"); shift 2 ;;
         --gpu-guest-angle) GPU_GUEST_ANGLE=1; shift ;;
         --gpu-host-swiftshader) GPU_HOST_SWIFTSHADER=1; shift ;;
+        --x-display) X_DISPLAY="$2"; shift 2 ;;
         --no-run) RUN_VM=0; shift ;;
         --dry-run) DRY_RUN=1; RUN_VM=0; shift ;;
         --help|-h) usage; exit 0 ;;
@@ -311,6 +314,10 @@ GPU_ARGS=(
     --gpu "displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],backend=2D,pci-address=00:02.0"
 )
 if [[ "$MODE" == "gpu" ]]; then
+    if [[ -z "$X_DISPLAY" ]]; then
+        echo "Error: --mode gpu requires DISPLAY or --x-display for the host render window" >&2
+        exit 1
+    fi
     if [[ -z "$ANGLE_RUNTIME_DIR" ]]; then
         echo "Error: --mode gpu requires ANGLE_RUNTIME_DIR with libEGL.so and libGLESv2.so" >&2
         echo "       Current ~/angle checkout has no built runtime under /opt/workspace/angle/out." >&2
@@ -366,6 +373,11 @@ CROSVM_CMD=(
     --cpus "$CPUS"
     --no-balloon
     --no-usb
+)
+if [[ "$MODE" == "gpu" ]]; then
+    CROSVM_CMD+=(--x-display "$X_DISPLAY")
+fi
+CROSVM_CMD+=(
     "${GPU_ARGS[@]}"
     --block "path=$DISK_IMAGE,ro=false,lock=false,sparse=false,pci-address=00:03.0"
     --serial "type=file,path=$LOG_DIR/serial.txt,hardware=serial,num=1,earlycon=true"
@@ -385,6 +397,9 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
     fi
     if [[ -n "${GFXSTREAM_ANGLE_ROOT:-}" ]]; then
         printf 'GFXSTREAM_ANGLE_ROOT=%s\n' "$GFXSTREAM_ANGLE_ROOT"
+    fi
+    if [[ "$MODE" == "gpu" ]]; then
+        printf 'X_DISPLAY=%s\n' "$X_DISPLAY"
     fi
     printf 'BOOTCONFIG:\n'
     printf '  %s\n' "${BOOTCONFIG_ARGS[@]}"
