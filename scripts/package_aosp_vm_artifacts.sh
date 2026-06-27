@@ -51,7 +51,7 @@ AOSP_PRODUCT_ROOT="$AOSP_ROOT/out/target/product"
 AOSP_HOST_ROOT="$AOSP_ROOT/out/host"
 PACKAGE_DIR="$OUTPUT_ROOT/$PACKAGE_NAME"
 MANIFEST="$PACKAGE_DIR/manifest.txt"
-ANDROID_LINUX_OUT="$REPO_ROOT/out/android-linux"
+ANDROID_LINUX_OUT_ROOT="$REPO_ROOT/out"
 
 require_dir() {
     local path="$1"
@@ -127,31 +127,41 @@ copy_android_product() {
 }
 
 copy_android_direct_linux() {
-    local product="vsoc_x86_64"
+    local product="$1"
     local product_dir="$AOSP_PRODUCT_ROOT/$product"
+    local source_dir="$ANDROID_LINUX_OUT_ROOT/android-linux-$product"
     local dst="$PACKAGE_DIR/products/android/$product/direct-linux"
-    if [[ ! -d "$ANDROID_LINUX_OUT" ]]; then
-        return 0
+
+    if [[ "$product" == "vsoc_x86_64" && -f "$ANDROID_LINUX_OUT_ROOT/android-linux/aggregate_android.img" ]]; then
+        source_dir="$ANDROID_LINUX_OUT_ROOT/android-linux"
+    fi
+
+    if [[ ! -f "$source_dir/aggregate_android.img" ]]; then
+        "$REPO_ROOT/scripts/run_android_linux.sh" \
+            --product-dir "$product_dir" \
+            --work-dir "$source_dir" \
+            --log-dir "$DIST_ROOT/logs/android-linux-$product-package" \
+            --no-run
     fi
 
     mkdir -p "$dst"
-    copy_file "$ANDROID_LINUX_OUT/aggregate_android.img" "$dst/aggregate_android.img"
-    copy_file "$ANDROID_LINUX_OUT/initrd_android.img" "$dst/initrd_android.img"
-    copy_file "$ANDROID_LINUX_OUT/android_fstab.dt" "$dst/android_fstab.dt"
-    copy_file "$ANDROID_LINUX_OUT/android.dtb" "$dst/android.dtb"
-    copy_file "$ANDROID_LINUX_OUT/android_fstab_extra.cpio.lz4" "$dst/android_fstab_extra.cpio.lz4"
-    copy_file "$ANDROID_LINUX_OUT/misc.img" "$dst/misc.img"
-    copy_file "$ANDROID_LINUX_OUT/factory_reset_protected.img" "$dst/factory_reset_protected.img"
-    copy_file "$ANDROID_LINUX_OUT/metadata.img" "$dst/metadata.img"
-    copy_dir "$ANDROID_LINUX_OUT/hvc" "$dst/hvc"
+    copy_file "$source_dir/aggregate_android.img" "$dst/aggregate_android.img"
+    copy_file "$source_dir/initrd_android.img" "$dst/initrd_android.img"
+    copy_file "$source_dir/android_fstab.dt" "$dst/android_fstab.dt"
+    copy_file "$source_dir/android.dtb" "$dst/android.dtb"
+    copy_file "$source_dir/android_fstab_extra.cpio.lz4" "$dst/android_fstab_extra.cpio.lz4"
+    copy_file "$source_dir/misc.img" "$dst/misc.img"
+    copy_file "$source_dir/factory_reset_protected.img" "$dst/factory_reset_protected.img"
+    copy_file "$source_dir/metadata.img" "$dst/metadata.img"
+    copy_dir "$source_dir/hvc" "$dst/hvc"
     copy_file "$product_dir/kernel" "$dst/kernel"
 
     cat >"$dst/README.txt" <<EOF
 # Android direct Linux boot image set
 
-This directory contains the already synthesized x86_64 Android image set from:
+This directory contains the synthesized Android image set for $product from:
 
-$ANDROID_LINUX_OUT
+$source_dir
 
 Use with the packaged Linux host runtime:
 
@@ -190,8 +200,15 @@ copy_host_runtime() {
     copy_dir "$DIST_ROOT/linux" "$PACKAGE_DIR/host/linux-x86_64/dist"
 }
 
-copy_product_runtime() {
-    copy_dir "$DIST_ROOT/apex_dir" "$PACKAGE_DIR/products/microdroid/apex_dir"
+copy_product_apex_dir() {
+    local product="$1"
+    local product_dir="$AOSP_PRODUCT_ROOT/$product"
+    local dst="$PACKAGE_DIR/products/microdroid/$product/apex_dir"
+
+    copy_dir "$product_dir/system/apex" "$dst/system/apex"
+    copy_dir "$product_dir/system_ext/apex" "$dst/system_ext/apex"
+    copy_dir "$product_dir/vendor/apex" "$dst/vendor/apex"
+    copy_dir "$product_dir/apex" "$dst/apex"
 }
 
 copy_selected_host_tools() {
@@ -200,14 +217,6 @@ copy_selected_host_tools() {
     copy_file "$AOSP_HOST_ROOT/linux-x86/bin/lpmake" "$PACKAGE_DIR/host-tools/linux-x86_64/bin/lpmake"
     copy_file "$AOSP_HOST_ROOT/linux-x86/bin/simg2img" "$PACKAGE_DIR/host-tools/linux-x86_64/bin/simg2img"
     copy_file "$AOSP_HOST_ROOT/linux_musl-arm64/bin/adb" "$PACKAGE_DIR/host-tools/linux-arm64/bin/adb"
-}
-
-copy_repo_helpers() {
-    copy_dir "$REPO_ROOT/scripts" "$PACKAGE_DIR/scripts"
-    copy_file "$REPO_ROOT/doc/LINUX_AVF_VM.md" "$PACKAGE_DIR/docs/LINUX_AVF_VM.md"
-    copy_file "$REPO_ROOT/doc/AOSP_CF_WINDOWS_GFXSTREAM_BOOT_STATUS.md" "$PACKAGE_DIR/docs/AOSP_CF_WINDOWS_GFXSTREAM_BOOT_STATUS.md"
-    copy_file "$REPO_ROOT/doc/CROSS_PLATFORM_VM_ARTIFACTS.md" "$PACKAGE_DIR/docs/CROSS_PLATFORM_VM_ARTIFACTS.md"
-    copy_file "$REPO_ROOT/doc/PLATFORM_DIFFERENCES.md" "$PACKAGE_DIR/docs/PLATFORM_DIFFERENCES.md"
 }
 
 write_summary() {
@@ -223,14 +232,13 @@ AOSP root: $AOSP_ROOT
 
 Contents:
 - products/android/<product>/images: AOSP top-level boot/kernel/vbmeta/super/userdata/partition images.
-- products/android/vsoc_x86_64/direct-linux: synthesized aggregate Android disk, initrd, fstab DT, helper partitions, and kernel used by the validated Linux direct-crosvm boot.
+- products/android/<product>/direct-linux: synthesized aggregate Android disk, initrd, fstab DT, helper partitions, and kernel for direct-crosvm boot input comparison.
 - products/android/<product>/meta: product metadata useful for bring-up and diffing.
 - products/microdroid/<product>/com.android.virt: Microdroid payloads from each product's com.android.virt apex.
+- products/microdroid/<product>/apex_dir: product-specific mounted APEX runtime tree required by Microdroid.
 - products/microdroid/soong/<arch>: architecture-specific Microdroid kernel/initrd/super/vbmeta/json/fstab.
-- products/microdroid/apex_dir: mounted APEX runtime tree required by Microdroid on every host platform.
 - host/linux-x86_64: current bscp Linux host runtime only.
 - host-tools: selected AOSP tools that exist in this workspace, not full host output trees.
-- scripts and docs: the current launch, check, and packaging helpers.
 
 This package was produced by copying existing artifacts only. No AOSP clean or full rebuild was run.
 EOF
@@ -260,14 +268,13 @@ mkdir -p "$PACKAGE_DIR"
 
 for product in "${PRODUCTS[@]}"; do
     copy_android_product "$product"
+    copy_android_direct_linux "$product"
+    copy_product_apex_dir "$product"
 done
-copy_android_direct_linux
 copy_microdroid_soong_arch "x86_64" "android_x86_64_silvermont"
 copy_microdroid_soong_arch "arm64" "android_arm64_armv8-a_cortex-a53"
-copy_product_runtime
 copy_host_runtime
 copy_selected_host_tools
-copy_repo_helpers
 write_summary
 create_archive
 

@@ -431,10 +431,14 @@ mkdir -p "$LOG_DIR"
 : >"$LOG_DIR/logcat-hvc2.txt"
 echo "Launching Android; logs: $LOG_DIR"
 if [[ "$TIMEOUT_SECS" != "0" ]]; then
-    timeout "$TIMEOUT_SECS" "${CROSVM_CMD[@]}" >"$LOG_DIR/stdout.txt" 2>"$LOG_DIR/stderr.txt" || KEEP_GOING=$?
+    TIMEOUT_CMD=(timeout)
+    if timeout --help 2>/dev/null | grep -q -- '--foreground'; then
+        TIMEOUT_CMD+=(--foreground)
+    fi
+    "${TIMEOUT_CMD[@]}" "$TIMEOUT_SECS" "${CROSVM_CMD[@]}" </dev/null >"$LOG_DIR/stdout.txt" 2>"$LOG_DIR/stderr.txt" || KEEP_GOING=$?
     if [[ "$KEEP_GOING" -ne 0 && "$KEEP_GOING" -ne 124 ]]; then
         exit "$KEEP_GOING"
     fi
 else
-    "${CROSVM_CMD[@]}" >"$LOG_DIR/stdout.txt" 2>"$LOG_DIR/stderr.txt"
+    "${CROSVM_CMD[@]}" </dev/null >"$LOG_DIR/stdout.txt" 2>"$LOG_DIR/stderr.txt"
 fi

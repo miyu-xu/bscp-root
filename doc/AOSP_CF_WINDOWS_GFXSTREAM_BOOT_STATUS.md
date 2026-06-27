@@ -88,9 +88,12 @@ blocked on unavailable GL transport.
 No AOSP clean or full rebuild was used for this Linux validation. The run used the existing
 `~/aosp/out/target/product/vsoc_x86_64` artifacts.
 
-The 2026-06-25 Linux run additionally validates that the host opens a real X11
-window and that the guest renders into it. This is now the minimum accepted
-Linux Android graphics validation: host window plus nonblank guest screenshot.
+The 2026-06-26 Linux route uses the direct-crosvm windowed gfxstream path with
+`wsi=vk`. A surfaceless/no-`wsi` experiment initialized host gfxstream but left
+the guest stopped before useful serial output, so it is not the default route.
+A host window is not accepted as passing until the captured XWD has real pixel
+content; guest `screencap` alone only proves SurfaceFlinger rendered inside
+Android.
 
 ```bash
 DISPLAY=:1 ./scripts/run_android_linux.sh --mode gpu --gpu-guest-angle --mem 8192 --timeout-secs 420 --x-display :1
@@ -98,7 +101,7 @@ DISPLAY=:1 ./scripts/check_android_linux_host_window.sh --log-dir out/dist/logs/
 ./scripts/check_android_linux_gfx_screenshot.sh --log-dir out/dist/logs/android-linux
 ```
 
-The passing host window evidence is:
+The host window evidence is:
 
 ```text
 display=:1
@@ -110,6 +113,16 @@ The host dump is saved as:
 
 ```text
 out/dist/logs/android-linux/host-window/crosvm-window.xwd
+out/dist/logs/android-linux/host-window/crosvm-window.metrics.txt
+```
+
+Latest host-window validation after unlocking Android and opening Settings:
+
+```text
+nonblack_ratio=0.731875
+bright_ratio=0.673819
+mean_luma=157.292
+unique_rgb_sample=65
 ```
 
 Latest Linux screenshot validation wrote:
@@ -119,8 +132,8 @@ out/dist/logs/android-linux/adb/gfxstream-angle.png
 size=1280x720
 mode=RGBA
 bbox=(0, 0, 1280, 720)
-unique_colors=6637
-mean_rgba=[19.73, 21.65, 33.93, 255.0]
+unique_colors=785
+mean_rgba=[243.38, 241.89, 248.12, 255.0]
 ```
 
 ## Current Windows result

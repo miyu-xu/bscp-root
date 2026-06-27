@@ -1,6 +1,6 @@
 # Cross-platform VM artifacts and debug logs
 
-Last updated: 2026-06-25
+Last updated: 2026-06-26
 
 This document records how to package the existing AOSP and BSCP VM artifacts for
 Linux, Windows, and macOS bring-up, and how to export comparable Microdroid and
@@ -26,23 +26,22 @@ The package contains:
 
 - `products/android/<product>/images`: boot, init_boot, vendor_boot, vbmeta, super,
   userdata, metadata, kernel, and other top-level product images.
-- `products/android/vsoc_x86_64/direct-linux`: the already synthesized
+- `products/android/<product>/direct-linux`: the synthesized
   `aggregate_android.img`, `initrd_android.img`, `android_fstab.dt`, helper
-  partitions, HVC inputs, and kernel used by the validated direct Linux boot.
+  partitions, HVC inputs, and kernel for direct-crosvm boot input comparison.
 - `products/android/<product>/meta`: build fingerprints, image lists, installed-files
   metadata, and related product metadata when present.
 - `products/microdroid/<product>/com.android.virt`: the product
   `com.android.virt` tree.
+- `products/microdroid/<product>/apex_dir`: the product-specific mounted APEX
+  runtime tree required by Microdroid. Keep this split by product/architecture;
+  do not treat it as a Linux host directory.
 - `products/microdroid/soong/x86_64` and `products/microdroid/soong/arm64`:
   Microdroid kernel, signed kernel, initrd, super, vbmeta, fstab, and JSON from
   Soong intermediates.
-- `products/microdroid/apex_dir`: the mounted APEX runtime tree required by
-  Microdroid on every host platform. It is product/runtime input, not a
-  Linux-only host binary directory.
 - `host/linux-x86_64`: the current Linux host runtime under `out/dist/linux`.
 - `host-tools`: selected AOSP host tools that exist in this workspace, not full
   host output trees.
-- `scripts` and `docs`: launch, validation, packaging, and debug notes.
 
 By default the script writes only the directory package. Use `--archive` when a
 compressed archive is explicitly needed.
@@ -88,25 +87,29 @@ DISPLAY=:1 ./scripts/check_android_linux_host_window.sh \
 ./scripts/check_android_linux_gfx_screenshot.sh --log-dir out/dist/logs/android-linux
 ```
 
-The 2026-06-25 Linux run validated:
+The 2026-06-26 Linux run validated:
 
-- X11 host window: `0x4600001 "crosvm" 1280x720+14+49`.
+- X11 host window: `0x5400001 "crosvm" 1280x720+14+49`.
 - Host window dump: `out/dist/logs/android-linux/host-window/crosvm-window.xwd`.
-- Guest screenshot: `out/dist/logs/android-linux/adb/gfxstream-angle.png`.
-- Screenshot metrics: 1280x720 RGBA, non-empty bbox, 6637 unique colors.
+- Host window metrics after opening Android Settings: `mean_luma=157.292`,
+  `bright_ratio=0.673819`, `unique_rgb_sample=65`.
+- Guest screenshot: `out/dist/logs/android-linux/adb/manual-visible.png`.
+- Screenshot metrics: 1280x720 RGBA, non-empty bbox, 785 unique colors.
 - gfxstream host init and guest ANGLE Vulkan markers.
 
 ## Build Notes
 
 Linux gfxstream+ANGLE crosvm must be built with the top-level `gpu`,
 `gfxstream`, and `x` features. `build_all.sh` appends these when
-`ENABLE_GFXSTREAM_ANGLE=1`.
+`ENABLE_GFXSTREAM_ANGLE=1`. The direct Android launch script runs crosvm under
+`timeout --foreground` and redirects stdin from `/dev/null` so interactive
+shell job control cannot stop the VM before Android boots.
 
 On a normal Linux development host install the X11 and Wayland build helpers
 used by crosvm display backends, for example `libx11-dev`, `libxext-dev`,
 `libwayland-dev`, and `wayland-protocols`. In this workspace, X11 validation was
 done without a system package install by linking against the existing runtime
-`libXext.so.6` through a repo-local symlink under `out/host-x11-lib`.
+`libXext.so.6` through a repo-local symlink under `out/host-deps/x11/lib`.
 
 Do not run `m clean`, `make clean`, `soong clean`, or a full AOSP rebuild for
 this package flow. The package scripts consume the existing `~/aosp/out`

@@ -246,15 +246,23 @@ DISPLAY=:1 ./scripts/check_android_linux_host_window.sh \
 ./scripts/check_android_linux_gfx_screenshot.sh --log-dir out/dist/logs/android-linux
 ```
 
-2026-06-25 验证结果：
+2026-06-26 验证要求：
 
-- X11 host 窗口存在：`0x4600001 "crosvm" 1280x720+14+49`
+- X11 host 窗口存在：`0x5400001 "crosvm" 1280x720+14+49`
 - host window dump：`out/dist/logs/android-linux/host-window/crosvm-window.xwd`
+- host window metrics：`out/dist/logs/android-linux/host-window/crosvm-window.metrics.txt`
 - guest 截图：`out/dist/logs/android-linux/adb/gfxstream-angle.png`
-- 截图指标：1280x720 RGBA，6637 unique colors，非空 bbox
+- 亮色 Settings 验证指标：host `mean_luma=157.292`、`bright_ratio=0.673819`；
+  guest 截图 1280x720 RGBA，785 unique colors，非空 bbox
 - Android boot markers、gfxstream host init、guest ANGLE Vulkan markers 全部通过
 
-只看到 guest screencap 不算完整通过；必须同时有 host 实时窗口证据。
+只看到 guest screencap 或只看到空 host 窗口不算完整通过；必须同时有 host
+窗口非黑像素证据和 guest screencap 证据。
+
+`run_android_linux.sh --timeout-secs` 使用 GNU `timeout --foreground`，并将 crosvm
+stdin 接到 `/dev/null`。不要去掉这两个行为；否则在交互式终端里 `timeout`
+会把 crosvm 放入后台进程组，crosvm 触碰 tty 后会停在 `T` 状态，表现为窗口黑、
+串口不增长。
 
 ## 4.2 基本命令
 
@@ -359,6 +367,8 @@ stage ANGLE runtime，同时复制可选的 `libvulkan.so*`、`libvk_swiftshader
 
 `gles=false` 会让 crosvm/gfxstream 进入 guest ANGLE 的 Vulkan-only 组合，避免 direct crosvm
 路径里 guest GL pipe 未就绪导致的 `eglMakeCurrent failed` / null context 问题。
+`wsi=vk` 是当前 Linux windowed host 显示路径；`egl=true,surfaceless=true,glx=false`
+的实验路径能初始化 host gfxstream，但 guest 会卡在早期启动阶段，因此不作为默认。
 
 `--gpu-host-swiftshader` 只在需要强制使用 staged SwiftShader Vulkan ICD 时启用。默认不强制设置
 `VK_ICD_FILENAMES`；本机验证使用 NVIDIA host Vulkan ICD 正常通过。
