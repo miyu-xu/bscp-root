@@ -45,4 +45,13 @@ reject_marker "Service PersistentDataBlockService init timeout" "$LOGCAT" \
 reject_marker "FATAL EXCEPTION IN SYSTEM PROCESS" "$LOGCAT" "system_server fatal exception"
 reject_marker "Exit zygote because system server" "$LOGCAT" "system_server terminated"
 
-echo "Marker check passed: android-linux"
+reject_marker "hdlc_interface.cpp:206: I/O error" "$LOGCAT" \
+    "ThreadNetwork HDLC I/O error"
+reject_marker "Can't start stack, last instance: starting HciHal" "$LOGCAT" \
+    "Bluetooth HciHal startup failure"
+reject_marker "NFA_DM_NFCC_TIMEOUT_EVT; abort" "$LOGCAT" \
+    "NFC NFCC timeout"
+reject_marker "ANR in com.android.phone" "$LOGCAT" \
+    "com.android.phone ANR without modem_simulator"
+
+echo "Marker check passed: android parity"

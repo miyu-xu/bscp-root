@@ -91,7 +91,7 @@ case "$OS_NAME" in
         fi
         LIB_EXT="so"
         DIST_DIR_NAME="linux"
-        DEFAULT_CROSVM_FEATURES="default-no-sandbox,config-file,qcow,balloon,android-sparse,composite-disk"
+        DEFAULT_CROSVM_FEATURES="default-no-sandbox,config-file,qcow,balloon,android-sparse,composite-disk,net"
         CROSVM_CARGO_TOOLCHAIN="${CROSVM_CARGO_TOOLCHAIN:-stable}"
         ;;
     *)

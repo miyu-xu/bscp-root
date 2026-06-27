@@ -87,9 +87,12 @@ init: processing action (sys.init.updatable_crashing=1) from (/system/etc/init/f
 Route assessment:
 
 - The crosvm/WHPX/rutabaga/gfxstream/ANGLE route is correct and should stay.
-- The remaining issue is an Android product/HAL policy problem exposed by
-  slower Windows boot timing: Linux reaches boot completion before this HAL can
-  trip rollback, while Windows does not.
+- Cuttlefish supports ThreadNetwork; do not remove or globally disable the
+  ThreadNetwork HAL/APEX for this product.
+- The remaining issue is that the hand-written direct-crosvm runners do not yet
+  fully reproduce Cuttlefish networking. The HAL launches `ot-rcp` with
+  `-Leth1`; Linux logs show the same HAL crash, but Linux reaches boot
+  completion before the repeated crash trips rollback, while Windows does not.
 - A raw byte patch of `aggregate_android.img` against
   `service vendor.threadnetwork_hal` is not a valid fix. It hits an inactive
   outer copy/metadata area; the live rc is loaded from the mounted APEX path
@@ -100,20 +103,76 @@ Route assessment:
   setter; the relevant strings are in the second-stage init inside the aggregate
   image.
 
-Correct next fixes are AOSP-side and should be incremental:
+Correct next fixes are direct-runner/network fixes and should be incremental:
 
-1. Prefer a product-level fix for this desktop/Cuttlefish direct-run target:
-   remove or disable the ThreadNetwork HAL/APEX for the Windows artifact, or
-   provide a harmless fake `ot-rcp`/Thread radio backend.
-2. If product removal is too broad, add a narrowly gated init/service policy
-   exemption for `vendor.threadnetwork_hal` on this host-only debug route rather
-   than disabling all APEX rollback globally.
-3. Rebuild incrementally for
-   `aosp_cf_x86_64_phone-trunk_staging-userdebug`, copy the new products through
-   `/media/sf_Desktop`, and refresh `D:\bscp-vm-artifacts`.
-4. Re-run the Windows runner and require all Linux parity markers:
+1. Keep the ThreadNetwork HAL/APEX in the Cuttlefish product.
+2. Rebuild the Linux crosvm dist with the `net` feature and pass two virtio-net
+   devices in Cuttlefish order: mobile first at PCI `00:01.1`, ethernet/`eth1`
+   second at PCI `00:01.2`.
+3. On Linux, either run with enough privilege for crosvm to create transient TAP
+   devices, or pass pre-created TAPs to `scripts/run_android_linux.sh` with
+   `--mobile-tap` and `--ethernet-tap`.
+4. Extend the Windows crosvm networking path. The current Windows/slirp route
+   creates only one virtio-net device, so it does not provide the `eth1`
+   interface expected by the default ThreadNetwork HAL command line.
+5. Re-run the Windows runner and require all Linux parity markers:
    `sys.boot_completed=1`, SurfaceFlinger boot finished, ANGLE/Vulkan
    RenderEngine, and a nonblank 1280x720 window/screenshot.
+
+## 2026-06-26 Linux direct-runner parity findings
+
+Evidence log set (Windows backup):
+
+```text
+/mnt/workspace/Windows/bscp-vm-debug-logs/android-linux-xshm-sync-20260626-210645/android-linux/
+```
+
+These are supported Cuttlefish product features for
+`aosp_cf_x86_64_phone-trunk_staging-userdebug`. Keep them enabled; fix the
+hand-written direct runners instead of removing HALs or APEX packages.
+
+| Feature | Guest service / HAL | Cuttlefish host path | Direct-runner gap | Priority |
+| --- | --- | --- | --- | --- |
+| ThreadNetwork | `vendor.threadnetwork_hal` / `com.android.hardware.threadnetwork` | Two virtio-net devices; `ot-rcp -Leth1` on second NIC (`00:01.2`) | Linux/Windows runners expose fewer than two net devices | P0 |
+| Bluetooth | `com.google.cf.bt` / `/dev/hvc5` | `root-canal` HCI `:7300` + `tcp_connector` to HVC FIFOs | `hvc5` is a sink; no RootCanal/connector | P1 |
+| NFC | `com.google.cf.nfc` / `/dev/hvc12` | `casimir` NCI `:7800` + `tcp_connector` to HVC FIFOs | `hvc12` is a sink; no Casimir/connector | P1 |
+| Telephony | `com.google.cf.rild` / `com.android.phone` | modem simulator + RIL channel | Recheck after radio-adjacent fixes; may be secondary | P2 |
+
+Linux backup-log markers (same product, direct-crosvm without host daemons):
+
+```text
+android.hardware.threadnetwork-service: Read() at hdlc_interface.cpp:206: I/O error
+bluetooth: Can't start stack, last instance: starting HciHal
+libnfc_nci: NFA_DM_NFCC_TIMEOUT_EVT; abort
+ActivityManager: ANR in com.android.phone
+```
+
+Linux still reached `sys.boot_completed=1` in this run because ThreadNetwork rollback
+did not trip before boot completion. Windows boot is slower, so the same missing
+devices block `sys.boot_completed=1` there.
+
+ThreadNetwork service URL in the Linux log confirms the `eth1` dependency:
+
+```text
+Url: spinel+hdlc+forkpty:///apex/com.android.hardware.threadnetwork/bin/ot-rcp?forkpty-arg=-Leth1&forkpty-arg=1
+```
+
+Graphics route conclusions above are unchanged. The new work is host-device parity
+for ThreadNetwork, Bluetooth, and NFC in the direct runners.
+
+Linux direct-runner validation (2026-06-27, log dir
+`out/dist/logs/android-linux-parity2`):
+
+- Dual-net TAP path exposes guest `eth1` at `00:1a:11:e1:cf:00`.
+- `sys.boot_completed=1` is reached with the parity runner.
+- ThreadNetwork `hdlc_interface.cpp:206` no longer appears once `eth1` exists.
+- Bluetooth reaches `Started HciHal`; NFC Casimir accepts an NCI connection.
+- Host `modem_simulator` is started by `scripts/start_cf_host_daemons.sh` via
+  `scripts/modem_simulator_launcher.py`, which writes a minimal Cuttlefish config,
+  listens on vsock port `9600 + (guest_cid - 3)` (9697 for `--cid 100`), and passes
+  `androidboot.modem_simulator_ports` in bootconfig.
+- Validated in `out/dist/logs/android-linux-modem`: guest RIL opens port 9697 and
+  parity checks pass with no `com.android.phone` ANR.
 
 
 ## 2026-06-24 Linux host update
@@ -353,13 +412,19 @@ tracked, but it is not the fatal that kills the boot loop in run82.
 1. Keep the current Windows graphics route unchanged:
    WHPX, `run-mp`, 4 vCPU, block PCI `00:03.0`, legacy virtio-console HVC, and
    `rutabaga + gfxstream + guest ANGLE`.
-2. Fix the ThreadNetwork HAL at product/source level, then rebuild
-   incrementally for `aosp_cf_x86_64_phone-trunk_staging-userdebug`.
-3. Copy refreshed products through `/media/sf_Desktop` into
+2. Keep the Cuttlefish ThreadNetwork HAL/APEX enabled; fix the hand-written
+   direct runners so they provide the Cuttlefish-compatible network interfaces
+   expected by the HAL.
+3. Rebuild Linux crosvm with the `net` feature and validate the new
+   `scripts/run_android_linux.sh` dual-net path, using either privileged
+   transient TAP creation or pre-created `--mobile-tap`/`--ethernet-tap`
+   devices.
+4. Extend the Windows crosvm/slirp path to expose the matching second network
+   device, then copy refreshed products through `/media/sf_Desktop` into
    `D:\bscp-vm-artifacts`, run
    `scripts\run_android_windows_gfxstream_angle.ps1 -FullHvc -RefreshImages`,
    and require `sys.boot_completed=1`.
-4. After boot completion, capture the host window or guest screenshot and apply
+5. After boot completion, capture the host window or guest screenshot and apply
    the same nonblank 1280x720 validation used on Linux.
 
 ## Local runtime artifacts
@@ -431,5 +496,6 @@ path by making gfxstream scanout import succeed on the host display backend.
 
 The Linux host route is proven through Android boot completion with gfxstream +
 guest ANGLE rendering over Vulkan. Windows now matches the graphics/rendering
-path and reaches bootanimation, but still needs an AOSP-side ThreadNetwork HAL
-fix before it can reach `sys.boot_completed=1`.
+path and reaches bootanimation, but the hand-written direct runners still need
+Cuttlefish-compatible network devices for ThreadNetwork before Windows can reach
+`sys.boot_completed=1`.

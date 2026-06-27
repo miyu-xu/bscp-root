@@ -3,6 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/start_cf_host_daemons.sh"
 
 PRODUCT_DIR="/opt/workspace/aosp/out/target/product/vsoc_x86_64"
 DIST_ROOT="$REPO_ROOT/out/dist"
@@ -18,7 +20,25 @@ DRY_RUN=0
 KEEP_GOING=0
 GPU_GUEST_ANGLE=0
 GPU_HOST_SWIFTSHADER=0
+X11_GFXSTREAM_SUBWINDOW="${CROSVM_X11_GFXSTREAM_SUBWINDOW:-auto}"
 X_DISPLAY="${DISPLAY:-}"
+ENABLE_NETWORK=1
+MOBILE_TAP="${CROSVM_ANDROID_MOBILE_TAP:-}"
+ETHERNET_TAP="${CROSVM_ANDROID_ETHERNET_TAP:-}"
+MOBILE_HOST_IP="${CROSVM_ANDROID_MOBILE_HOST_IP:-192.168.96.1}"
+ETHERNET_HOST_IP="${CROSVM_ANDROID_ETHERNET_HOST_IP:-192.168.97.1}"
+NETWORK_NETMASK="${CROSVM_ANDROID_NETMASK:-255.255.255.0}"
+ENABLE_BLUETOOTH=1
+ENABLE_NFC=1
+ENABLE_MODEM=1
+MODEM_INSTANCE_NUM=1
+MODEM_SIM_TYPE=1
+MODEM_BASE_PORT=9600
+BT_HCI_PORT="${CROSVM_ANDROID_BT_HCI_PORT:-7300}"
+CASIMIR_NCI_PORT="${CROSVM_ANDROID_CASIMIR_NCI_PORT:-7800}"
+CASIMIR_RF_PORT="${CROSVM_ANDROID_CASIMIR_RF_PORT:-7900}"
+AOSP_HOST_BIN="${AOSP_HOST_BIN:-/opt/workspace/aosp/out/host/linux-x86/bin}"
+HOST_DAEMON_PIDS=()
 EXTRA_BOOTCONFIG=()
 EXTRA_CROSVM_ARGS=()
 
@@ -40,7 +60,24 @@ Options:
   --gpu-guest-angle     Use guest ANGLE EGL with gfxstream-vulkan contexts
   --gpu-host-swiftshader
                         Force ANGLE's staged SwiftShader Vulkan ICD in gpu mode
+  --x11-gfxstream-subwindow
+                        Use gfxstream's native X11 subwindow instead of XShm readback
   --x-display DISPLAY   X11 display for the host GPU window (default: DISPLAY env)
+  --no-network          Do not add Cuttlefish-compatible virtio-net devices
+  --mobile-tap NAME     Existing first/mobile TAP to pass to crosvm
+  --ethernet-tap NAME   Existing second/eth1 TAP to pass to crosvm
+  --mobile-host-ip IP   Host IP for the first/mobile crosvm TAP (default: $MOBILE_HOST_IP)
+  --ethernet-host-ip IP Host IP for the second/eth1 crosvm TAP (default: $ETHERNET_HOST_IP)
+  --network-netmask IP  Netmask for generated TAP devices (default: $NETWORK_NETMASK)
+  --no-bluetooth        Do not wire /dev/hvc5 or start RootCanal/bt_connector
+  --no-nfc              Do not wire /dev/hvc12 or start Casimir/nfc_connector
+  --no-modem            Do not start modem_simulator or pass modem bootconfig
+  --bt-hci-port PORT    RootCanal HCI port (default: $BT_HCI_PORT)
+  --casimir-nci-port PORT
+                        Casimir NCI port (default: $CASIMIR_NCI_PORT)
+  --casimir-rf-port PORT
+                        Casimir RF port (default: $CASIMIR_RF_PORT)
+  --aosp-host-bin DIR   AOSP host bin dir for CF daemons (default: $AOSP_HOST_BIN)
   --no-run              Prepare disk/initrd but do not launch crosvm
   --dry-run             Validate inputs and print command without preparing
   --help                Show this help
@@ -61,7 +98,21 @@ while [[ $# -gt 0 ]]; do
         --bootconfig) EXTRA_BOOTCONFIG+=("$2"); shift 2 ;;
         --gpu-guest-angle) GPU_GUEST_ANGLE=1; shift ;;
         --gpu-host-swiftshader) GPU_HOST_SWIFTSHADER=1; shift ;;
+        --x11-gfxstream-subwindow) X11_GFXSTREAM_SUBWINDOW=1; shift ;;
         --x-display) X_DISPLAY="$2"; shift 2 ;;
+        --no-network) ENABLE_NETWORK=0; shift ;;
+        --mobile-tap) MOBILE_TAP="$2"; shift 2 ;;
+        --ethernet-tap) ETHERNET_TAP="$2"; shift 2 ;;
+        --mobile-host-ip) MOBILE_HOST_IP="$2"; shift 2 ;;
+        --ethernet-host-ip) ETHERNET_HOST_IP="$2"; shift 2 ;;
+        --network-netmask) NETWORK_NETMASK="$2"; shift 2 ;;
+        --no-bluetooth) ENABLE_BLUETOOTH=0; shift ;;
+        --no-nfc) ENABLE_NFC=0; shift ;;
+        --no-modem) ENABLE_MODEM=0; shift ;;
+        --bt-hci-port) BT_HCI_PORT="$2"; shift 2 ;;
+        --casimir-nci-port) CASIMIR_NCI_PORT="$2"; shift 2 ;;
+        --casimir-rf-port) CASIMIR_RF_PORT="$2"; shift 2 ;;
+        --aosp-host-bin) AOSP_HOST_BIN="$2"; shift 2 ;;
         --no-run) RUN_VM=0; shift ;;
         --dry-run) DRY_RUN=1; RUN_VM=0; shift ;;
         --help|-h) usage; exit 0 ;;
@@ -70,13 +121,38 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+resolve_cf_host_features() {
+    cf_probe_host_daemons "$ENABLE_BLUETOOTH" "$ENABLE_NFC" "$DIST_ROOT/linux/bin" "$ENABLE_MODEM"
+    ENABLE_BLUETOOTH="${CF_HOST_BLUETOOTH_ENABLED:-0}"
+    ENABLE_NFC="${CF_HOST_NFC_ENABLED:-0}"
+    ENABLE_MODEM="${CF_HOST_MODEM_ENABLED:-0}"
+}
+
+cf_modem_vsock_port() {
+    local guest_cid="$1"
+    echo $((MODEM_BASE_PORT + guest_cid - 3))
+}
+
+ensure_network_taps() {
+    if [[ "$ENABLE_NETWORK" -ne 1 || -n "$MOBILE_TAP" || -n "$ETHERNET_TAP" ]]; then
+        return 0
+    fi
+    local tap_exports
+    if ! tap_exports="$("$SCRIPT_DIR/create_cf_taps.sh")"; then
+        echo "Error: could not create Cuttlefish TAP devices; run scripts/create_cf_taps.sh manually or pass --mobile-tap/--ethernet-tap." >&2
+        exit 1
+    fi
+    # shellcheck disable=SC1090
+    eval "$tap_exports"
+}
+
 if [[ "$MODE" != "headless" && "$MODE" != "gpu" ]]; then
     echo "Error: --mode must be headless or gpu" >&2
     exit 2
 fi
 FIFO_DIR="$WORK_DIR/hvc"
 
-CROSVM_BIN="$DIST_ROOT/linux/bin/crosvm"
+CROSVM_BIN="${CROSVM_BIN:-$DIST_ROOT/linux/bin/crosvm}"
 KERNEL="$PRODUCT_DIR/kernel"
 RAMDISK="$PRODUCT_DIR/ramdisk.img"
 VENDOR_RAMDISK="$PRODUCT_DIR/vendor_ramdisk.img"
@@ -101,6 +177,11 @@ require_file() {
 }
 
 require_file "$CROSVM_BIN" "crosvm"
+if [[ "$ENABLE_NETWORK" -eq 1 ]] && ! "$CROSVM_BIN" run --help 2>&1 | grep -q -- "--net"; then
+    echo "Error: $CROSVM_BIN was built without crosvm's net feature; rebuild with build_all.sh so direct Cuttlefish networking can create eth1." >&2
+    echo "       Use --no-network to keep the old no-network direct boot path." >&2
+    exit 1
+fi
 require_file "$KERNEL" "kernel"
 require_file "$RAMDISK" "ramdisk"
 require_file "$VENDOR_RAMDISK" "vendor ramdisk"
@@ -162,6 +243,12 @@ build_bootconfig_args() {
         )
     fi
 
+    if [[ "$ENABLE_MODEM" -eq 1 ]]; then
+        BOOTCONFIG_ARGS+=(
+            "androidboot.modem_simulator_ports=$(cf_modem_vsock_port "$CID")"
+        )
+    fi
+
     BOOTCONFIG_ARGS+=("${EXTRA_BOOTCONFIG[@]}")
 }
 
@@ -187,9 +274,24 @@ prepare_writable_images() {
 prepare_hvc_inputs() {
     mkdir -p "$FIFO_DIR"
     local port
-    for port in keymaster gatekeeper bt gnss location confui uwb oemlock keymint nfc sensors mcu_control mcu_uart; do
+    for port in keymaster gatekeeper gnss location confui uwb oemlock keymint sensors mcu_control mcu_uart; do
         : >"$FIFO_DIR/${port}.in"
     done
+}
+
+stop_host_daemons() {
+    cf_stop_host_daemons
+}
+
+start_host_daemons() {
+    cf_start_host_daemons "$WORK_DIR" "$LOG_DIR" "$DIST_ROOT/linux/bin" \
+        "$ENABLE_BLUETOOTH" "$ENABLE_NFC" "$BT_HCI_PORT" "$CASIMIR_NCI_PORT" "$CASIMIR_RF_PORT" \
+        "$ENABLE_MODEM" "$CID" "$MODEM_INSTANCE_NUM" "$MODEM_SIM_TYPE" \
+        "$ETHERNET_HOST_IP" "192.168.97.2" "30" "8.8.8.8"
+    HOST_DAEMON_PIDS=("${CF_HOST_DAEMON_PIDS[@]:-}")
+    ENABLE_BLUETOOTH="${CF_HOST_BLUETOOTH_ENABLED:-0}"
+    ENABLE_NFC="${CF_HOST_NFC_ENABLED:-0}"
+    ENABLE_MODEM="${CF_HOST_MODEM_ENABLED:-0}"
 }
 
 write_initrd() {
@@ -330,6 +432,9 @@ if [[ "$MODE" == "gpu" ]]; then
         export VK_ICD_FILENAMES="$ANGLE_RUNTIME_DIR/vk_swiftshader_icd.json"
     fi
     if [[ "$GPU_GUEST_ANGLE" -eq 1 ]]; then
+        if [[ "$X11_GFXSTREAM_SUBWINDOW" == "auto" ]]; then
+            X11_GFXSTREAM_SUBWINDOW=1
+        fi
         GPU_ARGS=(
             --gpu "backend=gfxstream,displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk"
         )
@@ -340,7 +445,29 @@ if [[ "$MODE" == "gpu" ]]; then
     fi
 fi
 
+NET_ARGS=()
+if [[ "$ENABLE_NETWORK" -eq 1 ]]; then
+    ensure_network_taps
+    if [[ -n "$MOBILE_TAP" || -n "$ETHERNET_TAP" ]]; then
+        if [[ -z "$MOBILE_TAP" || -z "$ETHERNET_TAP" ]]; then
+            echo "Error: --mobile-tap and --ethernet-tap must be provided together." >&2
+            exit 2
+        fi
+        NET_ARGS=(
+            --net "tap-name=${MOBILE_TAP},mac=00:1a:11:e0:cf:00,pci-address=00:01.1"
+            --net "tap-name=${ETHERNET_TAP},mac=00:1a:11:e1:cf:00,pci-address=00:01.2"
+        )
+    else
+        # Match Cuttlefish's network PCI ordering: mobile first, ethernet/eth1 second.
+        NET_ARGS=(
+            --net "host-ip=${MOBILE_HOST_IP},netmask=${NETWORK_NETMASK},mac=00:1a:11:e0:cf:00,pci-address=00:01.1"
+            --net "host-ip=${ETHERNET_HOST_IP},netmask=${NETWORK_NETMASK},mac=00:1a:11:e1:cf:00,pci-address=00:01.2"
+        )
+    fi
+fi
+
 BOOT_DEVICE="pci0000:00/0000:00:03.0"
+resolve_cf_host_features
 build_bootconfig_args "$BOOT_DEVICE"
 
 KERNEL_PARAMS="console=hvc0,ttyS0 loglevel=7 printk.devkmsg=on init=/init"
@@ -350,14 +477,30 @@ HVC_ARGS=(
     --serial "hardware=legacy-virtio-console,num=3,type=file,path=$LOG_DIR/logcat-hvc2.txt"
     --serial "hardware=legacy-virtio-console,num=4,type=file,path=$LOG_DIR/keymaster-hvc3.txt,input=$FIFO_DIR/keymaster.in"
     --serial "hardware=legacy-virtio-console,num=5,type=file,path=$LOG_DIR/gatekeeper-hvc4.txt,input=$FIFO_DIR/gatekeeper.in"
-    --serial "hardware=legacy-virtio-console,num=6,type=sink"
+)
+if [[ "$ENABLE_BLUETOOTH" -eq 1 ]]; then
+    HVC_ARGS+=(
+        --serial "hardware=legacy-virtio-console,num=6,type=file,path=$FIFO_DIR/bt.out,input=$FIFO_DIR/bt.in"
+    )
+else
+    HVC_ARGS+=(--serial "hardware=legacy-virtio-console,num=6,type=sink")
+fi
+HVC_ARGS+=(
     --serial "hardware=legacy-virtio-console,num=7,type=sink"
     --serial "hardware=legacy-virtio-console,num=8,type=sink"
     --serial "hardware=legacy-virtio-console,num=9,type=file,path=$LOG_DIR/confui-hvc8.txt,input=$FIFO_DIR/confui.in"
     --serial "hardware=legacy-virtio-console,num=10,type=file,path=$LOG_DIR/uwb-hvc9.txt,input=$FIFO_DIR/uwb.in"
     --serial "hardware=legacy-virtio-console,num=11,type=file,path=$LOG_DIR/oemlock-hvc10.txt,input=$FIFO_DIR/oemlock.in"
     --serial "hardware=legacy-virtio-console,num=12,type=file,path=$LOG_DIR/keymint-hvc11.txt,input=$FIFO_DIR/keymint.in"
-    --serial "hardware=legacy-virtio-console,num=13,type=sink"
+)
+if [[ "$ENABLE_NFC" -eq 1 ]]; then
+    HVC_ARGS+=(
+        --serial "hardware=legacy-virtio-console,num=13,type=file,path=$FIFO_DIR/nfc.out,input=$FIFO_DIR/nfc.in"
+    )
+else
+    HVC_ARGS+=(--serial "hardware=legacy-virtio-console,num=13,type=sink")
+fi
+HVC_ARGS+=(
     --serial "hardware=legacy-virtio-console,num=14,type=file,path=$LOG_DIR/sensors-hvc13.txt,input=$FIFO_DIR/sensors.in"
     --serial "hardware=legacy-virtio-console,num=15,type=file,path=$LOG_DIR/mcu-control-hvc14.txt,input=$FIFO_DIR/mcu_control.in"
     --serial "hardware=legacy-virtio-console,num=16,type=file,path=$LOG_DIR/mcu-uart-hvc15.txt,input=$FIFO_DIR/mcu_uart.in"
@@ -379,6 +522,7 @@ if [[ "$MODE" == "gpu" ]]; then
 fi
 CROSVM_CMD+=(
     "${GPU_ARGS[@]}"
+    "${NET_ARGS[@]}"
     --block "path=$DISK_IMAGE,ro=false,lock=false,sparse=false,pci-address=00:03.0"
     --serial "type=file,path=$LOG_DIR/serial.txt,hardware=serial,num=1,earlycon=true"
     --serial "type=sink,hardware=serial,num=2"
@@ -398,11 +542,21 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
     if [[ -n "${GFXSTREAM_ANGLE_ROOT:-}" ]]; then
         printf 'GFXSTREAM_ANGLE_ROOT=%s\n' "$GFXSTREAM_ANGLE_ROOT"
     fi
+    if [[ "$X11_GFXSTREAM_SUBWINDOW" != "auto" ]]; then
+        printf 'CROSVM_X11_GFXSTREAM_SUBWINDOW=%s\n' "$X11_GFXSTREAM_SUBWINDOW"
+    fi
     if [[ "$MODE" == "gpu" ]]; then
         printf 'X_DISPLAY=%s\n' "$X_DISPLAY"
     fi
     printf 'BOOTCONFIG:\n'
     printf '  %s\n' "${BOOTCONFIG_ARGS[@]}"
+    if [[ "${#NET_ARGS[@]}" -gt 0 ]]; then
+        printf 'NETWORK:\n'
+        printf '  %s\n' "${NET_ARGS[@]}"
+    fi
+    printf 'BLUETOOTH: %s\n' "$ENABLE_BLUETOOTH"
+    printf 'NFC: %s\n' "$ENABLE_NFC"
+    printf 'MODEM: %s (vsock port %s)\n' "$ENABLE_MODEM" "$(cf_modem_vsock_port "$CID")"
     printf 'CROSVM:\n'
     printf '  %q' "${CROSVM_CMD[@]}"
     printf '\n'
@@ -422,7 +576,13 @@ if [[ "$RUN_VM" -eq 0 ]]; then
     exit 0
 fi
 
+start_host_daemons
+trap stop_host_daemons EXIT
+
 export LD_LIBRARY_PATH="$(IFS=:; echo "${LD_PATHS[*]}")${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+if [[ "$X11_GFXSTREAM_SUBWINDOW" != "auto" ]]; then
+    export CROSVM_X11_GFXSTREAM_SUBWINDOW="$X11_GFXSTREAM_SUBWINDOW"
+fi
 mkdir -p "$LOG_DIR"
 : >"$LOG_DIR/stdout.txt"
 : >"$LOG_DIR/stderr.txt"

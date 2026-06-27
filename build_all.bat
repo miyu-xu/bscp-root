@@ -22,7 +22,7 @@ if not defined GFXSTREAM_PATH set "GFXSTREAM_PATH="
 if not defined RUSTUP_TOOLCHAIN set "RUSTUP_TOOLCHAIN=stable"
 if not defined CARGO_CMD set "CARGO_CMD=rustup run %RUSTUP_TOOLCHAIN% cargo"
 if not defined RUSTC_CMD set "RUSTC_CMD=rustup run %RUSTUP_TOOLCHAIN% rustc"
-if not defined CROSVM_FEATURES set "CROSVM_FEATURES=whpx,composite-disk,android-sparse"
+if not defined CROSVM_FEATURES set "CROSVM_FEATURES=whpx,composite-disk,android-sparse,net,slirp"
 
 if not defined RUST_TARGET set "RUST_TARGET=x86_64-pc-windows-gnu"
 set "TOTAL_STEPS=4"

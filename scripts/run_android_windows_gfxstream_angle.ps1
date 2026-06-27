@@ -13,11 +13,16 @@ param(
     [switch]$DryRun,
     [switch]$UseSwiftShader,
     [switch]$ConservativeWhpx,
-    [switch]$FullHvc
+    [switch]$FullHvc,
+    [switch]$NoNetwork,
+    [switch]$NoBluetooth,
+    [switch]$NoNfc,
+    [string]$AospHostBin = ""
 )
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = (Resolve-Path "$PSScriptRoot\..").Path
+$script:HostDaemonProcesses = @()
 if (-not $WorkDir) { $WorkDir = Join-Path $RepoRoot "out\android-windows" }
 if (-not $LogDir) { $LogDir = Join-Path $RepoRoot "out\dist\logs\android-windows" }
 
@@ -107,6 +112,103 @@ function Join-WindowsArgumentList {
     }
 
     return ($quoted -join " ")
+}
+
+function Resolve-HostBinary {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [string[]]$SearchDirs
+    )
+
+    foreach ($dir in $SearchDirs) {
+        if (-not $dir) { continue }
+        $candidate = Join-Path $dir $Name
+        if ($Name -notmatch '\.') {
+            $candidate = Join-Path $dir "$Name.exe"
+        }
+        if (Test-Path $candidate) {
+            return (Resolve-Path $candidate).Path
+        }
+    }
+    return $null
+}
+
+function Start-CfHostDaemons {
+    param(
+        [string]$WorkDir,
+        [string]$LogDir,
+        [string[]]$SearchDirs,
+        [bool]$EnableBluetooth,
+        [bool]$EnableNfc
+    )
+
+    $fifoDir = Join-Path $WorkDir "hvc"
+    New-Item -ItemType Directory -Force -Path $fifoDir | Out-Null
+
+    if ($EnableBluetooth) {
+        $rootCanal = Resolve-HostBinary -Name "root-canal" -SearchDirs $SearchDirs
+        $tcpConnector = Resolve-HostBinary -Name "tcp_connector" -SearchDirs $SearchDirs
+        if (-not $rootCanal -or -not $tcpConnector) {
+            Write-Host "Warning: Bluetooth requested but root-canal/tcp_connector not found; skipping BT daemons."
+            $script:BluetoothEnabled = $false
+        } else {
+            $btIn = Join-Path $fifoDir "bt.in"
+            $btOut = Join-Path $fifoDir "bt.out"
+            foreach ($pipe in @($btIn, $btOut)) {
+                if (-not (Test-Path $pipe)) {
+                    New-Item -ItemType File -Path $pipe -Force | Out-Null
+                }
+            }
+            $rootStdout = Join-Path $LogDir "root-canal.stdout.txt"
+            $rootStderr = Join-Path $LogDir "root-canal.stderr.txt"
+            $btStdout = Join-Path $LogDir "bt-connector.stdout.txt"
+            $btStderr = Join-Path $LogDir "bt-connector.stderr.txt"
+            $script:HostDaemonProcesses += Start-Process -FilePath $rootCanal `
+                -ArgumentList @("--test_port=7301", "--hci_port=7300", "--link_port=7302", "--link_ble_port=7303") `
+                -RedirectStandardOutput $rootStdout -RedirectStandardError $rootStderr -PassThru
+            $script:HostDaemonProcesses += Start-Process -FilePath $tcpConnector `
+                -ArgumentList @("-fifo_out=$btIn", "-fifo_in=$btOut", "-data_port=7300", "-buffer_size=2050") `
+                -RedirectStandardOutput $btStdout -RedirectStandardError $btStderr -PassThru
+            $script:BluetoothEnabled = $true
+        }
+    }
+
+    if ($EnableNfc) {
+        $casimir = Resolve-HostBinary -Name "casimir" -SearchDirs $SearchDirs
+        $tcpConnector = Resolve-HostBinary -Name "tcp_connector" -SearchDirs $SearchDirs
+        if (-not $casimir -or -not $tcpConnector) {
+            Write-Host "Warning: NFC requested but casimir/tcp_connector not found; skipping NFC daemons."
+            $script:NfcEnabled = $false
+        } else {
+            $nfcIn = Join-Path $fifoDir "nfc.in"
+            $nfcOut = Join-Path $fifoDir "nfc.out"
+            foreach ($pipe in @($nfcIn, $nfcOut)) {
+                if (-not (Test-Path $pipe)) {
+                    New-Item -ItemType File -Path $pipe -Force | Out-Null
+                }
+            }
+            $casimirStdout = Join-Path $LogDir "casimir.stdout.txt"
+            $casimirStderr = Join-Path $LogDir "casimir.stderr.txt"
+            $nfcStdout = Join-Path $LogDir "nfc-connector.stdout.txt"
+            $nfcStderr = Join-Path $LogDir "nfc-connector.stderr.txt"
+            $script:HostDaemonProcesses += Start-Process -FilePath $casimir `
+                -ArgumentList @("--nci-port", "7800", "--rf-port", "7900") `
+                -RedirectStandardOutput $casimirStdout -RedirectStandardError $casimirStderr -PassThru
+            $script:HostDaemonProcesses += Start-Process -FilePath $tcpConnector `
+                -ArgumentList @("-fifo_out=$nfcIn", "-fifo_in=$nfcOut", "-data_port=7800", "-buffer_size=1024") `
+                -RedirectStandardOutput $nfcStdout -RedirectStandardError $nfcStderr -PassThru
+            $script:NfcEnabled = $true
+        }
+    }
+}
+
+function Stop-CfHostDaemons {
+    foreach ($proc in $script:HostDaemonProcesses) {
+        if ($proc -and -not $proc.HasExited) {
+            Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+        }
+    }
+    $script:HostDaemonProcesses = @()
 }
 
 if (-not $ArtifactDir) {
@@ -204,6 +306,22 @@ if ($ConservativeWhpx) {
 
 $GpuArg = "backend=gfxstream,displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk"
 
+$script:BluetoothEnabled = -not $NoBluetooth
+$script:NfcEnabled = -not $NoNfc
+$EnableNetwork = -not $NoNetwork
+$HostBinSearchDirs = @(
+    (Join-Path $RepoRoot "out\dist\windows\bin"),
+    $AospHostBin
+) | Where-Object { $_ -and (Test-Path $_) }
+
+$netArgs = @()
+if ($EnableNetwork) {
+    $netArgs = @(
+        "--net", "mac=00:1a:11:e0:cf:00,pci-address=00:01.1",
+        "--net", "mac=00:1a:11:e1:cf:00,pci-address=00:01.2"
+    )
+}
+
 if (-not $NoRun -and -not $DryRun) {
     Get-ChildItem -LiteralPath $LogDir -File -Filter "*.txt" -ErrorAction SilentlyContinue |
         Remove-Item -Force -ErrorAction SilentlyContinue
@@ -220,15 +338,35 @@ if ($RunMode -ne "run-mp" -or $FullHvc) {
         "--serial", "hardware=legacy-virtio-console,num=2,type=sink,pci-address=00:04.0",
         "--serial", "hardware=legacy-virtio-console,num=3,type=file,path=$(Join-Path $LogDir "logcat-hvc2.txt"),pci-address=00:05.0",
         "--serial", "hardware=legacy-virtio-console,num=4,type=file,path=$(Join-Path $LogDir "keymaster-hvc3.txt"),input=$(Join-Path $HvcDir "keymaster.in"),pci-address=00:06.0",
-        "--serial", "hardware=legacy-virtio-console,num=5,type=file,path=$(Join-Path $LogDir "gatekeeper-hvc4.txt"),input=$(Join-Path $HvcDir "gatekeeper.in"),pci-address=00:07.0",
-        "--serial", "hardware=legacy-virtio-console,num=6,type=sink,pci-address=00:08.0",
+        "--serial", "hardware=legacy-virtio-console,num=5,type=file,path=$(Join-Path $LogDir "gatekeeper-hvc4.txt"),input=$(Join-Path $HvcDir "gatekeeper.in"),pci-address=00:07.0"
+    )
+    if ($script:BluetoothEnabled) {
+        $serialArgs += @(
+            "--serial", "hardware=legacy-virtio-console,num=6,type=file,path=$(Join-Path $HvcDir "bt.out"),input=$(Join-Path $HvcDir "bt.in"),pci-address=00:08.0"
+        )
+    } else {
+        $serialArgs += @(
+            "--serial", "hardware=legacy-virtio-console,num=6,type=sink,pci-address=00:08.0"
+        )
+    }
+    $serialArgs += @(
         "--serial", "hardware=legacy-virtio-console,num=7,type=sink,pci-address=00:09.0",
         "--serial", "hardware=legacy-virtio-console,num=8,type=sink,pci-address=00:0a.0",
         "--serial", "hardware=legacy-virtio-console,num=9,type=file,path=$(Join-Path $LogDir "confui-hvc8.txt"),input=$(Join-Path $HvcDir "confui.in"),pci-address=00:0b.0",
         "--serial", "hardware=legacy-virtio-console,num=10,type=file,path=$(Join-Path $LogDir "uwb-hvc9.txt"),input=$(Join-Path $HvcDir "uwb.in"),pci-address=00:0c.0",
         "--serial", "hardware=legacy-virtio-console,num=11,type=file,path=$(Join-Path $LogDir "oemlock-hvc10.txt"),input=$(Join-Path $HvcDir "oemlock.in"),pci-address=00:0d.0",
-        "--serial", "hardware=legacy-virtio-console,num=12,type=file,path=$(Join-Path $LogDir "keymint-hvc11.txt"),input=$(Join-Path $HvcDir "keymint.in"),pci-address=00:0e.0",
-        "--serial", "hardware=legacy-virtio-console,num=13,type=sink,pci-address=00:0f.0",
+        "--serial", "hardware=legacy-virtio-console,num=12,type=file,path=$(Join-Path $LogDir "keymint-hvc11.txt"),input=$(Join-Path $HvcDir "keymint.in"),pci-address=00:0e.0"
+    )
+    if ($script:NfcEnabled) {
+        $serialArgs += @(
+            "--serial", "hardware=legacy-virtio-console,num=13,type=file,path=$(Join-Path $HvcDir "nfc.out"),input=$(Join-Path $HvcDir "nfc.in"),pci-address=00:0f.0"
+        )
+    } else {
+        $serialArgs += @(
+            "--serial", "hardware=legacy-virtio-console,num=13,type=sink,pci-address=00:0f.0"
+        )
+    }
+    $serialArgs += @(
         "--serial", "hardware=legacy-virtio-console,num=14,type=file,path=$(Join-Path $LogDir "sensors-hvc13.txt"),input=$(Join-Path $HvcDir "sensors.in"),pci-address=00:10.0",
         "--serial", "hardware=legacy-virtio-console,num=15,type=file,path=$(Join-Path $LogDir "mcu-control-hvc14.txt"),input=$(Join-Path $HvcDir "mcu_control.in"),pci-address=00:11.0",
         "--serial", "hardware=legacy-virtio-console,num=16,type=file,path=$(Join-Path $LogDir "mcu-uart-hvc15.txt"),input=$(Join-Path $HvcDir "mcu_uart.in"),pci-address=00:12.0"
@@ -246,7 +384,7 @@ $crosvmArgs = @(
     "--no-usb",
     "--gpu", $GpuArg,
     "--block", "path=$Disk,ro=false,lock=false,sparse=false,pci-address=00:03.0"
-) + $serialArgs + @(
+) + $netArgs + $serialArgs + @(
     "--android-fstab", $Fstab,
     "--initrd", $Initrd,
     "--params", $KernelParams,
@@ -261,6 +399,9 @@ $commandFile = Join-Path $LogDir "crosvm-command.txt"
     "GFXSTREAM_ANGLE_ROOT=$env:GFXSTREAM_ANGLE_ROOT",
     "VK_ICD_FILENAMES=$env:VK_ICD_FILENAMES",
     "CROSVM_WHPX_BLOCK_QUEUES=$env:CROSVM_WHPX_BLOCK_QUEUES",
+    "NETWORK_ENABLED=$EnableNetwork",
+    "BLUETOOTH_ENABLED=$($script:BluetoothEnabled)",
+    "NFC_ENABLED=$($script:NfcEnabled)",
     "Initrd=$Initrd",
     "",
     $Crosvm,
@@ -275,6 +416,9 @@ Write-Host "ANGLE:       $env:GFXSTREAM_ANGLE_ROOT"
 if ($env:VK_ICD_FILENAMES) { Write-Host "Vulkan ICD:  $env:VK_ICD_FILENAMES" }
 Write-Host "CPU/Mem:     $Cpus vCPU, ${Mem}MiB"
 Write-Host "Run mode:    $RunMode"
+Write-Host "Network:     $EnableNetwork"
+Write-Host "Bluetooth:   $($script:BluetoothEnabled)"
+Write-Host "NFC:         $($script:NfcEnabled)"
 Write-Host "Initrd:      $Initrd"
 Write-Host "GPU:         $GpuArg"
 
@@ -286,7 +430,13 @@ $stdout = Join-Path $LogDir "stdout.txt"
 $stderr = Join-Path $LogDir "stderr.txt"
 Remove-Item -LiteralPath $stdout, $stderr -Force -ErrorAction SilentlyContinue
 
+if (-not $DryRun) {
+    Start-CfHostDaemons -WorkDir $WorkDir -LogDir $LogDir -SearchDirs $HostBinSearchDirs `
+        -EnableBluetooth $script:BluetoothEnabled -EnableNfc $script:NfcEnabled
+}
+
 Write-Host "Launching Android on crosvm; logs are under $LogDir"
+try {
 if ($TimeoutSecs -gt 0) {
     $argumentLine = Join-WindowsArgumentList -Arguments $crosvmArgs
     $process = Start-Process -FilePath $Crosvm -ArgumentList $argumentLine -PassThru `
@@ -305,3 +455,6 @@ if ($TimeoutSecs -gt 0) {
 
 & $Crosvm @crosvmArgs > $stdout 2> $stderr
 exit $LASTEXITCODE
+} finally {
+    Stop-CfHostDaemons
+}
