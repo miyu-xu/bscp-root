@@ -79,16 +79,15 @@ preserved or tightened, not replaced.
 | `VkCommonOperations.cpp` / `.h` | Enables `VK_EXT_external_memory_host` on Windows when requested; lazy-loads `vkGetMemoryHostPointerPropertiesEXT`; probes coherent types after real `VkDevice` creation (`typeBits=0x18` on MX450); prefers GPUs with host-memory extension; caches probe on `VkEmulation`. | **Reasonable.** Upstream Windows path skipped the probe at init (no VkDevice). Device-time probe is the correct fix. |
 | `CoherentMemoryBacking.cpp` | Removes misleading "abort" comment; init-time stub unchanged (probe deferred to device time). | **Reasonable.** Comment-only clarity; behavior unchanged at init. |
 | `GraphicsDetectorVkExternalMemoryHost.cpp` | **No change.** Still Linux-only `memfd` probe in detector. | Acceptable; runtime probe in `VkCommonOperations` covers Windows. |
-| `external/crosvm/.../virtio_gpu.rs` | Local patch (gitignored): `resource_map_blob` falls back to `rutabaga.map` → `ExternalMapping` when Vulkan hypervisor import fails. | **Reasonable for `run-mp`.** Needed when WHPX cannot `register_memory` on exported handles. Not in git; rebuild crosvm from local tree. |
+| `external/crosvm/.../virtio_gpu.rs` | `resource_map_blob` first tries the exported Vulkan/descriptor mapping, then falls back to `rutabaga.map` -> `ExternalMapping` if hypervisor registration fails. | **Reasonable for `run-mp`.** This catches WHPX `register_memory` `EINVAL` after a valid export was already selected. |
 | `run_android_windows_gfxstream_angle.ps1` | `-GpuHostVisibleCoherent` sets `external-blob=true`; `-ResetBootState`; `-HostBinDir`; aggregate rebuild via `create_cf_android_disk.py`. | Runner/infra; required for reproducible validation. |
 | `check_android_windows_gfx_markers.ps1` | New marker script; requires `ExternalBlob: enabled` when coherent mode is on. | Test harness. |
 
 **Not yet upstreamable as-is:** Windows lacks `udmabuf`; scanout still uses
 framebuffer copy (`flush_resource`) rather than Vulkan blob zero-copy
-(`VulkanDisplay imported`). WHPX `register_memory` for exported blobs can fail
-intermittently (`EINVAL`); warm reboot without `-ResetBootState` may hit
-`ResourceMapBlob: ErrUnspec` and stall `system_server` — use `-ResetBootState`
-for validation runs.
+(`VulkanDisplay imported`). WHPX `register_memory` for exported blobs can still
+return `EINVAL`, but crosvm now retries with `ExternalMapping` before returning
+`ResourceMapBlob: ErrUnspec`.
 
 ### Re-run notes (2026-06-28)
 
@@ -97,10 +96,15 @@ for validation runs.
 | 1 | `-ResetBootState -GpuHostVisibleCoherent` | **Pass** — `boot_completed=1`, all markers |
 | 2 | `-GpuHostVisibleCoherent` (reuse disk) | **Fail** — 420s timeout, `ResourceMapBlob: ErrUnspec`, `system_server` binder stall |
 | 3 | `-GpuHostVisibleCoherent` (reuse disk) | **Fail** — 600s timeout, same `ResourceMapBlob` at ~23s |
+| 4 | `-ResetBootState -GpuHostVisibleCoherent` after crosvm fallback fix | **Pass** — `SurfaceFlinger: Boot is finished (36147 ms)`, `sys.boot_completed=1`, boot + gfx markers pass, no `ResourceMapBlob` |
 
-Coherent + ExternalBlob code path is validated on cold/fresh disk. Subsequent
-warm boots on WHPX are flaky until WHPX blob mapping stability is improved.
+Root cause of the intermittent `ResourceMapBlob` failures: `resource_map_blob`
+created a Vulkan/descriptor source when export metadata was available, then
+returned `ErrUnspec` if `SharedMemoryMapper::add_mapping()` failed later during
+WHPX `register_memory`. The old fallback only handled "no source was created";
+it did not handle "source was valid but hypervisor registration failed".
 
+## 2026-06-26 Windows parity update
 
 Linux has now booted both Microdroid and Android with visible
 `gfxstream + ANGLE` rendering. The Windows runner was aligned to that route:
