@@ -21,7 +21,8 @@ else
 fi
 
 echo
-echo "Windows follow-up (requires Windows host rebuild):"
+echo "Windows follow-up:"
 echo "  build_all.bat with net,slirp crosvm features"
 echo "  scripts\\run_android_windows_gfxstream_angle.ps1 -FullHvc -TimeoutSecs 420"
-echo "  inspect LogDir\\crosvm-command.txt for two --net entries and hvc5/hvc12 wiring"
+echo "  scripts\\validate_direct_runner_parity_windows.ps1 LOG_DIR"
+echo "  inspect LogDir\\crosvm-command.txt for two --net entries and hvc5/hvc12 pipe wiring"

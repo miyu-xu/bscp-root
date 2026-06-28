@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare Cuttlefish config and exec modem_simulator with a vsock server FD."""
+"""Prepare Cuttlefish config and exec Linux modem_simulator with a vsock server FD."""
 
 from __future__ import annotations
 
@@ -68,6 +68,13 @@ def create_vsock_server(port: int) -> socket.socket:
 
 
 def main() -> int:
+    if sys.platform == "win32":
+        print(
+            "Use scripts/modem_simulator_windows.py on Windows; this launcher is Linux-only.",
+            file=sys.stderr,
+        )
+        return 2
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--config-root", required=True)
     parser.add_argument("--modem-bin", required=True)
