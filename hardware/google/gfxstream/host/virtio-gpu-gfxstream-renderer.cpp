@@ -2128,6 +2128,14 @@ class PipeVirglRenderer {
                     std::nullopt);
 
                 e.caching = STREAM_RENDERER_MAP_CACHE_CACHED;
+#elif defined(_WIN32)
+                ManagedDescriptor managedHandle(
+                        reinterpret_cast<DescriptorType>(static_cast<intptr_t>(handle->os_handle)));
+                ExternalObjectManager::get()->addBlobDescriptorInfo(
+                    ctx_id, create_blob->blob_id, std::move(managedHandle), handle->handle_type, 0,
+                    std::nullopt);
+
+                e.caching = STREAM_RENDERER_MAP_CACHE_CACHED;
 #else
                 return -EINVAL;
 #endif
@@ -2173,8 +2181,6 @@ class PipeVirglRenderer {
     }
 
     int resourceMap(uint32_t res_handle, void** hvaOut, uint64_t* sizeOut) {
-        if (mFeatures.ExternalBlob.enabled) return -EINVAL;
-
         auto it = mResources.find(res_handle);
         if (it == mResources.end()) {
             if (hvaOut) *hvaOut = nullptr;
@@ -2183,6 +2189,20 @@ class PipeVirglRenderer {
         }
 
         const auto& entry = it->second;
+
+        // Exported blobs use export_blob + hypervisor import; host pointer blobs
+        // registered via addMapping remain mappable through rutabaga.map.
+        if (entry.descriptorInfo) {
+            if (hvaOut) *hvaOut = nullptr;
+            if (sizeOut) *sizeOut = 0;
+            return -EINVAL;
+        }
+
+        if (!entry.hva) {
+            if (hvaOut) *hvaOut = nullptr;
+            if (sizeOut) *sizeOut = 0;
+            return -EINVAL;
+        }
 
         if (hvaOut) *hvaOut = entry.hva;
         if (sizeOut) *sizeOut = entry.hvaSize;

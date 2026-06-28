@@ -452,6 +452,10 @@ struct VkEmulation {
         uint32_t guestMemoryTypeIndex;
     };
     std::optional<RepresentativeColorBufferMemoryTypeInfo> representativeColorBufferMemoryTypeInfo;
+
+    // Cached during init when VulkanAllocateHostMemory is enabled. Reused when the guest
+    // enumerates physical devices (Windows requires a real VkDevice for the probe).
+    CoherentHostMemoryProbeResult coherentHostMemoryProbeResult{};
 };
 
 VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,

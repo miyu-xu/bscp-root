@@ -1,7 +1,7 @@
 # AOSP Cuttlefish on Windows WHPX + crosvm + rutabaga/gfxstream boot status
 
 Date: 2026-06-13
-Last updated: 2026-06-26
+Last updated: 2026-06-28
 
 ## Goal
 
@@ -25,7 +25,82 @@ The active route is:
 This route is still correct. It is not a headless-only route and it is not
 switching away from rutabaga/gfxstream.
 
-## 2026-06-26 Windows parity update
+## 2026-06-28 Windows coherent host memory boot validation
+
+Validated with `-GpuHostVisibleCoherent` and a fresh disk rebuilt from D-drive
+product images (not the prebuilt `direct-linux/aggregate_android.img` alone):
+
+```powershell
+powershell -NoProfile -File scripts\run_android_windows_gfxstream_angle.ps1 `
+  -ArtifactDir "D:\bscp-vm-artifacts\bscp-vm-artifacts-20260626-gfxstream-angle-visible\products\android\vsoc_x86_64\direct-linux" `
+  -WorkDir "D:\bscp-vm-work" -FullHvc -GpuHostVisibleCoherent `
+  -ResetBootState -TimeoutSecs 600
+```
+
+`-ResetBootState` is equivalent to `-RefreshImages -RebuildAggregate`. Use it
+when vold/keystore state is corrupted after unclean shutdowns.
+
+Root cause of earlier boot failures after copying the prebuilt aggregate:
+
+- Artifact `metadata.img` is not a valid ext4 image at first boot.
+- Guest init formats `/metadata`, wiping encryption keys while `userdata` inside
+  the prebuilt aggregate remains metadata-encrypted from prior boots.
+- Rebuilding the aggregate from `../images/userdata.img` plus artifact
+  `metadata.img`/`misc.img`/`frp` restores a consistent first-boot state.
+
+Validated markers (`out/dist/logs/android-windows`):
+
+- Host: `VulkanAllocateHostMemory: enabled`, `ExternalBlob: enabled`,
+  `Coherent host memory probe result: typeBits=0x18`.
+- Guest: `sys.boot_completed=1`, `SurfaceFlinger: Boot is finished`,
+  RenderEngine ANGLE over Vulkan on MX450.
+- No `ResourceMapBlob: ErrUnspec` or vold/keystore decrypt failures.
+- `scripts/check_android_windows_markers.ps1` and
+  `scripts/check_android_windows_gfx_markers.ps1` pass.
+
+Windows coherent config (differs from Linux):
+
+| Setting | Linux | Windows |
+|---------|-------|---------|
+| `VulkanAllocateHostMemory` | enabled | enabled |
+| `external-blob` | true | **true** (aligned with Linux coherent path) |
+| `udmabuf` | true | false |
+
+### Upstream AOSP gfxstream diff review (2026-06-28)
+
+Compared against the gfxstream host sources in this tree (AOSP-derived). All
+changes are Windows coherent-memory / ExternalBlob bring-up; Linux paths are
+preserved or tightened, not replaced.
+
+| File | vs upstream AOSP | Assessment |
+|------|------------------|------------|
+| `VkDecoderGlobalState.cpp` | Reorders allocation: when **both** `VulkanAllocateHostMemory` and `ExternalBlob` are on, blob allocations (`VkCreateBlobGOOGLE` in `pNext`) now take the **export** path (`EXPORT_MEMORY_ALLOCATE_INFO` + WIN32 opaque handle) instead of host-pointer import. Host-pointer import is gated on `!ExternalBlob.enabled`. Maps memory before `vkGetMemoryWin32HandleKHR` when `!info->ptr`. | **Reasonable.** Matches Linux semantics: blobs export handles; non-blob coherent memory uses host-pointer import. Fixes `ResourceMapBlob` / `export_blob` failures when both features were enabled. |
+| `virtio-gpu-gfxstream-renderer.cpp` | Adds `_WIN32` branch for `STREAM_BLOB_FLAG_CREATE_GUEST_HANDLE` (parity with Linux/QNX). `resourceMap()` no longer blanket `-EINVAL` when ExternalBlob is on; only descriptor-exported blobs reject HVA map. | **Reasonable.** Enables `rutabaga.map` fallback for host-pointer ring blobs under `run-mp`. Descriptor blobs still use hypervisor import. |
+| `VkCommonOperations.cpp` / `.h` | Enables `VK_EXT_external_memory_host` on Windows when requested; lazy-loads `vkGetMemoryHostPointerPropertiesEXT`; probes coherent types after real `VkDevice` creation (`typeBits=0x18` on MX450); prefers GPUs with host-memory extension; caches probe on `VkEmulation`. | **Reasonable.** Upstream Windows path skipped the probe at init (no VkDevice). Device-time probe is the correct fix. |
+| `CoherentMemoryBacking.cpp` | Removes misleading "abort" comment; init-time stub unchanged (probe deferred to device time). | **Reasonable.** Comment-only clarity; behavior unchanged at init. |
+| `GraphicsDetectorVkExternalMemoryHost.cpp` | **No change.** Still Linux-only `memfd` probe in detector. | Acceptable; runtime probe in `VkCommonOperations` covers Windows. |
+| `external/crosvm/.../virtio_gpu.rs` | Local patch (gitignored): `resource_map_blob` falls back to `rutabaga.map` → `ExternalMapping` when Vulkan hypervisor import fails. | **Reasonable for `run-mp`.** Needed when WHPX cannot `register_memory` on exported handles. Not in git; rebuild crosvm from local tree. |
+| `run_android_windows_gfxstream_angle.ps1` | `-GpuHostVisibleCoherent` sets `external-blob=true`; `-ResetBootState`; `-HostBinDir`; aggregate rebuild via `create_cf_android_disk.py`. | Runner/infra; required for reproducible validation. |
+| `check_android_windows_gfx_markers.ps1` | New marker script; requires `ExternalBlob: enabled` when coherent mode is on. | Test harness. |
+
+**Not yet upstreamable as-is:** Windows lacks `udmabuf`; scanout still uses
+framebuffer copy (`flush_resource`) rather than Vulkan blob zero-copy
+(`VulkanDisplay imported`). WHPX `register_memory` for exported blobs can fail
+intermittently (`EINVAL`); warm reboot without `-ResetBootState` may hit
+`ResourceMapBlob: ErrUnspec` and stall `system_server` — use `-ResetBootState`
+for validation runs.
+
+### Re-run notes (2026-06-28)
+
+| Run | Flags | Result |
+|-----|-------|--------|
+| 1 | `-ResetBootState -GpuHostVisibleCoherent` | **Pass** — `boot_completed=1`, all markers |
+| 2 | `-GpuHostVisibleCoherent` (reuse disk) | **Fail** — 420s timeout, `ResourceMapBlob: ErrUnspec`, `system_server` binder stall |
+| 3 | `-GpuHostVisibleCoherent` (reuse disk) | **Fail** — 600s timeout, same `ResourceMapBlob` at ~23s |
+
+Coherent + ExternalBlob code path is validated on cold/fresh disk. Subsequent
+warm boots on WHPX are flaky until WHPX blob mapping stability is improved.
+
 
 Linux has now booted both Microdroid and Android with visible
 `gfxstream + ANGLE` rendering. The Windows runner was aligned to that route:
@@ -119,6 +194,43 @@ Correct next fixes are direct-runner/network fixes and should be incremental:
    `sys.boot_completed=1`, SurfaceFlinger boot finished, ANGLE/Vulkan
    RenderEngine, and a nonblank 1280x720 window/screenshot.
 
+## 2026-06-27 Windows direct-runner parity implementation
+
+Code changes landed to align the Windows hand-written runner with the Linux parity
+path while keeping Cuttlefish product HALs/APEX enabled:
+
+- **crosvm (Windows)**: `--net mac=...,pci-address=...` parsing, `NetParametersMode::Slirp`,
+  multi slirp/net backend spawn (`cfg.net_vhost_user_tubes`), per-NIC MAC in virtio config.
+- **Runner**: `scripts/run_android_windows_gfxstream_angle.ps1` passes two `--net` devices,
+  starts RootCanal/Casimir, bridges HVC5/HVC12 through Windows named pipes via
+  `scripts/cf_hvc_tcp_bridge.ps1`, and validates rebuilt crosvm exposes `--net`.
+- **Validation**: `scripts/check_android_windows_parity_markers.ps1`,
+  `scripts/check_android_windows_gfx_markers.ps1`,
+  `scripts/validate_direct_runner_parity_windows.ps1`.
+- **Modem/RIL (P2)**: `scripts/modem_simulator_windows.py` is a Windows-native Python host
+  modem that listens on `\\.\pipe\binder_rpc_vsock_{cid}_{port}` (crosvm virtio-vsock /
+  libbinder path). Runner patches `androidboot.modem_simulator_ports` into initrd bootconfig.
+  Linux continues to use AOSP `modem_simulator` via `scripts/modem_simulator_launcher.py`.
+  Use `-NoModem` to skip.
+
+Rebuild before testing:
+
+```powershell
+$env:ENABLE_GFXSTREAM_ANGLE = "1"
+.\build_all.bat
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File scripts\run_android_windows_gfxstream_angle.ps1 `
+  -FullHvc -TimeoutSecs 420
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File scripts\validate_direct_runner_parity_windows.ps1 `
+  -LogDir out\dist\logs\android-windows
+```
+
+Expected `crosvm-command.txt` markers when networking is enabled:
+
+- two `--net` entries (`00:01.1` mobile, `00:01.2` eth1)
+- HVC6/HVC13 wired to `\\.\pipe\bscp_cf_*` paths when BT/NFC daemons start
+
 ## 2026-06-26 Linux direct-runner parity findings
 
 Evidence log set (Windows backup):
@@ -133,10 +245,10 @@ hand-written direct runners instead of removing HALs or APEX packages.
 
 | Feature | Guest service / HAL | Cuttlefish host path | Direct-runner gap | Priority |
 | --- | --- | --- | --- | --- |
-| ThreadNetwork | `vendor.threadnetwork_hal` / `com.android.hardware.threadnetwork` | Two virtio-net devices; `ot-rcp -Leth1` on second NIC (`00:01.2`) | Linux/Windows runners expose fewer than two net devices | P0 |
-| Bluetooth | `com.google.cf.bt` / `/dev/hvc5` | `root-canal` HCI `:7300` + `tcp_connector` to HVC FIFOs | `hvc5` is a sink; no RootCanal/connector | P1 |
-| NFC | `com.google.cf.nfc` / `/dev/hvc12` | `casimir` NCI `:7800` + `tcp_connector` to HVC FIFOs | `hvc12` is a sink; no Casimir/connector | P1 |
-| Telephony | `com.google.cf.rild` / `com.android.phone` | modem simulator + RIL channel | Recheck after radio-adjacent fixes; may be secondary | P2 |
+| ThreadNetwork | `vendor.threadnetwork_hal` / `com.android.hardware.threadnetwork` | Two virtio-net devices; `ot-rcp -Leth1` on second NIC (`00:01.2`) | Windows runner now passes two `--net` entries; crosvm Windows broker starts one slirp/net backend per NIC | P0 |
+| Bluetooth | `com.google.cf.bt` / `/dev/hvc5` | `root-canal` HCI `:7300` + `tcp_connector` to HVC FIFOs | Windows runner uses named pipes + `scripts/cf_hvc_tcp_bridge.ps1` to RootCanal/Casimir | P1 |
+| NFC | `com.google.cf.nfc` / `/dev/hvc12` | `casimir` NCI `:7800` + `tcp_connector` to HVC FIFOs | Same Windows pipe bridge path as Bluetooth | P1 |
+| Telephony | `com.google.cf.rild` / `com.android.phone` | modem simulator + RIL channel | Windows uses `scripts/modem_simulator_windows.py` on `binder_rpc_vsock_{cid}_{port}`; Linux uses AOSP `modem_simulator` | P2 |
 
 Linux backup-log markers (same product, direct-crosvm without host daemons):
 
@@ -167,6 +279,27 @@ Linux direct-runner validation (2026-06-27, log dir
 - `sys.boot_completed=1` is reached with the parity runner.
 - ThreadNetwork `hdlc_interface.cpp:206` no longer appears once `eth1` exists.
 - Bluetooth reaches `Started HciHal`; NFC Casimir accepts an NCI connection.
+
+Windows direct-runner dual-net validation (2026-06-27, log dir
+`out/dist/logs/android-windows`):
+
+- Root cause of the early dual-NIC boot failure: Windows `run-mp` used
+  `create_vhost_user_block_device()` without forwarding `--block pci-address=00:03.0`.
+  With two virtio-net devices present, vsock auto-allocated `00:03.0`, so
+  `android_fstab.dt` / `androidboot.boot_devices` no longer matched the block
+  device and init failed with `realpath failed: /dev/block/by-name/super`.
+- Fix: pass `disk.pci_address` into `create_vhost_user_block_device()` in
+  `external/crosvm/src/sys/windows.rs`; align runner device order with Linux
+  (`GPU` → two `--net` → `--block` → HVC) in
+  `scripts/run_android_windows_gfxstream_angle.ps1`.
+- Validated with packaged `D:\...\direct-linux\aggregate_android.img` (no
+  `-RebuildAggregate`): PCI `00:03.0` = virtio-blk `1af4:1042`, guest `eth1`
+  appears, ThreadNetwork HAL starts without `hdlc_interface.cpp:206`,
+  `PersistentDataBlockService` passes, modem RIL connects.
+- Remaining boot blocker (unchanged from gfxstream runs): `system_server` watchdog
+  in `DisplayManagerService.nativeGetHdrOutputConversionSupport()`; no
+  `sys.boot_completed=1` yet.
+
 - Host `modem_simulator` is started by `scripts/start_cf_host_daemons.sh` via
   `scripts/modem_simulator_launcher.py`, which writes a minimal Cuttlefish config,
   listens on vsock port `9600 + (guest_cid - 3)` (9697 for `--cid 100`), and passes
@@ -174,6 +307,18 @@ Linux direct-runner validation (2026-06-27, log dir
 - Validated in `out/dist/logs/android-linux-modem`: guest RIL opens port 9697 and
   parity checks pass with no `com.android.phone` ANR.
 
+Windows direct-runner modem path (2026-06-27):
+
+- AOSP does not ship a Windows `modem_simulator.exe`. The Windows runner uses
+  `scripts/modem_simulator_windows.py`, a Python AT-command host modem aligned with
+  Cuttlefish `modem_simulator` behavior.
+- crosvm virtio-vsock connects guest-initiated host-port traffic to
+  `\\.\pipe\binder_rpc_vsock_{guest_cid}_{host_port}` (see
+  `external/crosvm/devices/src/virtio/vsock/host_avf_bridge.rs` and
+  `frameworks/native/libs/binder/platform/namedpipe_vsock.h`).
+- `scripts/run_android_windows_gfxstream_angle.ps1` merges
+  `androidboot.modem_simulator_ports=9600 + (cid - 3)` into the initrd bootconfig
+  trailer via `scripts/patch_initrd_bootconfig.py` before launch.
 
 ## 2026-06-24 Linux host update
 

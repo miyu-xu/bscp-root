@@ -9,15 +9,30 @@ param(
     [ValidateSet("run", "run-mp")]
     [string]$RunMode = "run-mp",
     [switch]$RefreshImages,
+    [switch]$RebuildAggregate,
+    [switch]$ResetBootState,
     [switch]$NoRun,
     [switch]$DryRun,
     [switch]$UseSwiftShader,
     [switch]$ConservativeWhpx,
+    [switch]$GpuHostVisibleCoherent,
     [switch]$FullHvc,
     [switch]$NoNetwork,
     [switch]$NoBluetooth,
     [switch]$NoNfc,
-    [string]$AospHostBin = ""
+    [switch]$NoModem,
+    [string]$AospHostBin = "",
+    [string]$HostBinDir = "",
+    [int]$BtHciPort = 7300,
+    [int]$CasimirNciPort = 7800,
+    [int]$CasimirRfPort = 7900,
+    [string]$RilGateway = "192.168.97.1",
+    [string]$RilIpaddr = "192.168.97.2",
+    [int]$RilPrefixlen = 30,
+    [string]$RilDns = "8.8.8.8",
+    [int]$ModemInstanceNum = 1,
+    [int]$ModemSimType = 1,
+    [int]$ModemBasePort = 9600
 )
 
 $ErrorActionPreference = "Stop"
@@ -133,41 +148,80 @@ function Resolve-HostBinary {
     return $null
 }
 
+function Get-CfPipePath {
+    param([string]$Name)
+    return "\\.\pipe\bscp_cf_${Name}_$([System.Diagnostics.Process]::GetCurrentProcess().Id)"
+}
+
+function Get-CfModemVsockPort {
+    param(
+        [int]$GuestCid,
+        [int]$BasePort = 9600
+    )
+    return $BasePort + $GuestCid - 3
+}
+
+function Get-CfBinderRpcVsockPipePath {
+    param(
+        [int]$GuestCid,
+        [int]$Port
+    )
+    return "\\.\pipe\binder_rpc_vsock_${GuestCid}_${Port}"
+}
+
 function Start-CfHostDaemons {
     param(
         [string]$WorkDir,
         [string]$LogDir,
         [string[]]$SearchDirs,
         [bool]$EnableBluetooth,
-        [bool]$EnableNfc
+        [bool]$EnableNfc,
+        [bool]$EnableModem,
+        [int]$GuestCid,
+        [string]$BtOutPipe,
+        [string]$BtInPipe,
+        [string]$NfcOutPipe,
+        [string]$NfcInPipe,
+        [string]$RilGateway,
+        [string]$RilIpaddr,
+        [int]$RilPrefixlen,
+        [string]$RilDns,
+        [int]$ModemBasePort
     )
 
-    $fifoDir = Join-Path $WorkDir "hvc"
-    New-Item -ItemType Directory -Force -Path $fifoDir | Out-Null
+    $bridgeScript = Join-Path $PSScriptRoot "cf_hvc_tcp_bridge.ps1"
+    if (-not (Test-Path $bridgeScript)) {
+        throw "Missing bridge script: $bridgeScript"
+    }
 
     if ($EnableBluetooth) {
         $rootCanal = Resolve-HostBinary -Name "root-canal" -SearchDirs $SearchDirs
-        $tcpConnector = Resolve-HostBinary -Name "tcp_connector" -SearchDirs $SearchDirs
-        if (-not $rootCanal -or -not $tcpConnector) {
-            Write-Host "Warning: Bluetooth requested but root-canal/tcp_connector not found; skipping BT daemons."
+        if (-not $rootCanal) {
+            Write-Host "Warning: Bluetooth requested but root-canal not found; skipping BT daemons."
             $script:BluetoothEnabled = $false
         } else {
-            $btIn = Join-Path $fifoDir "bt.in"
-            $btOut = Join-Path $fifoDir "bt.out"
-            foreach ($pipe in @($btIn, $btOut)) {
-                if (-not (Test-Path $pipe)) {
-                    New-Item -ItemType File -Path $pipe -Force | Out-Null
-                }
-            }
             $rootStdout = Join-Path $LogDir "root-canal.stdout.txt"
             $rootStderr = Join-Path $LogDir "root-canal.stderr.txt"
-            $btStdout = Join-Path $LogDir "bt-connector.stdout.txt"
-            $btStderr = Join-Path $LogDir "bt-connector.stderr.txt"
+            $btStdout = Join-Path $LogDir "bt-bridge.stdout.txt"
+            $btStderr = Join-Path $LogDir "bt-bridge.stderr.txt"
             $script:HostDaemonProcesses += Start-Process -FilePath $rootCanal `
-                -ArgumentList @("--test_port=7301", "--hci_port=7300", "--link_port=7302", "--link_ble_port=7303") `
+                -ArgumentList @(
+                    "--test_port=$($BtHciPort + 1)",
+                    "--hci_port=$BtHciPort",
+                    "--link_port=$($BtHciPort + 2)",
+                    "--link_ble_port=$($BtHciPort + 3)"
+                ) `
                 -RedirectStandardOutput $rootStdout -RedirectStandardError $rootStderr -PassThru
-            $script:HostDaemonProcesses += Start-Process -FilePath $tcpConnector `
-                -ArgumentList @("-fifo_out=$btIn", "-fifo_in=$btOut", "-data_port=7300", "-buffer_size=2050") `
+            Start-Sleep -Seconds 1
+            $script:HostDaemonProcesses += Start-Process -FilePath "powershell.exe" `
+                -ArgumentList @(
+                    "-NoProfile", "-ExecutionPolicy", "Bypass",
+                    "-File", $bridgeScript,
+                    "-PipeOut", $BtOutPipe,
+                    "-PipeIn", $BtInPipe,
+                    "-TcpPort", "$BtHciPort",
+                    "-BufferSize", "2050"
+                ) `
                 -RedirectStandardOutput $btStdout -RedirectStandardError $btStderr -PassThru
             $script:BluetoothEnabled = $true
         }
@@ -175,30 +229,55 @@ function Start-CfHostDaemons {
 
     if ($EnableNfc) {
         $casimir = Resolve-HostBinary -Name "casimir" -SearchDirs $SearchDirs
-        $tcpConnector = Resolve-HostBinary -Name "tcp_connector" -SearchDirs $SearchDirs
-        if (-not $casimir -or -not $tcpConnector) {
-            Write-Host "Warning: NFC requested but casimir/tcp_connector not found; skipping NFC daemons."
+        if (-not $casimir) {
+            Write-Host "Warning: NFC requested but casimir not found; skipping NFC daemons."
             $script:NfcEnabled = $false
         } else {
-            $nfcIn = Join-Path $fifoDir "nfc.in"
-            $nfcOut = Join-Path $fifoDir "nfc.out"
-            foreach ($pipe in @($nfcIn, $nfcOut)) {
-                if (-not (Test-Path $pipe)) {
-                    New-Item -ItemType File -Path $pipe -Force | Out-Null
-                }
-            }
             $casimirStdout = Join-Path $LogDir "casimir.stdout.txt"
             $casimirStderr = Join-Path $LogDir "casimir.stderr.txt"
-            $nfcStdout = Join-Path $LogDir "nfc-connector.stdout.txt"
-            $nfcStderr = Join-Path $LogDir "nfc-connector.stderr.txt"
+            $nfcStdout = Join-Path $LogDir "nfc-bridge.stdout.txt"
+            $nfcStderr = Join-Path $LogDir "nfc-bridge.stderr.txt"
             $script:HostDaemonProcesses += Start-Process -FilePath $casimir `
-                -ArgumentList @("--nci-port", "7800", "--rf-port", "7900") `
+                -ArgumentList @("--nci-port", "$CasimirNciPort", "--rf-port", "$CasimirRfPort") `
                 -RedirectStandardOutput $casimirStdout -RedirectStandardError $casimirStderr -PassThru
-            $script:HostDaemonProcesses += Start-Process -FilePath $tcpConnector `
-                -ArgumentList @("-fifo_out=$nfcIn", "-fifo_in=$nfcOut", "-data_port=7800", "-buffer_size=1024") `
+            $script:HostDaemonProcesses += Start-Process -FilePath "powershell.exe" `
+                -ArgumentList @(
+                    "-NoProfile", "-ExecutionPolicy", "Bypass",
+                    "-File", $bridgeScript,
+                    "-PipeOut", $NfcOutPipe,
+                    "-PipeIn", $NfcInPipe,
+                    "-TcpPort", "$CasimirNciPort",
+                    "-BufferSize", "1024"
+                ) `
                 -RedirectStandardOutput $nfcStdout -RedirectStandardError $nfcStderr -PassThru
             $script:NfcEnabled = $true
         }
+    }
+
+    if ($EnableModem) {
+        $modemScript = Join-Path $PSScriptRoot "modem_simulator_windows.py"
+        if (-not (Test-Path $modemScript)) {
+            throw "Missing Windows modem simulator: $modemScript"
+        }
+        $modemStdout = Join-Path $LogDir "modem-simulator.stdout.txt"
+        $modemStderr = Join-Path $LogDir "modem-simulator.stderr.txt"
+        $modemPort = Get-CfModemVsockPort -GuestCid $GuestCid -BasePort $ModemBasePort
+        $modemPipe = Get-CfBinderRpcVsockPipePath -GuestCid $GuestCid -Port $modemPort
+        $modemArgs = @(
+            $modemScript,
+            "--guest-cid", "$GuestCid",
+            "--base-port", "$ModemBasePort",
+            "--ril-gateway", $RilGateway,
+            "--ril-ipaddr", $RilIpaddr,
+            "--ril-prefixlen", "$RilPrefixlen",
+            "--ril-dns", $RilDns
+        )
+        Write-Host "Modem pipe:  $modemPipe (Python host modem, vsock port $modemPort)"
+            $script:HostDaemonProcesses += Start-Process -FilePath "python" `
+                -ArgumentList $modemArgs `
+                -RedirectStandardOutput $modemStdout -RedirectStandardError $modemStderr -PassThru
+            Start-Sleep -Seconds 1
+            $script:ModemEnabled = $true
     }
 }
 
@@ -215,6 +294,12 @@ if (-not $ArtifactDir) {
     $ArtifactDir = Find-DefaultArtifactDir
 }
 $ArtifactDir = (Resolve-Path $ArtifactDir).Path
+
+if ($ResetBootState) {
+    $RefreshImages = $true
+    $RebuildAggregate = $true
+    Write-Host "ResetBootState: refreshing artifact inputs and rebuilding aggregate from images/"
+}
 
 New-Item -ItemType Directory -Force -Path $WorkDir, $LogDir | Out-Null
 $HvcDir = Join-Path $WorkDir "hvc"
@@ -233,6 +318,10 @@ $files = @(
 )
 
 foreach ($name in $files) {
+    if ($RebuildAggregate -and $name -eq "aggregate_android.img") {
+        Write-Host "skip copy $name (RebuildAggregate will create it)"
+        continue
+    }
     if ($DryRun) {
         $src = Join-Path $ArtifactDir $name
         if (-not (Test-Path $src)) { throw "Missing source file: $src" }
@@ -240,6 +329,30 @@ foreach ($name in $files) {
     } else {
         Copy-IfNeeded -Source (Join-Path $ArtifactDir $name) -Destination (Join-Path $WorkDir $name)
     }
+}
+
+if ($RebuildAggregate -and -not $DryRun -and -not $NoRun) {
+    $productDir = Join-Path (Split-Path $ArtifactDir -Parent) "images"
+    if (-not (Test-Path $productDir)) {
+        throw "RebuildAggregate requires sibling images/ under $(Split-Path $ArtifactDir -Parent)"
+    }
+    $diskScript = Join-Path $PSScriptRoot "create_cf_android_disk.py"
+    if (-not (Test-Path $diskScript)) {
+        throw "Missing disk builder: $diskScript"
+    }
+    $aggregateOut = Join-Path $WorkDir "aggregate_android.img"
+    $aggregateTmp = Join-Path $WorkDir "aggregate_android_new.img"
+    Write-Host "Rebuilding aggregate disk from $productDir -> $aggregateOut"
+    & python $diskScript `
+        --product-dir $productDir `
+        --misc-image (Join-Path $ArtifactDir "misc.img") `
+        --metadata-image (Join-Path $ArtifactDir "metadata.img") `
+        --frp-image (Join-Path $ArtifactDir "factory_reset_protected.img") `
+        --output $aggregateTmp
+    if ($LASTEXITCODE -ne 0) {
+        throw "create_cf_android_disk.py failed with exit $LASTEXITCODE"
+    }
+    Move-Item -LiteralPath $aggregateTmp -Destination $aggregateOut -Force
 }
 
 $artifactHvc = Join-Path $ArtifactDir "hvc"
@@ -260,7 +373,7 @@ foreach ($port in @("keymaster", "gatekeeper", "bt", "gnss", "location", "confui
 }
 
 $DistRoot = Join-Path $RepoRoot "out\dist\windows"
-$BinDir = Join-Path $DistRoot "bin"
+$BinDir = if ($HostBinDir) { (Resolve-Path $HostBinDir).Path } else { Join-Path $DistRoot "bin" }
 $Crosvm = Join-Path $BinDir "crosvm.exe"
 if (-not (Test-Path $Crosvm)) {
     throw "crosvm.exe not found: $Crosvm"
@@ -282,6 +395,18 @@ if ($AngleDir) {
 }
 $env:GFXSTREAM_PATH = $BinDir
 
+$GfxstreamBuildDll = Join-Path $RepoRoot "out\gfxstream_build_windows\libgfxstream_backend.dll"
+if (Test-Path $GfxstreamBuildDll) {
+    $buildTime = (Get-Item $GfxstreamBuildDll).LastWriteTimeUtc
+    $distLib = Join-Path $BinDir "libgfxstream_backend.dll"
+    $needsSync = -not (Test-Path $distLib) -or ((Get-Item $distLib).LastWriteTimeUtc -lt $buildTime)
+    if ($needsSync) {
+        Copy-Item -Force $GfxstreamBuildDll $distLib
+        Copy-Item -Force $GfxstreamBuildDll (Join-Path $BinDir "gfxstream_backend.dll")
+        Write-Host "Synced gfxstream backend DLLs from $GfxstreamBuildDll"
+    }
+}
+
 if ($UseSwiftShader) {
     $swiftshaderIcd = Join-Path $BinDir "vk_swiftshader_icd.json"
     if (-not (Test-Path $swiftshaderIcd)) {
@@ -295,31 +420,82 @@ if ($ConservativeWhpx) {
     $env:CROSVM_WHPX_BLOCK_QUEUES = "1"
 }
 
+$script:BluetoothEnabled = -not $NoBluetooth
+$script:NfcEnabled = -not $NoNfc
+$script:ModemEnabled = -not $NoModem
+$ModemVsockPort = Get-CfModemVsockPort -GuestCid $Cid -BasePort $ModemBasePort
+$EnableNetwork = -not $NoNetwork
+$BtOutPipe = Get-CfPipePath -Name "bt_out"
+$BtInPipe = Get-CfPipePath -Name "bt_in"
+$NfcOutPipe = Get-CfPipePath -Name "nfc_out"
+$NfcInPipe = Get-CfPipePath -Name "nfc_in"
+$HostBinSearchDirs = @(
+    (Join-Path $RepoRoot "out\dist\windows\bin"),
+    $AospHostBin
+) | Where-Object { $_ -and (Test-Path $_) }
+
+if ($script:BluetoothEnabled -and -not (Resolve-HostBinary -Name "root-canal" -SearchDirs $HostBinSearchDirs)) {
+    Write-Host "Warning: root-canal not found; disabling Bluetooth HVC pipes."
+    $script:BluetoothEnabled = $false
+}
+if ($script:NfcEnabled -and -not (Resolve-HostBinary -Name "casimir" -SearchDirs $HostBinSearchDirs)) {
+    Write-Host "Warning: casimir not found; disabling NFC HVC pipes."
+    $script:NfcEnabled = $false
+}
+
 $Disk = Join-Path $WorkDir "aggregate_android.img"
 $Fstab = Join-Path $WorkDir "android_fstab.dt"
 $Initrd = Join-Path $WorkDir "initrd_android.img"
+if ($script:ModemEnabled -and -not $DryRun) {
+    $bootconfigPatch = Join-Path $PSScriptRoot "patch_initrd_bootconfig.py"
+    if (-not (Test-Path $bootconfigPatch)) {
+        throw "Missing bootconfig patch script: $bootconfigPatch"
+    }
+    & python $bootconfigPatch --initrd $Initrd --set "androidboot.modem_simulator_ports=$ModemVsockPort"
+    if ($LASTEXITCODE -ne 0) {
+        throw "Failed to patch initrd bootconfig for modem_simulator_ports=$ModemVsockPort"
+    }
+    Write-Host "Bootconfig:  androidboot.modem_simulator_ports=$ModemVsockPort"
+}
 $Kernel = Join-Path $WorkDir "kernel"
 $KernelParams = "console=hvc0,ttyS0 loglevel=7 printk.devkmsg=on init=/init"
 if ($ConservativeWhpx) {
     $KernelParams = "$KernelParams clearcpuid=297"
 }
 
-$GpuArg = "backend=gfxstream,displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk"
+if (-not $GpuHostVisibleCoherent -and $env:CROSVM_ANDROID_HOST_VISIBLE_COHERENT -eq "1") {
+    $GpuHostVisibleCoherent = $true
+}
 
-$script:BluetoothEnabled = -not $NoBluetooth
-$script:NfcEnabled = -not $NoNfc
-$EnableNetwork = -not $NoNetwork
-$HostBinSearchDirs = @(
-    (Join-Path $RepoRoot "out\dist\windows\bin"),
-    $AospHostBin
-) | Where-Object { $_ -and (Test-Path $_) }
+$GpuExternalBlob = "false"
+$GpuRendererFeatures = ""
+if ($GpuHostVisibleCoherent) {
+    # Match Linux --gpu-host-visible-coherent: exportable blobs for guest ResourceMapBlob
+    # and VulkanAllocateHostMemory for coherent type enforcement via export allocation.
+    $GpuExternalBlob = "true"
+    $GpuRendererFeatures = ",renderer-features=VulkanAllocateHostMemory:enabled"
+}
+
+$GpuArg = "backend=gfxstream,displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk,external-blob=$GpuExternalBlob,udmabuf=false$GpuRendererFeatures"
 
 $netArgs = @()
 if ($EnableNetwork) {
-    $netArgs = @(
-        "--net", "mac=00:1a:11:e0:cf:00,pci-address=00:01.1",
-        "--net", "mac=00:1a:11:e1:cf:00,pci-address=00:01.2"
-    )
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $helpText = & $Crosvm run-mp --help 2>&1 | Out-String
+    } finally {
+        $ErrorActionPreference = $prevEap
+    }
+    if ($helpText -notmatch "--net") {
+        Write-Host "Warning: crosvm was built without --net support; disabling dual virtio-net."
+        $EnableNetwork = $false
+    } else {
+        $netArgs = @(
+            "--net", "mac=00:1a:11:e0:cf:00,pci-address=00:01.1",
+            "--net", "mac=00:1a:11:e1:cf:00,pci-address=00:01.2"
+        )
+    }
 }
 
 if (-not $NoRun -and -not $DryRun) {
@@ -342,7 +518,7 @@ if ($RunMode -ne "run-mp" -or $FullHvc) {
     )
     if ($script:BluetoothEnabled) {
         $serialArgs += @(
-            "--serial", "hardware=legacy-virtio-console,num=6,type=file,path=$(Join-Path $HvcDir "bt.out"),input=$(Join-Path $HvcDir "bt.in"),pci-address=00:08.0"
+            "--serial", "hardware=legacy-virtio-console,num=6,type=file,path=$BtOutPipe,input=$BtInPipe,pci-address=00:08.0"
         )
     } else {
         $serialArgs += @(
@@ -359,7 +535,7 @@ if ($RunMode -ne "run-mp" -or $FullHvc) {
     )
     if ($script:NfcEnabled) {
         $serialArgs += @(
-            "--serial", "hardware=legacy-virtio-console,num=13,type=file,path=$(Join-Path $HvcDir "nfc.out"),input=$(Join-Path $HvcDir "nfc.in"),pci-address=00:0f.0"
+            "--serial", "hardware=legacy-virtio-console,num=13,type=file,path=$NfcOutPipe,input=$NfcInPipe,pci-address=00:0f.0"
         )
     } else {
         $serialArgs += @(
@@ -373,6 +549,7 @@ if ($RunMode -ne "run-mp" -or $FullHvc) {
     )
 }
 
+# Match scripts/run_android_linux.sh device order: GPU, NET, BLOCK, then serial/HVC.
 $crosvmArgs = @(
     "--log-level", "info",
     $RunMode,
@@ -382,9 +559,10 @@ $crosvmArgs = @(
     "--cpus", "$Cpus",
     "--no-balloon",
     "--no-usb",
-    "--gpu", $GpuArg,
+    "--gpu", $GpuArg
+) + $netArgs + @(
     "--block", "path=$Disk,ro=false,lock=false,sparse=false,pci-address=00:03.0"
-) + $netArgs + $serialArgs + @(
+) + $serialArgs + @(
     "--android-fstab", $Fstab,
     "--initrd", $Initrd,
     "--params", $KernelParams,
@@ -399,9 +577,17 @@ $commandFile = Join-Path $LogDir "crosvm-command.txt"
     "GFXSTREAM_ANGLE_ROOT=$env:GFXSTREAM_ANGLE_ROOT",
     "VK_ICD_FILENAMES=$env:VK_ICD_FILENAMES",
     "CROSVM_WHPX_BLOCK_QUEUES=$env:CROSVM_WHPX_BLOCK_QUEUES",
+    "GPU_HOST_VISIBLE_COHERENT=$GpuHostVisibleCoherent",
     "NETWORK_ENABLED=$EnableNetwork",
     "BLUETOOTH_ENABLED=$($script:BluetoothEnabled)",
     "NFC_ENABLED=$($script:NfcEnabled)",
+    "MODEM_ENABLED=$($script:ModemEnabled)",
+    "MODEM_VSOCK_PORT=$ModemVsockPort",
+    "MODEM_PIPE=$(if ($script:ModemEnabled) { Get-CfBinderRpcVsockPipePath -GuestCid $Cid -Port $ModemVsockPort } else { '' })",
+    "BT_OUT_PIPE=$BtOutPipe",
+    "BT_IN_PIPE=$BtInPipe",
+    "NFC_OUT_PIPE=$NfcOutPipe",
+    "NFC_IN_PIPE=$NfcInPipe",
     "Initrd=$Initrd",
     "",
     $Crosvm,
@@ -416,9 +602,15 @@ Write-Host "ANGLE:       $env:GFXSTREAM_ANGLE_ROOT"
 if ($env:VK_ICD_FILENAMES) { Write-Host "Vulkan ICD:  $env:VK_ICD_FILENAMES" }
 Write-Host "CPU/Mem:     $Cpus vCPU, ${Mem}MiB"
 Write-Host "Run mode:    $RunMode"
+Write-Host "GPU coherent: $(if ($GpuHostVisibleCoherent) { 'enabled (VulkanAllocateHostMemory + external-blob=true)' } else { 'disabled' })"
 Write-Host "Network:     $EnableNetwork"
 Write-Host "Bluetooth:   $($script:BluetoothEnabled)"
 Write-Host "NFC:         $($script:NfcEnabled)"
+if ($script:ModemEnabled) {
+    Write-Host "Modem:       enabled (Python host modem on binder_rpc pipe, port $ModemVsockPort)"
+} else {
+    Write-Host "Modem:       disabled (use -NoModem to suppress)"
+}
 Write-Host "Initrd:      $Initrd"
 Write-Host "GPU:         $GpuArg"
 
@@ -432,7 +624,11 @@ Remove-Item -LiteralPath $stdout, $stderr -Force -ErrorAction SilentlyContinue
 
 if (-not $DryRun) {
     Start-CfHostDaemons -WorkDir $WorkDir -LogDir $LogDir -SearchDirs $HostBinSearchDirs `
-        -EnableBluetooth $script:BluetoothEnabled -EnableNfc $script:NfcEnabled
+        -EnableBluetooth $script:BluetoothEnabled -EnableNfc $script:NfcEnabled `
+        -EnableModem $script:ModemEnabled -GuestCid $Cid `
+        -BtOutPipe $BtOutPipe -BtInPipe $BtInPipe -NfcOutPipe $NfcOutPipe -NfcInPipe $NfcInPipe `
+        -RilGateway $RilGateway -RilIpaddr $RilIpaddr -RilPrefixlen $RilPrefixlen -RilDns $RilDns `
+        -ModemBasePort $ModemBasePort
 }
 
 Write-Host "Launching Android on crosvm; logs are under $LogDir"

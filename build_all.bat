@@ -22,7 +22,7 @@ if not defined GFXSTREAM_PATH set "GFXSTREAM_PATH="
 if not defined RUSTUP_TOOLCHAIN set "RUSTUP_TOOLCHAIN=stable"
 if not defined CARGO_CMD set "CARGO_CMD=rustup run %RUSTUP_TOOLCHAIN% cargo"
 if not defined RUSTC_CMD set "RUSTC_CMD=rustup run %RUSTUP_TOOLCHAIN% rustc"
-if not defined CROSVM_FEATURES set "CROSVM_FEATURES=whpx,composite-disk,android-sparse,net,slirp"
+if not defined CROSVM_FEATURES set "CROSVM_FEATURES=whpx,composite-disk,android-sparse,net,slirp,balloon,gpu,gfxstream,vulkan_display,vulkano"
 
 if not defined RUST_TARGET set "RUST_TARGET=x86_64-pc-windows-gnu"
 set "TOTAL_STEPS=4"
@@ -278,8 +278,9 @@ copy /Y "%CMAKE_BUILD_DIR%\bin\*.exe" "%DIST_BIN%\" >nul 2>&1
 copy /Y "%DLL_SRC%" "%DIST_LIB%\libbinder-rpc.dll" >nul
 copy /Y "%DLL_SRC%" "%DIST_BIN%\libbinder-rpc.dll" >nul
 if "%ENABLE_GFXSTREAM_ANGLE%"=="1" (
-    copy /Y "%GFXSTREAM_PATH%\gfxstream_backend.dll" "%DIST_BIN%\" >nul 2>&1
-    copy /Y "%GFXSTREAM_PATH%\libgfxstream_backend.dll" "%DIST_BIN%\" >nul 2>&1
+    rem crosvm links against libgfxstream_backend.dll; publish both names from the build artifact.
+    copy /Y "%GFXSTREAM_PATH%\libgfxstream_backend.dll" "%DIST_BIN%\libgfxstream_backend.dll" >nul 2>&1
+    copy /Y "%GFXSTREAM_PATH%\libgfxstream_backend.dll" "%DIST_BIN%\gfxstream_backend.dll" >nul 2>&1
 )
 
 if exist "%TGT_OUT%\virtmgr.exe" (

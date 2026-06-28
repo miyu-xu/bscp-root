@@ -127,10 +127,22 @@ VK_EXT_MEMORY_HANDLE dupExternalMemory(VK_EXT_MEMORY_HANDLE h) {
 CoherentHostMemoryProbeResult probeCoherentHostMemory(VulkanDispatch* vk,
                                                        VkPhysicalDevice physdev,
                                                        uint32_t /*compatibleMemoryTypeMask*/) {
+    AutoLock lock(sVkEmulationLock);
+    if (VkEmulation* emu = getGlobalVkEmulation()) {
+        if (emu->features.VulkanAllocateHostMemory.enabled && physdev == emu->physdev) {
+            return emu->coherentHostMemoryProbeResult;
+        }
+    }
+
     VkPhysicalDeviceMemoryProperties hostMemProps;
     vk->vkGetPhysicalDeviceMemoryProperties(physdev, &hostMemProps);
+#ifndef _WIN32
     auto backing = CoherentMemoryBacking::createForPlatform(vk, physdev, hostMemProps);
     return backing ? backing->probeResult() : CoherentHostMemoryProbeResult{};
+#else
+    (void)hostMemProps;
+    return CoherentHostMemoryProbeResult{};
+#endif
 }
 
 bool getStagingMemoryTypeIndex(VulkanDispatch* vk, VkDevice device,
@@ -666,7 +678,13 @@ int getSelectedGpuIndex(const std::vector<VkEmulation::DeviceSupportInfo>& devic
 
     uint32_t maxScore = 0;
     for (int i = 0; i < physdevCount; ++i) {
-        const uint32_t score = getDeviceScore(deviceInfos[i]);
+        uint32_t score = getDeviceScore(deviceInfos[i]);
+        // Prefer a GPU that can run the VK_EXT_external_memory_host probe when
+        // guest host-visible coherent memory was explicitly requested.
+        if (sVkEmulation && sVkEmulation->features.VulkanAllocateHostMemory.enabled &&
+            deviceInfos[i].supportsExternalMemoryHostProps) {
+            score += 10000;
+        }
         VERBOSE("Device selection score for '%s' = %d", deviceInfos[i].physdevProps.deviceName,
                 score);
         if (score > maxScore) {
@@ -1013,12 +1031,13 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
 #endif
         }
 
+        deviceInfos[i].supportsExternalMemoryHostProps =
+            extensionsSupported(deviceExts, {VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME});
+
         if (sVkEmulation->instanceSupportsGetPhysicalDeviceProperties2) {
             deviceInfos[i].supportsDriverProperties =
                 extensionsSupported(deviceExts, {VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME}) ||
                 (deviceInfos[i].physdevProps.apiVersion >= VK_API_VERSION_1_2);
-            deviceInfos[i].supportsExternalMemoryHostProps =
-                extensionsSupported(deviceExts, {VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME});
 
             VkPhysicalDeviceProperties2 deviceProps = {
                 .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR,
@@ -1165,6 +1184,10 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
     sVkEmulation->physdev = physdevs[selectedGpuIndex];
     sVkEmulation->physicalDeviceIndex = selectedGpuIndex;
     sVkEmulation->deviceInfo = deviceInfos[selectedGpuIndex];
+    if (sVkEmulation->deviceInfo.supportsExternalMemoryHostProps &&
+        sVkEmulation->deviceInfo.externalMemoryHostProps.minImportedHostPointerAlignment == 0) {
+        sVkEmulation->deviceInfo.externalMemoryHostProps.minImportedHostPointerAlignment = 4096;
+    }
     // Postcondition: sVkEmulation has valid device support info
 
     // Collect image support info of the selected device
@@ -1229,8 +1252,13 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
 #endif
 
     if (sVkEmulation->features.VulkanAllocateHostMemory.enabled) {
-        if (sVkEmulation->deviceInfo.supportsExternalMemoryHostProps) {
+        const bool hostExtAvailable = sVkEmulation->deviceInfo.supportsExternalMemoryHostProps ||
+            extensionsSupported(sVkEmulation->deviceInfo.extensions,
+                                {VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME});
+        sVkEmulation->deviceInfo.supportsExternalMemoryHostProps = hostExtAvailable;
+        if (hostExtAvailable) {
             selectedDeviceExtensionNames_.emplace(VK_EXT_EXTERNAL_MEMORY_HOST_EXTENSION_NAME);
+            INFO("Enabling VK_EXT_external_memory_host for guest host-visible coherent memory");
         } else {
             WARN(
                 "VulkanAllocateHostMemory was requested but "
@@ -1366,6 +1394,20 @@ VkEmulation* createGlobalVkEmulation(VulkanDispatch* vk,
                                                  "Cannot find vkGetBufferMemoryRequirements2KHR");
         }
     }
+    if (sVkEmulation->deviceInfo.supportsExternalMemoryHostProps) {
+#ifdef VK_EXT_external_memory_host
+        dvk->vkGetMemoryHostPointerPropertiesEXT =
+            reinterpret_cast<PFN_vkGetMemoryHostPointerPropertiesEXT>(
+                dvk->vkGetDeviceProcAddr(sVkEmulation->device,
+                                         "vkGetMemoryHostPointerPropertiesEXT"));
+        if (!dvk->vkGetMemoryHostPointerPropertiesEXT) {
+            WARN("vkGetMemoryHostPointerPropertiesEXT unavailable after enabling "
+                 "VK_EXT_external_memory_host on %s",
+                 sVkEmulation->deviceInfo.physdevProps.deviceName);
+        }
+#endif
+    }
+
     if (sVkEmulation->deviceInfo.supportsExternalMemoryExport) {
 #ifdef _WIN32
         // Use vkGetMemoryWin32HandleKHR
@@ -4234,6 +4276,7 @@ findRepresentativeColorBufferMemoryTypeIndexLocked() {
         sVkEmulation->deviceInfo.memProps, sVkEmulation->deviceInfo.supportsExternalMemoryHostProps,
         sVkEmulation->deviceInfo.externalMemoryHostProps.minImportedHostPointerAlignment,
         sVkEmulation->features);
+    sVkEmulation->coherentHostMemoryProbeResult = coherentProbe;
     EmulatedPhysicalDeviceMemoryProperties helper(sVkEmulation->deviceInfo.memProps,
                                                   hostMemoryTypeIndex, sVkEmulation->features,
                                                   coherentProbe);
@@ -4258,11 +4301,28 @@ CoherentHostMemoryProbeResult probeCoherentHostMemory(
     if (!sVkEmulation || physicalDevice == VK_NULL_HANDLE || physicalDevice != sVkEmulation->physdev) {
         return result;
     }
-    if (device == VK_NULL_HANDLE || !vk || !vk->vkGetMemoryHostPointerPropertiesEXT) {
-        ERR("VK_EXT_external_memory_host function not available, cannot probe coherent host memory");
+    if (device == VK_NULL_HANDLE) {
+        ERR("Coherent host memory probe skipped: VkDevice is null");
+        return result;
+    }
+    if (!vk) {
+        ERR("Coherent host memory probe skipped: VulkanDispatch is null");
+        return result;
+    }
+    if (!vk->vkGetMemoryHostPointerPropertiesEXT) {
+#ifdef VK_EXT_external_memory_host
+        const_cast<VulkanDispatch*>(vk)->vkGetMemoryHostPointerPropertiesEXT =
+            (PFN_vkGetMemoryHostPointerPropertiesEXT)vk->vkGetDeviceProcAddr(
+                device, "vkGetMemoryHostPointerPropertiesEXT");
+#endif
+    }
+    if (!vk->vkGetMemoryHostPointerPropertiesEXT) {
+        ERR("vkGetMemoryHostPointerPropertiesEXT unavailable; ensure "
+            "VK_EXT_external_memory_host is enabled on the host VkDevice");
         return result;
     }
     if (!supportsExternalMemoryHostProps) {
+        WARN("VK_EXT_external_memory_host is not supported by the host Vulkan device");
         return result;
     }
 
@@ -4317,6 +4377,10 @@ CoherentHostMemoryProbeResult probeCoherentHostMemory(
             (flags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) {
             result.coherentHostMemoryTypeMask |= (1u << i);
         }
+    }
+
+    if (result.coherentHostMemoryTypeMask != 0) {
+        result.success = true;
     }
 
     INFO("Coherent host memory probe result: typeBits=0x%x", result.coherentHostMemoryTypeMask);

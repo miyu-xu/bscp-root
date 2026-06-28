@@ -5002,43 +5002,20 @@ class VkDecoderGlobalState::Impl {
                     .pHostPointer = mappedPtr,
                 };
                 vk_append_struct(&structChainIter, &*importHostInfo);
-            } else if (m_emu->features.ExternalBlob.enabled) {
-                VkExternalMemoryHandleTypeFlags handleTypes;
-
-#if defined(__APPLE__)
-                if (m_emu->instanceSupportsMoltenVK) {
-                    // Using a different handle type when in MoltenVK mode
-                    handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLBUFFER_BIT_KHR;
-                }
-#elif defined(_WIN32)
-                handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;
-#elif defined(__unix__)
-                handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
-#endif
-
-#ifdef __linux__
-                if (m_emu->deviceInfo.supportsDmaBuf &&
-                    hasDeviceExtension(device, VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME)) {
-                    handleTypes |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
-                }
-#endif
-
-                exportAllocateInfo = {
-                    .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
-                    .pNext = NULL,
-                    .handleTypes = handleTypes,
-                };
-                vk_append_struct(&structChainIter, &*exportAllocateInfo);
             } else if (m_emu->features.VulkanAllocateHostMemory.enabled &&
-                       localAllocInfo.pNext == nullptr) {
-#ifndef _WIN32
-                if (!m_emu || !m_emu->deviceInfo.supportsExternalMemoryHostProps) {
+                       m_emu->deviceInfo.supportsExternalMemoryHostProps &&
+                       localAllocInfo.pNext == nullptr &&
+                       !m_emu->features.ExternalBlob.enabled) {
+                if (!m_emu) {
                     ERR("VK_EXT_EXTERNAL_MEMORY_HOST is not supported, cannot use "
                         "VulkanAllocateHostMemory");
                     return VK_ERROR_INCOMPATIBLE_DRIVER;
                 }
                 VkDeviceSize alignmentSize =
                     m_emu->deviceInfo.externalMemoryHostProps.minImportedHostPointerAlignment;
+                if (alignmentSize == 0) {
+                    alignmentSize = 4096;
+                }
                 VkDeviceSize alignedSize = __ALIGN(localAllocInfo.allocationSize, alignmentSize);
                 localAllocInfo.allocationSize = alignedSize;
                 privateMemory =
@@ -5056,6 +5033,19 @@ class VkDecoderGlobalState::Impl {
                     .pNext = NULL,
                     .memoryTypeBits = 0,
                 };
+
+                if (!vk->vkGetMemoryHostPointerPropertiesEXT) {
+#ifdef VK_EXT_external_memory_host
+                    vk->vkGetMemoryHostPointerPropertiesEXT =
+                        (PFN_vkGetMemoryHostPointerPropertiesEXT)vk->vkGetDeviceProcAddr(
+                            device, "vkGetMemoryHostPointerPropertiesEXT");
+#endif
+                }
+                if (!vk->vkGetMemoryHostPointerPropertiesEXT) {
+                    ERR("vkGetMemoryHostPointerPropertiesEXT unavailable, cannot use "
+                        "VulkanAllocateHostMemory");
+                    return VK_ERROR_INCOMPATIBLE_DRIVER;
+                }
 
                 vk->vkGetMemoryHostPointerPropertiesEXT(
                     device, VK_EXTERNAL_MEMORY_HANDLE_TYPE_HOST_ALLOCATION_BIT_EXT, mappedPtr,
@@ -5094,7 +5084,33 @@ class VkDecoderGlobalState::Impl {
                 }
 
                 vk_append_struct(&structChainIter, &*importHostInfo);
+            } else if (m_emu->features.ExternalBlob.enabled) {
+                VkExternalMemoryHandleTypeFlags handleTypes;
+
+#if defined(__APPLE__)
+                if (m_emu->instanceSupportsMoltenVK) {
+                    // Using a different handle type when in MoltenVK mode
+                    handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_MTLBUFFER_BIT_KHR;
+                }
+#elif defined(_WIN32)
+                handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_WIN32_BIT;
+#elif defined(__unix__)
+                handleTypes = VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT;
 #endif
+
+#ifdef __linux__
+                if (m_emu->deviceInfo.supportsDmaBuf &&
+                    hasDeviceExtension(device, VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME)) {
+                    handleTypes |= VK_EXTERNAL_MEMORY_HANDLE_TYPE_DMA_BUF_BIT_EXT;
+                }
+#endif
+
+                exportAllocateInfo = {
+                    .sType = VK_STRUCTURE_TYPE_EXPORT_MEMORY_ALLOCATE_INFO,
+                    .pNext = NULL,
+                    .handleTypes = handleTypes,
+                };
+                vk_append_struct(&structChainIter, &*exportAllocateInfo);
             }
         }
 
@@ -5533,7 +5549,7 @@ class VkDecoderGlobalState::Impl {
             memcpy(vulkanInfo.driverUUID, m_emu->deviceInfo.idProps.driverUUID,
                    sizeof(vulkanInfo.driverUUID));
 
-            if (snapshotsEnabled()) {
+            if (snapshotsEnabled() || !info->ptr) {
                 VkResult mapResult = vk->vkMapMemory(device, memory, 0, info->size, 0, &info->ptr);
                 if (mapResult != VK_SUCCESS) {
                     return VK_ERROR_OUT_OF_HOST_MEMORY;
