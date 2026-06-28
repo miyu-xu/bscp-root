@@ -3,7 +3,7 @@
 This document records the implemented cross-platform plan and the exact code changes made to wire
 `gfxstream + ANGLE(Vulkan backend)` across Linux, Windows, and macOS.
 
-Last Linux runtime validation update: 2026-06-27.
+Last Linux runtime validation update: 2026-06-28.
 
 It also captures two coherent-memory phases:
 
@@ -107,6 +107,48 @@ Vulkan. Windows and macOS should copy the validated boot/present flow first, the
 host GL/EGL emulation only after the guest/host memory path is stable.
 
 ## 4. Key decisions
+
+### 4.0 2026-06-28 upstream graphics review
+
+The latest upstream baseline includes the Windows-validated graphics route:
+
+- root commit `8626186` (`gfxstream: enable Windows ExternalBlob with coherent host memory`)
+- root commit `388a8c6` (`docs: record Windows ExternalBlob fallback validation`)
+- root commit `c108cb1` (`android: add Windows modem and direct-runner parity scripts`)
+- crosvm commit `d4e0faf11` (`gpu: fall back when blob mapping registration fails`)
+- crosvm commit `f53bb8e3d` (`windows: enable split HVC pipes and dual virtio-net`)
+
+The necessary graphics changes are:
+
+- keep gfxstream's Windows `ExternalBlob` descriptor registration path for exported blobs
+- keep the distinction between exported blobs and host-pointer blobs in `resourceMap()`
+- enable `VK_EXT_external_memory_host` on the selected host `VkDevice` when
+  `VulkanAllocateHostMemory` is requested
+- probe coherent host memory only with a real `VkDevice`, cache that result on `VkEmulation`, and
+  reuse it during guest physical-device enumeration
+- prefer a physical device that supports `VK_EXT_external_memory_host` when coherent host memory is
+  requested
+- map exported memory before `vkGetMemoryWin32HandleKHR` when no host pointer exists yet
+- keep crosvm's `ResourceMapBlob` fallback from hypervisor registration to `rutabaga.map()` for
+  host-pointer blobs
+
+The following local experiments are not part of the required route and were intentionally not
+re-applied after the upstream fast-forward:
+
+- Linux runner debug flags such as `--gpu-disable-queue-submit-with-commands`,
+  `--gpu-disable-no-delay-close-color-buffer`, and `--gpu-udmabuf`
+- gfxstream `DisplayVk` release-fence waits or forced display-borrow completion changes
+- crosvm scanout-side `wait_sync_resource()` synchronization experiments
+- direct `VulkanDisplay` scanout import as the primary Android gfxstream present path
+
+The route is still the gfxstream native present path, not a crosvm framebuffer copy path. If Linux
+continues to show partial or stale regions after the upstream sync, the next investigation should
+start from gfxstream/native-window present ordering and guest/host image ownership, not from the
+previous crosvm XShm or VulkanDisplay experiments.
+
+AOSP note: this sync did not modify `/opt/workspace/aosp` and did not clean or rebuild AOSP. A
+`repo status` check on 2026-06-28 showed pre-existing local changes under
+`packages/modules/Virtualization/` (`android/virtmgr`, `android/vm`, and `libs/libvmclient`).
 
 ### 4.1 `GuestVulkanOnly` is enabled for Linux direct Android
 
@@ -933,7 +975,8 @@ cmake --build out/test_build --target Vulkan_unittests -j$(sysctl -n hw.ncpu)
 1. The Windows path is build-closed, but that does not by itself prove every guest runtime workload
    is functionally correct.
 2. Linux and macOS still require native-host validation for the coherent-memory story.
-3. `ExternalBlob` remains intentionally outside the current coherent-memory implementation path.
+3. `ExternalBlob` is no longer treated as a blanket reason to disable mapping. Exported blobs use
+   descriptor export/import, while host-pointer blobs remain mappable through `rutabaga.map()`.
 4. The current implementation (Phase C) uses a unified `VK_EXT_external_memory_host` probe path on all
    platforms including macOS via MoltenVK. The macOS `#ifdef __APPLE__` fallback has been removed.
 
