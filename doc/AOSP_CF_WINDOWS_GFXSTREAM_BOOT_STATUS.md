@@ -1,7 +1,7 @@
 # AOSP Cuttlefish on Windows WHPX + crosvm + rutabaga/gfxstream boot status
 
 Date: 2026-06-13
-Last updated: 2026-06-28
+Last updated: 2026-07-17
 
 ## Goal
 
@@ -24,6 +24,67 @@ The active route is:
 
 This route is still correct. It is not a headless-only route and it is not
 switching away from rutabaga/gfxstream.
+
+## 2026-07-17 reset and NVIDIA ICD revalidation
+
+After the host `out/` tree and ANGLE runtime were reset, the complete Windows
+route was rebuilt and validated again. The first runs selected Intel Iris Xe
+for host Vulkan and crashed in `igvk64.dll` at the first real rendering work:
+
+```text
+ntdll!RtlEnterCriticalSection
+igvk64.dll
+crosvm run-main: exit code 0xc0000005
+```
+
+Selecting a GPU by name was insufficient because the Vulkan loader enumerated
+only Intel on this Optimus host. Limiting the loader to the NVIDIA ICD restored
+the proven MX450 path. The runner now accepts `-VulkanIcd` and `-VulkanGpu` so
+the selection is recorded in `crosvm-command.txt` and is reproducible:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass `
+  -File scripts\run_android_windows_gfxstream_angle.ps1 `
+  -ArtifactDir "D:\bscp-vm-artifacts\bscp-vm-artifacts-20260626-gfxstream-angle-visible\products\android\vsoc_x86_64\direct-linux" `
+  -WorkDir "D:\bscp-vm-work" -FullHvc -GpuHostVisibleCoherent `
+  -VulkanIcd "C:\Windows\System32\DriverStore\FileRepository\nvbl.inf_amd64_fd4690a19e51c99e\nv-vk64.json" `
+  -VulkanGpu NVIDIA -ResetBootState -TimeoutSecs 600
+```
+
+Validated evidence:
+
+- Host Vulkan device: `NVIDIA GeForce MX450`, API `1.4.329`.
+- Coherent host memory probe: `typeBits=0x18`.
+- `stream_renderer_init Gfxstream initialized successfully!`.
+- Guest RenderEngine: ANGLE `2.1`, Vulkan `1.3.0`, NVIDIA MX450.
+- `SurfaceFlinger: Boot is finished (46376 ms)`.
+- `sys.boot_completed=1` at guest uptime 93 seconds.
+- Boot, gfxstream, and parity marker scripts pass.
+
+The window-close path releases scanout 0 and shuts down the VM successfully;
+the broker can still report `0xe000007c` if the main/metrics children exceed
+its cleanup timeout. This happens after a completed boot and is separate from
+the Intel Vulkan access violation.
+
+`root-canal` and `casimir` were not present in the rebuilt host artifacts, so
+the runner correctly disabled Bluetooth and NFC. The parity marker checker now
+uses `BLUETOOTH_ENABLED`, `NFC_ENABLED`, and `MODEM_ENABLED` from the captured
+command file instead of rejecting disabled-daemon errors unconditionally.
+
+The first modem-enabled rerun still reached `sys.boot_completed=1`, but exposed
+three bugs in the Windows Python modem shim: combined `AT+COPS` commands were
+split before exact dispatch, facility-lock queries returned no `+CLCK` value,
+and Win32 pipe errors lost their real error code. The latter two caused the
+radio compatibility service to die in `getFacilityLockForApp`. The shim now
+preserves combined commands, returns `+CLCK: 0` for lock queries, and opens
+`kernel32` with `use_last_error=True`; parity validation also rejects a modem
+service death when the host modem is enabled.
+
+A final modem-enabled run from a freshly rebuilt aggregate passed all marker
+checks: `SurfaceFlinger: Boot is finished (47616 ms)`, `sys.boot_completed=1`
+at guest uptime 88 seconds, no radio service death, no phone ANR, and no Python
+pipe exception. The Windows modem remains a compatibility shim rather than the
+full AOSP Linux modem simulator, but it no longer blocks the validated boot.
 
 ## 2026-06-28 Windows coherent host memory boot validation
 

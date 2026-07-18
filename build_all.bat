@@ -49,7 +49,7 @@ if "%~1"=="-c" (
 )
 if "%~1"=="--help" (
     echo Usage: %~nx0 [--clean]
-    echo   --clean  Force clean rebuild (removes CMake cache and cargo target dir)
+    echo   --clean  Force clean rebuild ^(removes CMake cache and cargo target dir^)
     exit /b 0
 )
 
@@ -110,7 +110,7 @@ if not defined MINGW_PATH if exist "C:\mingw-w64\%MINGW_SUBDIR%\bin\g++.exe" set
 
 set "CMAKE_PATH=C:\Program Files\CMake\bin"
 if not defined MINGW_PATH (
-    echo Error: MinGW-w64 (g++.exe) not found. Checked:
+    echo Error: MinGW-w64 ^(g++.exe^) not found. Checked:
     echo   C:\workspace\%MINGW_SUBDIR%
     echo   C:\tools\%MINGW_SUBDIR%
     echo   C:\msys64\%MINGW_SUBDIR%

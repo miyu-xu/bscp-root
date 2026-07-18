@@ -14,6 +14,8 @@ param(
     [switch]$NoRun,
     [switch]$DryRun,
     [switch]$UseSwiftShader,
+    [string]$VulkanIcd = "",
+    [string]$VulkanGpu = "",
     [switch]$ConservativeWhpx,
     [switch]$GpuHostVisibleCoherent,
     [switch]$FullHvc,
@@ -459,6 +461,19 @@ if (Test-Path $GfxstreamBuildDll) {
     }
 }
 
+if ($UseSwiftShader -and $VulkanIcd) {
+    throw "-UseSwiftShader and -VulkanIcd cannot be used together"
+}
+if ($VulkanIcd) {
+    if (-not (Test-Path -LiteralPath $VulkanIcd -PathType Leaf)) {
+        throw "Vulkan ICD manifest not found: $VulkanIcd"
+    }
+    $env:VK_ICD_FILENAMES = (Resolve-Path -LiteralPath $VulkanIcd).Path
+}
+if ($VulkanGpu) {
+    $env:ANDROID_EMU_VK_SELECT_GPU = $VulkanGpu
+}
+
 if ($UseSwiftShader) {
     $swiftshaderIcd = Join-Path $BinDir "vk_swiftshader_icd.json"
     if (-not (Test-Path $swiftshaderIcd)) {
@@ -642,6 +657,7 @@ $commandFile = Join-Path $LogDir "crosvm-command.txt"
     "LogDir=$LogDir",
     "GFXSTREAM_ANGLE_ROOT=$env:GFXSTREAM_ANGLE_ROOT",
     "VK_ICD_FILENAMES=$env:VK_ICD_FILENAMES",
+    "ANDROID_EMU_VK_SELECT_GPU=$env:ANDROID_EMU_VK_SELECT_GPU",
     "CROSVM_WHPX_BLOCK_QUEUES=$env:CROSVM_WHPX_BLOCK_QUEUES",
     "GPU_HOST_VISIBLE_COHERENT=$GpuHostVisibleCoherent",
     "NETWORK_ENABLED=$EnableNetwork",
@@ -671,6 +687,7 @@ Write-Host "LogDir:      $LogDir"
 Write-Host "Command:     $commandFile"
 Write-Host "ANGLE:       $env:GFXSTREAM_ANGLE_ROOT"
 if ($env:VK_ICD_FILENAMES) { Write-Host "Vulkan ICD:  $env:VK_ICD_FILENAMES" }
+if ($env:ANDROID_EMU_VK_SELECT_GPU) { Write-Host "Vulkan GPU:  $env:ANDROID_EMU_VK_SELECT_GPU" }
 Write-Host "CPU/Mem:     $Cpus vCPU, ${Mem}MiB"
 Write-Host "Run mode:    $RunMode"
 Write-Host "GPU coherent: $(if ($GpuHostVisibleCoherent) { 'enabled (VulkanAllocateHostMemory + external-blob=true)' } else { 'disabled' })"

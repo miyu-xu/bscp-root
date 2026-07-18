@@ -29,6 +29,7 @@ PIPE_HEADER_SIZE = 8
 ERROR_PIPE_CONNECTED = 535
 ERROR_IO_PENDING = 997
 INVALID_HANDLE_VALUE = ctypes.c_void_p(-1).value
+KERNEL32 = ctypes.WinDLL("kernel32", use_last_error=True) if sys.platform == "win32" else None
 
 
 def pack_framed_payload(payload: bytes) -> bytes:
@@ -145,7 +146,7 @@ class AtModem:
             ("+CPIN=", self._handle_cpin_set),
             ("+CRSM=", self._handle_ok),
             ("+CSIM=", self._handle_ok),
-            ("+CLCK=", self._handle_ok),
+            ("+CLCK=", self._handle_clck),
             ("+CCHO=", self._handle_ok),
             ("+CCHC=", self._handle_ok),
             ("+CGLA=", self._handle_ok),
@@ -190,6 +191,10 @@ class AtModem:
         command = normalize_command(raw_command)
         if not command:
             return ["OK"]
+
+        handler = self._exact_handlers.get(command)
+        if handler:
+            return handler()
 
         responses: list[str] = []
         for part in command.split(";"):
@@ -321,6 +326,12 @@ class AtModem:
     def _handle_cpin_set(self, _command: str) -> list[str]:
         return ["OK"]
 
+    def _handle_clck(self, command: str) -> list[str]:
+        fields = command.split(",")
+        if len(fields) >= 2 and fields[1].strip() == "2":
+            return ["+CLCK: 0", "OK"]
+        return ["OK"]
+
     def _handle_cgdcont_set(self, command: str) -> list[str]:
         match = re.match(r"\+CGDCONT=(\d+),([^,]*),([^,]*)", command)
         if not match:
@@ -383,7 +394,7 @@ class AtModem:
 
 class WindowsPipe:
     def __init__(self, handle: int) -> None:
-        self._kernel32 = ctypes.windll.kernel32
+        self._kernel32 = KERNEL32
         self.handle = handle
 
     def close(self) -> None:
@@ -414,7 +425,7 @@ class WindowsPipe:
 
 
 def create_pipe_server(path: str) -> int:
-    kernel32 = ctypes.windll.kernel32
+    kernel32 = KERNEL32
     handle = kernel32.CreateNamedPipeW(
         path,
         PIPE_ACCESS_DUPLEX,
@@ -431,7 +442,7 @@ def create_pipe_server(path: str) -> int:
 
 
 def accept_pipe(handle: int) -> int:
-    kernel32 = ctypes.windll.kernel32
+    kernel32 = KERNEL32
     connected = kernel32.ConnectNamedPipe(handle, None)
     if not connected:
         err = ctypes.get_last_error()

@@ -6,6 +6,7 @@ $ErrorActionPreference = "Stop"
 
 $Logcat = Join-Path $LogDir "logcat-hvc2.txt"
 $KernelLog = Join-Path $LogDir "hvc.txt"
+$CommandFile = Join-Path $LogDir "crosvm-command.txt"
 
 if (-not (Test-Path $Logcat) -or -not (Test-Path $KernelLog)) {
     throw "Missing Android logs under $LogDir"
@@ -25,6 +26,22 @@ function Reject-Marker {
     }
 }
 
+function Get-EnabledConfig {
+    param([string]$Name, [bool]$Default = $true)
+    if (-not (Test-Path $CommandFile)) {
+        return $Default
+    }
+    $line = Get-Content $CommandFile | Where-Object { $_ -like "$Name=*" } | Select-Object -First 1
+    if (-not $line) {
+        return $Default
+    }
+    return ($line.Substring($Name.Length + 1) -eq "True")
+}
+
+$BluetoothEnabled = Get-EnabledConfig -Name "BLUETOOTH_ENABLED"
+$NfcEnabled = Get-EnabledConfig -Name "NFC_ENABLED"
+$ModemEnabled = Get-EnabledConfig -Name "MODEM_ENABLED"
+
 Require-Marker -Pattern "Finished executing PersistentDataBlockService.onStart" -File $Logcat `
     -Label "PersistentDataBlockService initialized"
 Require-Marker -Pattern "OnBootPhase_1000" -File $Logcat -Label "system_server boot phase 1000"
@@ -37,11 +54,19 @@ Reject-Marker -Pattern "Exit zygote because system server" -File $Logcat -Label 
 
 Reject-Marker -Pattern "hdlc_interface.cpp:206: I/O error" -File $Logcat `
     -Label "ThreadNetwork HDLC I/O error"
-Reject-Marker -Pattern "Can't start stack, last instance: starting HciHal" -File $Logcat `
-    -Label "Bluetooth HciHal startup failure"
-Reject-Marker -Pattern "NFA_DM_NFCC_TIMEOUT_EVT; abort" -File $Logcat `
-    -Label "NFC NFCC timeout"
-Reject-Marker -Pattern "ANR in com.android.phone" -File $Logcat `
-    -Label "com.android.phone ANR without host modem"
+if ($BluetoothEnabled) {
+    Reject-Marker -Pattern "Can't start stack, last instance: starting HciHal" -File $Logcat `
+        -Label "Bluetooth HciHal startup failure"
+}
+if ($NfcEnabled) {
+    Reject-Marker -Pattern "NFA_DM_NFCC_TIMEOUT_EVT; abort" -File $Logcat `
+        -Label "NFC NFCC timeout"
+}
+if ($ModemEnabled) {
+    Reject-Marker -Pattern "ANR in com.android.phone" -File $Logcat `
+        -Label "com.android.phone ANR with host modem enabled"
+    Reject-Marker -Pattern "Service MODEM has died" -File $Logcat `
+        -Label "radio modem service death"
+}
 
 Write-Host "Marker check passed: android-windows parity"
