@@ -21,6 +21,7 @@ param(
     [switch]$NoBluetooth,
     [switch]$NoNfc,
     [switch]$NoModem,
+    [switch]$NoSensors,
     [string]$AospHostBin = "",
     [string]$HostBinDir = "",
     [int]$BtHciPort = 7300,
@@ -177,11 +178,14 @@ function Start-CfHostDaemons {
         [bool]$EnableBluetooth,
         [bool]$EnableNfc,
         [bool]$EnableModem,
+        [bool]$EnableSensors,
         [int]$GuestCid,
         [string]$BtOutPipe,
         [string]$BtInPipe,
         [string]$NfcOutPipe,
         [string]$NfcInPipe,
+        [string]$SensorsOutPipe,
+        [string]$SensorsInPipe,
         [string]$RilGateway,
         [string]$RilIpaddr,
         [int]$RilPrefixlen,
@@ -196,62 +200,88 @@ function Start-CfHostDaemons {
 
     if ($EnableBluetooth) {
         $rootCanal = Resolve-HostBinary -Name "root-canal" -SearchDirs $SearchDirs
+        $rootProgram = $rootCanal
+        $rootArgs = @(
+            "--test_port=$($BtHciPort + 1)",
+            "--hci_port=$BtHciPort",
+            "--link_port=$($BtHciPort + 2)",
+            "--link_ble_port=$($BtHciPort + 3)"
+        )
         if (-not $rootCanal) {
-            Write-Host "Warning: Bluetooth requested but root-canal not found; skipping BT daemons."
-            $script:BluetoothEnabled = $false
+            $rootStub = @(
+                (Join-Path $PSScriptRoot "root_canal_stub.py")
+                ($SearchDirs | ForEach-Object { Join-Path $_ "root_canal_stub.py" })
+            ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+            if (-not $rootStub) {
+                throw "Bluetooth requested but neither root-canal nor root_canal_stub.py was found"
+            }
+            $rootProgram = "python"
+            $rootArgs = @($rootStub, "--hci-port", "$BtHciPort")
+            $script:BluetoothBackend = "stub"
         } else {
-            $rootStdout = Join-Path $LogDir "root-canal.stdout.txt"
-            $rootStderr = Join-Path $LogDir "root-canal.stderr.txt"
-            $btStdout = Join-Path $LogDir "bt-bridge.stdout.txt"
-            $btStderr = Join-Path $LogDir "bt-bridge.stderr.txt"
-            $script:HostDaemonProcesses += Start-Process -FilePath $rootCanal `
-                -ArgumentList @(
-                    "--test_port=$($BtHciPort + 1)",
-                    "--hci_port=$BtHciPort",
-                    "--link_port=$($BtHciPort + 2)",
-                    "--link_ble_port=$($BtHciPort + 3)"
-                ) `
-                -RedirectStandardOutput $rootStdout -RedirectStandardError $rootStderr -PassThru
-            Start-Sleep -Seconds 1
-            $script:HostDaemonProcesses += Start-Process -FilePath "powershell.exe" `
-                -ArgumentList @(
-                    "-NoProfile", "-ExecutionPolicy", "Bypass",
-                    "-File", $bridgeScript,
-                    "-PipeOut", $BtOutPipe,
-                    "-PipeIn", $BtInPipe,
-                    "-TcpPort", "$BtHciPort",
-                    "-BufferSize", "2050"
-                ) `
-                -RedirectStandardOutput $btStdout -RedirectStandardError $btStderr -PassThru
-            $script:BluetoothEnabled = $true
+            $script:BluetoothBackend = "native"
         }
+        $rootStdout = Join-Path $LogDir "root-canal.stdout.txt"
+        $rootStderr = Join-Path $LogDir "root-canal.stderr.txt"
+        $btStdout = Join-Path $LogDir "bt-bridge.stdout.txt"
+        $btStderr = Join-Path $LogDir "bt-bridge.stderr.txt"
+        $script:HostDaemonProcesses += Start-Process -FilePath $rootProgram `
+            -ArgumentList $rootArgs `
+            -RedirectStandardOutput $rootStdout -RedirectStandardError $rootStderr -PassThru
+        Start-Sleep -Seconds 1
+        $script:HostDaemonProcesses += Start-Process -FilePath "powershell.exe" `
+            -ArgumentList @(
+                "-NoProfile", "-ExecutionPolicy", "Bypass",
+                "-File", $bridgeScript,
+                "-PipeOut", $BtOutPipe,
+                "-PipeIn", $BtInPipe,
+                "-TcpPort", "$BtHciPort",
+                "-BufferSize", "2050"
+            ) `
+            -RedirectStandardOutput $btStdout -RedirectStandardError $btStderr -PassThru
+        $script:BluetoothEnabled = $true
     }
 
     if ($EnableNfc) {
         $casimir = Resolve-HostBinary -Name "casimir" -SearchDirs $SearchDirs
+        $casimirProgram = $casimir
+        $casimirArgs = @("--nci-port", "$CasimirNciPort", "--rf-port", "$CasimirRfPort")
         if (-not $casimir) {
-            Write-Host "Warning: NFC requested but casimir not found; skipping NFC daemons."
-            $script:NfcEnabled = $false
+            $casimirStub = @(
+                (Join-Path $PSScriptRoot "casimir_stub.py")
+                ($SearchDirs | ForEach-Object { Join-Path $_ "casimir_stub.py" })
+            ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+            if (-not $casimirStub) {
+                throw "NFC requested but neither casimir nor casimir_stub.py was found"
+            }
+            $casimirProgram = "python"
+            $casimirArgs = @(
+                $casimirStub, "--nci-port", "$CasimirNciPort",
+                "--rf-port", "$CasimirRfPort"
+            )
+            $script:NfcBackend = "stub"
         } else {
-            $casimirStdout = Join-Path $LogDir "casimir.stdout.txt"
-            $casimirStderr = Join-Path $LogDir "casimir.stderr.txt"
-            $nfcStdout = Join-Path $LogDir "nfc-bridge.stdout.txt"
-            $nfcStderr = Join-Path $LogDir "nfc-bridge.stderr.txt"
-            $script:HostDaemonProcesses += Start-Process -FilePath $casimir `
-                -ArgumentList @("--nci-port", "$CasimirNciPort", "--rf-port", "$CasimirRfPort") `
-                -RedirectStandardOutput $casimirStdout -RedirectStandardError $casimirStderr -PassThru
-            $script:HostDaemonProcesses += Start-Process -FilePath "powershell.exe" `
-                -ArgumentList @(
-                    "-NoProfile", "-ExecutionPolicy", "Bypass",
-                    "-File", $bridgeScript,
-                    "-PipeOut", $NfcOutPipe,
-                    "-PipeIn", $NfcInPipe,
-                    "-TcpPort", "$CasimirNciPort",
-                    "-BufferSize", "1024"
-                ) `
-                -RedirectStandardOutput $nfcStdout -RedirectStandardError $nfcStderr -PassThru
-            $script:NfcEnabled = $true
+            $script:NfcBackend = "native"
         }
+        $casimirStdout = Join-Path $LogDir "casimir.stdout.txt"
+        $casimirStderr = Join-Path $LogDir "casimir.stderr.txt"
+        $nfcStdout = Join-Path $LogDir "nfc-bridge.stdout.txt"
+        $nfcStderr = Join-Path $LogDir "nfc-bridge.stderr.txt"
+        $script:HostDaemonProcesses += Start-Process -FilePath $casimirProgram `
+            -ArgumentList $casimirArgs `
+            -RedirectStandardOutput $casimirStdout -RedirectStandardError $casimirStderr -PassThru
+        Start-Sleep -Seconds 1
+        $script:HostDaemonProcesses += Start-Process -FilePath "powershell.exe" `
+            -ArgumentList @(
+                "-NoProfile", "-ExecutionPolicy", "Bypass",
+                "-File", $bridgeScript,
+                "-PipeOut", $NfcOutPipe,
+                "-PipeIn", $NfcInPipe,
+                "-TcpPort", "$CasimirNciPort",
+                "-BufferSize", "1024"
+            ) `
+            -RedirectStandardOutput $nfcStdout -RedirectStandardError $nfcStderr -PassThru
+        $script:NfcEnabled = $true
     }
 
     if ($EnableModem) {
@@ -279,6 +309,28 @@ function Start-CfHostDaemons {
             Start-Sleep -Seconds 1
             $script:ModemEnabled = $true
     }
+
+    if ($EnableSensors) {
+        $sensorScript = Join-Path $PSScriptRoot "sensors_simulator_host.py"
+        if (-not (Test-Path $sensorScript)) {
+            throw "Missing Sensors host service: $sensorScript"
+        }
+        $sensorStdout = Join-Path $LogDir "sensors-simulator.stdout.txt"
+        $sensorStderr = Join-Path $LogDir "sensors-simulator.stderr.txt"
+        $script:HostDaemonProcesses += Start-Process -FilePath "python" `
+            -ArgumentList @($sensorScript, "--guest-out", $SensorsOutPipe,
+                "--guest-in", $SensorsInPipe) `
+            -RedirectStandardOutput $sensorStdout `
+            -RedirectStandardError $sensorStderr -PassThru
+        $script:SensorsEnabled = $true
+    }
+
+    @(
+        "bluetooth=$($script:BluetoothBackend)",
+        "nfc=$($script:NfcBackend)",
+        "modem=$(if ($script:ModemEnabled) { 'stub' } else { 'disabled' })",
+        "sensors=$(if ($script:SensorsEnabled) { 'stub' } else { 'disabled' })"
+    ) | Set-Content -LiteralPath (Join-Path $LogDir "host-device-backends.txt") -Encoding UTF8
 }
 
 function Stop-CfHostDaemons {
@@ -423,14 +475,20 @@ if ($ConservativeWhpx) {
 $script:BluetoothEnabled = -not $NoBluetooth
 $script:NfcEnabled = -not $NoNfc
 $script:ModemEnabled = -not $NoModem
+$script:SensorsEnabled = -not $NoSensors
+$script:BluetoothBackend = if ($NoBluetooth) { "disabled" } else { "pending" }
+$script:NfcBackend = if ($NoNfc) { "disabled" } else { "pending" }
 $ModemVsockPort = Get-CfModemVsockPort -GuestCid $Cid -BasePort $ModemBasePort
 $EnableNetwork = -not $NoNetwork
 $BtOutPipe = Get-CfPipePath -Name "bt_out"
 $BtInPipe = Get-CfPipePath -Name "bt_in"
 $NfcOutPipe = Get-CfPipePath -Name "nfc_out"
 $NfcInPipe = Get-CfPipePath -Name "nfc_in"
+$SensorsOutPipe = Get-CfPipePath -Name "sensors_out"
+$SensorsInPipe = Get-CfPipePath -Name "sensors_in"
 $HostBinSearchDirs = @(
     (Join-Path $RepoRoot "out\dist\windows\bin"),
+    (Join-Path $RepoRoot "out\dist\host-tools\windows-x86_64\bin"),
     $AospHostBin
 ) | Where-Object { $_ -and (Test-Path $_) }
 
@@ -542,8 +600,16 @@ if ($RunMode -ne "run-mp" -or $FullHvc) {
             "--serial", "hardware=legacy-virtio-console,num=13,type=sink,pci-address=00:0f.0"
         )
     }
+    if ($script:SensorsEnabled) {
+        $serialArgs += @(
+            "--serial", "hardware=legacy-virtio-console,num=14,type=file,path=$SensorsOutPipe,input=$SensorsInPipe,pci-address=00:10.0"
+        )
+    } else {
+        $serialArgs += @(
+            "--serial", "hardware=legacy-virtio-console,num=14,type=sink,pci-address=00:10.0"
+        )
+    }
     $serialArgs += @(
-        "--serial", "hardware=legacy-virtio-console,num=14,type=file,path=$(Join-Path $LogDir "sensors-hvc13.txt"),input=$(Join-Path $HvcDir "sensors.in"),pci-address=00:10.0",
         "--serial", "hardware=legacy-virtio-console,num=15,type=file,path=$(Join-Path $LogDir "mcu-control-hvc14.txt"),input=$(Join-Path $HvcDir "mcu_control.in"),pci-address=00:11.0",
         "--serial", "hardware=legacy-virtio-console,num=16,type=file,path=$(Join-Path $LogDir "mcu-uart-hvc15.txt"),input=$(Join-Path $HvcDir "mcu_uart.in"),pci-address=00:12.0"
     )
@@ -580,8 +646,13 @@ $commandFile = Join-Path $LogDir "crosvm-command.txt"
     "GPU_HOST_VISIBLE_COHERENT=$GpuHostVisibleCoherent",
     "NETWORK_ENABLED=$EnableNetwork",
     "BLUETOOTH_ENABLED=$($script:BluetoothEnabled)",
+    "BLUETOOTH_BACKEND=$($script:BluetoothBackend)",
     "NFC_ENABLED=$($script:NfcEnabled)",
+    "NFC_BACKEND=$($script:NfcBackend)",
     "MODEM_ENABLED=$($script:ModemEnabled)",
+    "SENSORS_ENABLED=$($script:SensorsEnabled)",
+    "SENSORS_OUT_PIPE=$SensorsOutPipe",
+    "SENSORS_IN_PIPE=$SensorsInPipe",
     "MODEM_VSOCK_PORT=$ModemVsockPort",
     "MODEM_PIPE=$(if ($script:ModemEnabled) { Get-CfBinderRpcVsockPipePath -GuestCid $Cid -Port $ModemVsockPort } else { '' })",
     "BT_OUT_PIPE=$BtOutPipe",
@@ -606,6 +677,9 @@ Write-Host "GPU coherent: $(if ($GpuHostVisibleCoherent) { 'enabled (VulkanAlloc
 Write-Host "Network:     $EnableNetwork"
 Write-Host "Bluetooth:   $($script:BluetoothEnabled)"
 Write-Host "NFC:         $($script:NfcEnabled)"
+Write-Host "BT backend:  $($script:BluetoothBackend)"
+Write-Host "NFC backend: $($script:NfcBackend)"
+Write-Host "Sensors:     $($script:SensorsEnabled)"
 if ($script:ModemEnabled) {
     Write-Host "Modem:       enabled (Python host modem on binder_rpc pipe, port $ModemVsockPort)"
 } else {
@@ -625,8 +699,10 @@ Remove-Item -LiteralPath $stdout, $stderr -Force -ErrorAction SilentlyContinue
 if (-not $DryRun) {
     Start-CfHostDaemons -WorkDir $WorkDir -LogDir $LogDir -SearchDirs $HostBinSearchDirs `
         -EnableBluetooth $script:BluetoothEnabled -EnableNfc $script:NfcEnabled `
-        -EnableModem $script:ModemEnabled -GuestCid $Cid `
+        -EnableModem $script:ModemEnabled -EnableSensors $script:SensorsEnabled `
+        -GuestCid $Cid `
         -BtOutPipe $BtOutPipe -BtInPipe $BtInPipe -NfcOutPipe $NfcOutPipe -NfcInPipe $NfcInPipe `
+        -SensorsOutPipe $SensorsOutPipe -SensorsInPipe $SensorsInPipe `
         -RilGateway $RilGateway -RilIpaddr $RilIpaddr -RilPrefixlen $RilPrefixlen -RilDns $RilDns `
         -ModemBasePort $ModemBasePort
 }

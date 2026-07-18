@@ -6,6 +6,7 @@ set -euo pipefail
 # When executed directly with --probe-only, prints availability variables to stdout.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="${REPO_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 AOSP_HOST_BIN="${AOSP_HOST_BIN:-/opt/workspace/aosp/out/host/linux-x86/bin}"
 
 cf_resolve_host_bin() {
@@ -13,6 +14,8 @@ cf_resolve_host_bin() {
     local dist_bin="${CF_DIST_BIN:-}"
     local candidate
     for candidate in \
+        "$REPO_ROOT/out/dist/host-tools/linux-x86_64/bin/$name" \
+        "$REPO_ROOT/out/dist/host-tools/linux-arm64/bin/$name" \
         "$AOSP_HOST_BIN/$name" \
         ${dist_bin:+"$dist_bin/$name"}; do
         if [[ -n "$candidate" && -x "$candidate" ]]; then
@@ -44,18 +47,33 @@ cf_probe_host_daemons() {
     local enable_modem="${4:-1}"
 
     CF_DIST_BIN="$dist_bin"
+    CF_HOST_BLUETOOTH_BACKEND=disabled
+    CF_HOST_NFC_BACKEND=disabled
+    CF_HOST_MODEM_BACKEND=disabled
     if [[ "$enable_bluetooth" -eq 1 ]]; then
-        if ! cf_resolve_host_bin root-canal >/dev/null || ! cf_resolve_host_bin tcp_connector >/dev/null; then
+        if cf_resolve_host_bin root-canal >/dev/null && cf_resolve_host_bin tcp_connector >/dev/null; then
+            CF_HOST_BLUETOOTH_BACKEND=native
+        elif [[ -f "$SCRIPT_DIR/root_canal_stub.py" && -f "$SCRIPT_DIR/cf_hvc_bridge.py" ]] && command -v python3 >/dev/null; then
+            CF_HOST_BLUETOOTH_BACKEND=stub
+        else
             enable_bluetooth=0
         fi
     fi
     if [[ "$enable_nfc" -eq 1 ]]; then
-        if ! cf_resolve_host_bin casimir >/dev/null || ! cf_resolve_host_bin tcp_connector >/dev/null; then
+        if cf_resolve_host_bin casimir >/dev/null && cf_resolve_host_bin tcp_connector >/dev/null; then
+            CF_HOST_NFC_BACKEND=native
+        elif [[ -f "$SCRIPT_DIR/casimir_stub.py" && -f "$SCRIPT_DIR/cf_hvc_bridge.py" ]] && command -v python3 >/dev/null; then
+            CF_HOST_NFC_BACKEND=stub
+        else
             enable_nfc=0
         fi
     fi
     if [[ "$enable_modem" -eq 1 ]]; then
-        if ! cf_resolve_host_bin modem_simulator >/dev/null; then
+        if cf_resolve_host_bin modem_simulator >/dev/null; then
+            CF_HOST_MODEM_BACKEND=native
+        elif [[ -f "$SCRIPT_DIR/modem_simulator_host.py" ]] && command -v python3 >/dev/null; then
+            CF_HOST_MODEM_BACKEND=stub
+        else
             enable_modem=0
         fi
     fi
@@ -123,58 +141,102 @@ cf_start_host_daemons() {
         local bt_in_fd bt_out_fd
         cf_open_fifo_rw "$fifo_dir/bt.in" bt_in_fd
         cf_open_fifo_rw "$fifo_dir/bt.out" bt_out_fd
-        cf_start_daemon root-canal \
-            "$(cf_resolve_host_bin root-canal)" \
-            --test_port="$((bt_hci_port + 1))" \
-            --hci_port="$bt_hci_port" \
-            --link_port="$((bt_hci_port + 2))" \
-            --link_ble_port="$((bt_hci_port + 3))"
-        sleep 1
-        cf_start_daemon bt-connector \
-            "$(cf_resolve_host_bin tcp_connector)" \
-            -fifo_in="$bt_out_fd" \
-            -fifo_out="$bt_in_fd" \
-            -data_port="$bt_hci_port" \
-            -buffer_size=2050
+        if [[ "$CF_HOST_BLUETOOTH_BACKEND" == native ]]; then
+            cf_start_daemon root-canal \
+                "$(cf_resolve_host_bin root-canal)" \
+                --test_port="$((bt_hci_port + 1))" \
+                --hci_port="$bt_hci_port" \
+                --link_port="$((bt_hci_port + 2))" \
+                --link_ble_port="$((bt_hci_port + 3))"
+            sleep 1
+            cf_start_daemon bt-connector \
+                "$(cf_resolve_host_bin tcp_connector)" \
+                -fifo_in="$bt_out_fd" \
+                -fifo_out="$bt_in_fd" \
+                -data_port="$bt_hci_port" \
+                -buffer_size=2050
+        else
+            cf_start_daemon root-canal-stub \
+                python3 "$SCRIPT_DIR/root_canal_stub.py" --hci-port "$bt_hci_port"
+            sleep 0.2
+            cf_start_daemon bt-stub-bridge \
+                python3 "$SCRIPT_DIR/cf_hvc_bridge.py" \
+                --guest-out "$fifo_dir/bt.out" --guest-in "$fifo_dir/bt.in" \
+                --tcp-port "$bt_hci_port" --reconnect
+        fi
     fi
 
     if [[ "$enable_nfc" -eq 1 ]]; then
         local nfc_in_fd nfc_out_fd
         cf_open_fifo_rw "$fifo_dir/nfc.in" nfc_in_fd
         cf_open_fifo_rw "$fifo_dir/nfc.out" nfc_out_fd
-        cf_start_daemon casimir \
-            "$(cf_resolve_host_bin casimir)" \
-            --nci-port "$casimir_nci_port" \
-            --rf-port "$casimir_rf_port"
-        cf_start_daemon nfc-connector \
-            "$(cf_resolve_host_bin tcp_connector)" \
-            -fifo_in="$nfc_out_fd" \
-            -fifo_out="$nfc_in_fd" \
-            -data_port="$casimir_nci_port" \
-            -buffer_size=1024
+        if [[ "$CF_HOST_NFC_BACKEND" == native ]]; then
+            cf_start_daemon casimir \
+                "$(cf_resolve_host_bin casimir)" \
+                --nci-port "$casimir_nci_port" \
+                --rf-port "$casimir_rf_port"
+            cf_start_daemon nfc-connector \
+                "$(cf_resolve_host_bin tcp_connector)" \
+                -fifo_in="$nfc_out_fd" \
+                -fifo_out="$nfc_in_fd" \
+                -data_port="$casimir_nci_port" \
+                -buffer_size=1024
+        else
+            cf_start_daemon casimir-stub \
+                python3 "$SCRIPT_DIR/casimir_stub.py" \
+                --nci-port "$casimir_nci_port" --rf-port "$casimir_rf_port"
+            sleep 0.2
+            cf_start_daemon nfc-stub-bridge \
+                python3 "$SCRIPT_DIR/cf_hvc_bridge.py" \
+                --guest-out "$fifo_dir/nfc.out" --guest-in "$fifo_dir/nfc.in" \
+                --tcp-port "$casimir_nci_port" --reconnect
+        fi
     fi
 
     if [[ "$enable_modem" -eq 1 ]]; then
-        local launcher="$SCRIPT_DIR/modem_simulator_launcher.py"
-        local config_root="$work_dir/cf_modem"
-        local aosp_host_out
-        aosp_host_out="$(cd "$AOSP_HOST_BIN/.." && pwd)"
-        if [[ ! -x "$launcher" ]]; then
-            echo "Error: missing modem launcher: $launcher" >&2
-            exit 1
+        if [[ "$CF_HOST_MODEM_BACKEND" == native ]]; then
+            local launcher="$SCRIPT_DIR/modem_simulator_launcher.py"
+            local config_root="$work_dir/cf_modem"
+            local aosp_host_out
+            aosp_host_out="$(cd "$AOSP_HOST_BIN/.." && pwd)"
+            if [[ ! -x "$launcher" ]]; then
+                echo "Error: missing modem launcher: $launcher" >&2
+                exit 1
+            fi
+            cf_start_daemon modem-simulator \
+                python3 "$launcher" \
+                --config-root "$config_root" \
+                --modem-bin "$(cf_resolve_host_bin modem_simulator)" \
+                --guest-cid "$guest_cid" \
+                --instance-num "$modem_instance_num" \
+                --sim-type "$modem_sim_type" \
+                --ril-gateway "$ril_gateway" \
+                --ril-ipaddr "$ril_ipaddr" \
+                --ril-prefixlen "$ril_prefixlen" \
+                --ril-dns "$ril_dns" \
+                --aosp-host-out "$aosp_host_out"
+        else
+            cf_start_daemon modem-simulator-stub \
+                python3 "$SCRIPT_DIR/modem_simulator_host.py" \
+                --guest-cid "$guest_cid" \
+                --ril-gateway "$ril_gateway" \
+                --ril-ipaddr "$ril_ipaddr" \
+                --ril-prefixlen "$ril_prefixlen" \
+                --ril-dns "$ril_dns"
         fi
-        cf_start_daemon modem-simulator \
-            python3 "$launcher" \
-            --config-root "$config_root" \
-            --modem-bin "$(cf_resolve_host_bin modem_simulator)" \
-            --guest-cid "$guest_cid" \
-            --instance-num "$modem_instance_num" \
-            --sim-type "$modem_sim_type" \
-            --ril-gateway "$ril_gateway" \
-            --ril-ipaddr "$ril_ipaddr" \
-            --ril-prefixlen "$ril_prefixlen" \
-            --ril-dns "$ril_dns" \
-            --aosp-host-out "$aosp_host_out"
+    fi
+
+    local sensors_host="$SCRIPT_DIR/sensors_simulator_host.py"
+    if [[ -f "$sensors_host" ]]; then
+        : >"$log_dir/sensors-hvc13.txt"
+        if [[ ! -p "$fifo_dir/sensors.in" ]]; then
+            rm -f "$fifo_dir/sensors.in"
+            mkfifo "$fifo_dir/sensors.in"
+        fi
+        cf_start_daemon sensors-simulator \
+            python3 "$sensors_host" \
+            --guest-out "$log_dir/sensors-hvc13.txt" \
+            --guest-in "$fifo_dir/sensors.in"
     fi
 }
 
@@ -240,6 +302,9 @@ EOF
         printf 'CF_HOST_BLUETOOTH_ENABLED=%s\n' "$CF_HOST_BLUETOOTH_ENABLED"
         printf 'CF_HOST_NFC_ENABLED=%s\n' "$CF_HOST_NFC_ENABLED"
         printf 'CF_HOST_MODEM_ENABLED=%s\n' "${CF_HOST_MODEM_ENABLED:-0}"
+        printf 'CF_HOST_BLUETOOTH_BACKEND=%s\n' "$CF_HOST_BLUETOOTH_BACKEND"
+        printf 'CF_HOST_NFC_BACKEND=%s\n' "$CF_HOST_NFC_BACKEND"
+        printf 'CF_HOST_MODEM_BACKEND=%s\n' "$CF_HOST_MODEM_BACKEND"
         exit 0
     fi
 
@@ -253,4 +318,6 @@ EOF
     printf 'CF_HOST_DAEMON_PIDS=(%s)\n' "${CF_HOST_DAEMON_PIDS[*]}"
     printf 'CF_HOST_BLUETOOTH_ENABLED=%s\n' "$CF_HOST_BLUETOOTH_ENABLED"
     printf 'CF_HOST_NFC_ENABLED=%s\n' "$CF_HOST_NFC_ENABLED"
+    printf 'CF_HOST_BLUETOOTH_BACKEND=%s\n' "$CF_HOST_BLUETOOTH_BACKEND"
+    printf 'CF_HOST_NFC_BACKEND=%s\n' "$CF_HOST_NFC_BACKEND"
 fi
