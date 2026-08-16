@@ -54,23 +54,34 @@ def sensor_reports() -> list[bytes]:
 
 
 class SensorService:
-    def __init__(self, source: Stream, sink: Stream, interval: float) -> None:
-        self.source = source
-        self.sink = sink
+    def __init__(
+        self,
+        control_source: Stream,
+        control_sink: Stream,
+        data_sink: Stream,
+        interval: float,
+    ) -> None:
+        self.control_source = control_source
+        self.control_sink = control_sink
+        self.data_sink = data_sink
         self.interval = interval
         self.stop = threading.Event()
         self.activated = threading.Event()
         self.framed = True
 
-    def send(self, payload: bytes) -> None:
+    def send_control(self, payload: bytes) -> None:
         data = encode_message(K_UPDATE_HAL, payload) if self.framed else payload
-        self.sink.write(data)
+        self.control_sink.write(data)
+
+    def send_report(self, payload: bytes) -> None:
+        data = encode_message(K_UPDATE_HAL, payload) if self.framed else payload
+        self.data_sink.write(data)
 
     def process_payload(self, payload: bytes, framed: bool) -> None:
         text = payload.decode("ascii", errors="ignore").strip().lower()
         if text.startswith("list-sensors"):
             self.framed = framed
-            self.send(f"{HOST_SENSOR_MASK}\n".encode("ascii"))
+            self.send_control(f"{HOST_SENSOR_MASK}\n".encode("ascii"))
             self.activated.set()
             print("sensors_simulator_host: HAL activated", flush=True)
 
@@ -79,7 +90,7 @@ class SensorService:
         line_buffer = bytearray()
         try:
             while not self.stop.is_set():
-                data = self.source.read()
+                data = self.control_source.read()
                 if not data:
                     break
                 buffer.extend(data)
@@ -107,7 +118,7 @@ class SensorService:
         while not self.stop.wait(self.interval):
             if self.activated.is_set():
                 for report in sensor_reports():
-                    self.send(report)
+                    self.send_report(report)
 
     def run(self) -> None:
         reporter = threading.Thread(target=self.report_loop, daemon=True)
@@ -117,18 +128,53 @@ class SensorService:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--guest-out", required=True)
-    parser.add_argument("--guest-in", required=True)
+    parser.add_argument("--guest-out")
+    parser.add_argument("--guest-in")
+    parser.add_argument("--control-guest-out")
+    parser.add_argument("--control-guest-in")
+    parser.add_argument("--data-guest-out")
+    parser.add_argument("--data-guest-in")
     parser.add_argument("--interval-ms", type=int, default=1000)
     args = parser.parse_args()
+    combined = bool(args.guest_out and args.guest_in)
+    split = all(
+        (
+            args.control_guest_out,
+            args.control_guest_in,
+            args.data_guest_out,
+            args.data_guest_in,
+        )
+    )
+    if combined == split:
+        parser.error(
+            "provide either --guest-out/--guest-in or all four split control/data endpoints"
+        )
     stop = threading.Event()
     try:
-        source, sink = open_hvc_streams(args.guest_out, args.guest_in, stop)
-        print(
-            f"sensors_simulator_host: serving {args.guest_out}/{args.guest_in}",
-            flush=True,
-        )
-        SensorService(source, sink, max(args.interval_ms, 10) / 1000.0).run()
+        if combined:
+            control_source, control_sink = open_hvc_streams(
+                args.guest_out, args.guest_in, stop
+            )
+            data_sink = control_sink
+            description = f"combined {args.guest_out}/{args.guest_in}"
+        else:
+            control_source, control_sink = open_hvc_streams(
+                args.control_guest_out, args.control_guest_in, stop
+            )
+            _data_source, data_sink = open_hvc_streams(
+                args.data_guest_out, args.data_guest_in, stop
+            )
+            description = (
+                f"control {args.control_guest_out}/{args.control_guest_in}; "
+                f"data {args.data_guest_out}/{args.data_guest_in}"
+            )
+        print(f"sensors_simulator_host: serving {description}", flush=True)
+        SensorService(
+            control_source,
+            control_sink,
+            data_sink,
+            max(args.interval_ms, 10) / 1000.0,
+        ).run()
     except KeyboardInterrupt:
         stop.set()
     return 0

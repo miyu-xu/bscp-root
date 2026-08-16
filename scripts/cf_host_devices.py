@@ -89,6 +89,10 @@ def add_common_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--nfc-in")
     parser.add_argument("--sensors-out")
     parser.add_argument("--sensors-in")
+    parser.add_argument("--sensors-control-out")
+    parser.add_argument("--sensors-control-in")
+    parser.add_argument("--sensors-data-out")
+    parser.add_argument("--sensors-data-in")
     parser.add_argument("--bt-hci-port", type=int, default=7300)
     parser.add_argument("--casimir-nci-port", type=int, default=7800)
     parser.add_argument("--casimir-rf-port", type=int, default=7900)
@@ -233,13 +237,44 @@ def run(args: argparse.Namespace) -> int:
             backends["modem"] = "stub"
 
         if args.sensors:
-            if not validate_hvc(args, "sensors"):
+            sensors_combined = validate_hvc(args, "sensors")
+            sensors_split = all(
+                (
+                    args.sensors_control_out,
+                    args.sensors_control_in,
+                    args.sensors_data_out,
+                    args.sensors_data_in,
+                )
+            )
+            if sensors_combined == sensors_split:
                 missing("Sensors", "HVC endpoints")
             else:
+                sensor_argv = [python, str(status["sensors_host"])]
+                if sensors_split:
+                    sensor_argv.extend(
+                        [
+                            "--control-guest-out",
+                            args.sensors_control_out,
+                            "--control-guest-in",
+                            args.sensors_control_in,
+                            "--data-guest-out",
+                            args.sensors_data_out,
+                            "--data-guest-in",
+                            args.sensors_data_in,
+                        ]
+                    )
+                else:
+                    sensor_argv.extend(
+                        [
+                            "--guest-out",
+                            args.sensors_out,
+                            "--guest-in",
+                            args.sensors_in,
+                        ]
+                    )
                 supervisor.start(
                     "sensors-simulator",
-                    [python, str(status["sensors_host"]), "--guest-out", args.sensors_out,
-                     "--guest-in", args.sensors_in],
+                    sensor_argv,
                 )
                 active["sensors"] = True
                 backends["sensors"] = "stub"

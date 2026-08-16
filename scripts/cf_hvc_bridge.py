@@ -10,6 +10,7 @@ the direct runners.
 from __future__ import annotations
 
 import argparse
+import ctypes
 import errno
 import os
 import socket
@@ -158,6 +159,44 @@ class WindowsNamedPipeStream(Stream):
         self.pipe.close()
 
 
+def connect_windows_pipe(path: str, stop: threading.Event) -> int:
+    """Connect to the named-pipe server created by crosvm."""
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.CreateFileW.argtypes = (
+        ctypes.c_wchar_p,
+        ctypes.c_uint32,
+        ctypes.c_uint32,
+        ctypes.c_void_p,
+        ctypes.c_uint32,
+        ctypes.c_uint32,
+        ctypes.c_void_p,
+    )
+    kernel32.CreateFileW.restype = ctypes.c_void_p
+
+    generic_read_write = 0x80000000 | 0x40000000
+    open_existing = 3
+    invalid_handle = ctypes.c_void_p(-1).value
+    retryable_errors = {2, 231}  # ERROR_FILE_NOT_FOUND, ERROR_PIPE_BUSY
+
+    while not stop.is_set():
+        handle = kernel32.CreateFileW(
+            path,
+            generic_read_write,
+            0,
+            None,
+            open_existing,
+            0,
+            None,
+        )
+        if handle != invalid_handle:
+            return int(handle)
+        error = ctypes.get_last_error()
+        if error not in retryable_errors:
+            raise OSError(f"CreateFileW failed for {path}: winerr={error}")
+        time.sleep(0.05)
+    raise InterruptedError(f"stopped while connecting to {path}")
+
+
 def open_hvc_streams(
     guest_out: str, guest_in: str, stop: threading.Event
 ) -> tuple[Stream, Stream]:
@@ -165,22 +204,20 @@ def open_hvc_streams(
     if sys.platform != "win32":
         return UnixReadStream(guest_out, stop), UnixWriteStream(guest_in, stop)
 
-    from modem_simulator_windows import accept_pipe, create_pipe_server
-
-    # Both servers must exist before crosvm starts opening either client.
-    out_handle = create_pipe_server(guest_out)
-    in_handle = create_pipe_server(guest_in)
+    # crosvm owns both server endpoints. Connect concurrently because it creates
+    # them in sequence while bringing up the virtio-console device.
+    handles: dict[str, int] = {}
     errors: list[BaseException] = []
 
-    def accept(handle: int) -> None:
+    def connect(name: str, path: str) -> None:
         try:
-            accept_pipe(handle)
+            handles[name] = connect_windows_pipe(path, stop)
         except BaseException as exc:  # propagate after both join
             errors.append(exc)
 
     threads = [
-        threading.Thread(target=accept, args=(out_handle,)),
-        threading.Thread(target=accept, args=(in_handle,)),
+        threading.Thread(target=connect, args=("out", guest_out)),
+        threading.Thread(target=connect, args=("in", guest_in)),
     ]
     for thread in threads:
         thread.start()
@@ -188,7 +225,7 @@ def open_hvc_streams(
         thread.join()
     if errors:
         raise errors[0]
-    return WindowsNamedPipeStream(out_handle), WindowsNamedPipeStream(in_handle)
+    return WindowsNamedPipeStream(handles["out"]), WindowsNamedPipeStream(handles["in"])
 
 
 def connect_tcp(host: str, port: int, stop: threading.Event) -> SocketStream:

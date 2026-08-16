@@ -30,7 +30,7 @@ usage() {
 Usage: $0 [options]
 
 Options:
-  --artifact-dir DIR  Packaged vsoc_arm64_only direct-linux directory
+  --artifact-dir DIR  Packaged vsoc_arm64_only direct-linux directory (raw or sparse disk)
   --dist-root DIR     macOS host dist root (default: $DIST_ROOT)
   --work-dir DIR      Writable runtime directory (default: $WORK_DIR)
   --log-root DIR      Local runtime log root (default: $LOG_ROOT)
@@ -94,7 +94,8 @@ fi
 find_default_artifact_dir() {
     local candidate=""
     while IFS= read -r candidate; do
-        if [[ -f "$candidate/aggregate_android.img" ]]; then
+        if [[ -f "$candidate/aggregate_android.img" ||
+            -f "$candidate/aggregate_android.sparse.img" ]]; then
             printf '%s\n' "$candidate"
             return 0
         fi
@@ -140,10 +141,21 @@ if [[ "$PREPARED_ONLY" -eq 0 &&
     exit 1
 fi
 
+ARTIFACT_DISK="$ARTIFACT_DIR/aggregate_android.img"
+ARTIFACT_DISK_IS_SPARSE=0
+if [[ -f "$ARTIFACT_DIR/aggregate_android.sparse.img" ]]; then
+    ARTIFACT_DISK="$ARTIFACT_DIR/aggregate_android.sparse.img"
+    ARTIFACT_DISK_IS_SPARSE=1
+fi
+if [[ "$COPY_DISK" -eq 0 && "$ARTIFACT_DISK_IS_SPARSE" -eq 1 ]]; then
+    echo "Error: --direct-disk requires aggregate_android.img; sparse packages must use --copy-disk" >&2
+    exit 1
+fi
+
 CROSVM="$DIST_ROOT/bin/crosvm-angle"
 for path in \
     "$CROSVM" \
-    "$ARTIFACT_DIR/aggregate_android.img" \
+    "$ARTIFACT_DISK" \
     "$ARTIFACT_DIR/android_fstab.dt" \
     "$ARTIFACT_DIR/initrd_android.img" \
     "$ARTIFACT_DIR/kernel"; do
@@ -156,7 +168,7 @@ done
 if [[ "$COPY_DISK" -eq 1 ]]; then
     DISK="$WORK_DIR/aggregate_android.img"
 else
-    DISK="$ARTIFACT_DIR/aggregate_android.img"
+    DISK="$ARTIFACT_DISK"
 fi
 FSTAB="$WORK_DIR/android_fstab.dt"
 INITRD="$WORK_DIR/initrd_android.img"
@@ -185,6 +197,20 @@ copy_if_needed() {
     echo "copy $src -> $dst"
     if ! cp -c -p "$src" "$tmp" 2>/dev/null; then
         cp -p "$src" "$tmp"
+    fi
+    mv -f "$tmp" "$dst"
+}
+
+expand_sparse_disk() {
+    local src="$1"
+    local dst="$2"
+    local tmp="$dst.new"
+    rm -f "$tmp"
+    echo "expand Android sparse disk $src -> $dst"
+    if ! python3 "$SCRIPT_DIR/simg2img.py" "$src" "$tmp"; then
+        rm -f "$tmp"
+        echo "Error: failed to expand Android sparse aggregate: $src" >&2
+        exit 1
     fi
     mv -f "$tmp" "$dst"
 }
@@ -239,10 +265,18 @@ CMD=(
     --no-usb
     --socket "$SOCKET"
     --gpu "backend=gfxstream,displays=[[mode=windowed[1280,720],dpi=[320,320],refresh-rate=60]],context-types=gfxstream-vulkan:gfxstream-composer,angle=true,gles=false,vulkan=true,wsi=vk,external-blob=false,udmabuf=false"
-    "${NET_ARGS[@]}"
+)
+if [[ "$ENABLE_NET" -eq 1 ]]; then
+    CMD+=("${NET_ARGS[@]}")
+fi
+CMD+=(
     --block "path=$DISK,ro=false,lock=true,sparse=false,pci-address=00:03.0"
-    "${HVC_ARGS[@]}"
-    "${INPUT_ARGS[@]}"
+)
+CMD+=("${HVC_ARGS[@]}")
+if [[ "$ENABLE_INPUT" -eq 1 ]]; then
+    CMD+=("${INPUT_ARGS[@]}")
+fi
+CMD+=(
     --android-fstab "$FSTAB"
     --initrd "$INITRD"
     --params "console=hvc0,ttyS0 loglevel=7 printk.devkmsg=on init=/init"
@@ -272,19 +306,27 @@ if [[ "$PREPARED_ONLY" -eq 1 ]]; then
     echo "reuse prepared image set in $WORK_DIR"
 else
     if [[ "$COPY_DISK" -eq 1 ]]; then
-        copy_if_needed "$ARTIFACT_DIR/aggregate_android.img" "$DISK"
+        if [[ "$ARTIFACT_DISK_IS_SPARSE" -eq 1 ]]; then
+            expand_sparse_disk "$ARTIFACT_DISK" "$DISK"
+        else
+            copy_if_needed "$ARTIFACT_DISK" "$DISK"
+        fi
     fi
     copy_if_needed "$ARTIFACT_DIR/android_fstab.dt" "$FSTAB"
     copy_if_needed "$ARTIFACT_DIR/initrd_android.img" "$INITRD"
     copy_if_needed "$ARTIFACT_DIR/kernel" "$KERNEL"
 fi
 
+BOOTCONFIG_UPDATES=(
+    --set "androidboot.boot_devices=10000.pci"
+)
 if [[ "$ENABLE_MODEM" -eq 1 ]]; then
     MODEM_PORT=$((9600 + CID - 3))
-    python3 "$SCRIPT_DIR/patch_initrd_bootconfig.py" \
-        --initrd "$INITRD" \
-        --set "androidboot.modem_simulator_ports=$MODEM_PORT"
+    BOOTCONFIG_UPDATES+=(--set "androidboot.modem_simulator_ports=$MODEM_PORT")
 fi
+python3 "$SCRIPT_DIR/patch_initrd_bootconfig.py" \
+    --initrd "$INITRD" \
+    "${BOOTCONFIG_UPDATES[@]}"
 
 if [[ "$NO_RUN" -eq 1 ]]; then
     echo "Prepared macOS Android image set:"

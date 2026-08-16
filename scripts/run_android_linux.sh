@@ -15,6 +15,8 @@ MEM="4096"
 CPUS="4"
 CID="100"
 TIMEOUT_SECS="0"
+BOOT_DEVICE="${CROSVM_ANDROID_BOOT_DEVICE:-}"
+REBUILD_DISK=1
 RUN_VM=1
 DRY_RUN=0
 KEEP_GOING=0
@@ -26,6 +28,8 @@ X_DISPLAY="${DISPLAY:-}"
 DISABLE_AVB=0
 DYNAMIC_FS_TYPE=""
 DATA_FS_TYPE="${CROSVM_ANDROID_DATA_FS_TYPE:-auto}"
+DATA_ENCRYPTION="${CROSVM_ANDROID_DATA_ENCRYPTION:-metadata}"
+FSTAB_SUFFIX="${CROSVM_ANDROID_FSTAB_SUFFIX:-cf.f2fs.hctr2}"
 ENABLE_NETWORK=1
 MOBILE_TAP="${CROSVM_ANDROID_MOBILE_TAP:-}"
 ETHERNET_TAP="${CROSVM_ANDROID_ETHERNET_TAP:-}"
@@ -65,6 +69,8 @@ Options:
   --cpus N              Guest vCPU count (default: $CPUS)
   --cid N               Guest vsock CID (default: $CID)
   --timeout-secs N      Kill crosvm after N seconds; 0 disables timeout
+  --boot-device DEVICE  Android boot device; auto-detected from the guest kernel
+                        (ARM64 crosvm: 10000.pci; x86_64: pci0000:00/0000:00:03.0)
   --bootconfig K=V      Append a bootconfig key/value
   --gpu-guest-angle     Use guest ANGLE EGL with gfxstream-vulkan contexts
   --gpu-host-swiftshader
@@ -77,6 +83,12 @@ Options:
   --disable-avb         Strip avb/avb_keys flags from the generated direct-boot DT fstab
   --dynamic-fs-type FS  Keep only this fs type for dynamic partition fstab duplicates
   --data-fs-type FS     Keep only this fs type for /data fstab duplicates; auto uses userdata.img
+  --data-encryption MODE
+                        /data encryption profile: metadata or none (default: $DATA_ENCRYPTION).
+                        none is for explicitly labeled development artifacts only and mounts
+                        /data in first stage to match crosvm's DT-fstab semantics.
+  --fstab-suffix NAME   Boot fstab suffix (default: $FSTAB_SUFFIX). Use a dedicated suffix
+                        when the generated profile must not merge with the vendor fstab.
   --no-network          Do not add Cuttlefish-compatible virtio-net devices
   --mobile-tap NAME     Existing first/mobile TAP to pass to crosvm
   --ethernet-tap NAME   Existing second/eth1 TAP to pass to crosvm
@@ -92,6 +104,7 @@ Options:
   --casimir-rf-port PORT
                         Casimir RF port (default: $CASIMIR_RF_PORT)
   --aosp-host-bin DIR   AOSP host bin dir for CF daemons (default: $AOSP_HOST_BIN)
+  --reuse-disk          Rebuild initrd/fstab but keep an existing aggregate disk
   --no-run              Prepare disk/initrd but do not launch crosvm
   --dry-run             Validate inputs and print command without preparing
   --help                Show this help
@@ -113,6 +126,7 @@ while [[ $# -gt 0 ]]; do
         --cpus) CPUS="$2"; shift 2 ;;
         --cid) CID="$2"; shift 2 ;;
         --timeout-secs) TIMEOUT_SECS="$2"; shift 2 ;;
+        --boot-device) BOOT_DEVICE="$2"; shift 2 ;;
         --bootconfig) EXTRA_BOOTCONFIG+=("$2"); shift 2 ;;
         --gpu-guest-angle) GPU_GUEST_ANGLE=1; shift ;;
         --gpu-host-swiftshader) GPU_HOST_SWIFTSHADER=1; shift ;;
@@ -122,6 +136,8 @@ while [[ $# -gt 0 ]]; do
         --disable-avb) DISABLE_AVB=1; shift ;;
         --dynamic-fs-type) DYNAMIC_FS_TYPE="$2"; shift 2 ;;
         --data-fs-type) DATA_FS_TYPE="$2"; shift 2 ;;
+        --data-encryption) DATA_ENCRYPTION="$2"; shift 2 ;;
+        --fstab-suffix) FSTAB_SUFFIX="$2"; shift 2 ;;
         --no-network) ENABLE_NETWORK=0; shift ;;
         --mobile-tap) MOBILE_TAP="$2"; shift 2 ;;
         --ethernet-tap) ETHERNET_TAP="$2"; shift 2 ;;
@@ -135,6 +151,7 @@ while [[ $# -gt 0 ]]; do
         --casimir-nci-port) CASIMIR_NCI_PORT="$2"; shift 2 ;;
         --casimir-rf-port) CASIMIR_RF_PORT="$2"; shift 2 ;;
         --aosp-host-bin) AOSP_HOST_BIN="$2"; shift 2 ;;
+        --reuse-disk) REBUILD_DISK=0; shift ;;
         --no-run) RUN_VM=0; shift ;;
         --dry-run) DRY_RUN=1; RUN_VM=0; shift ;;
         --help|-h) usage; exit 0 ;;
@@ -170,6 +187,14 @@ ensure_network_taps() {
 
 if [[ "$MODE" != "headless" && "$MODE" != "gpu" ]]; then
     echo "Error: --mode must be headless or gpu" >&2
+    exit 2
+fi
+if [[ "$DATA_ENCRYPTION" != "metadata" && "$DATA_ENCRYPTION" != "none" ]]; then
+    echo "Error: --data-encryption must be metadata or none" >&2
+    exit 2
+fi
+if [[ ! "$FSTAB_SUFFIX" =~ ^[A-Za-z0-9._-]+$ ]]; then
+    echo "Error: --fstab-suffix must contain only letters, digits, dot, underscore, or hyphen" >&2
     exit 2
 fi
 FIFO_DIR="$WORK_DIR/hvc"
@@ -209,6 +234,34 @@ for image in boot.img vendor_boot.img vbmeta.img vbmeta_system.img super.img use
     require_file "$PRODUCT_DIR/$image" "$image"
 done
 
+if [[ -z "$DYNAMIC_FS_TYPE" && -f "$PRODUCT_DIR/misc_info.txt" ]]; then
+    DYNAMIC_FS_TYPE="$(sed -n 's/^system_fs_type=//p' "$PRODUCT_DIR/misc_info.txt" | head -n 1)"
+fi
+if [[ -z "$DYNAMIC_FS_TYPE" ]]; then
+    DYNAMIC_FS_TYPE="$(
+        awk '
+            $1 ~ /^(odm|odm_dlkm|product|system|system_ext|system_dlkm|vendor|vendor_dlkm)$/ {
+                if (!($3 in types)) {
+                    types[$3] = 1
+                    count += 1
+                }
+            }
+            END {
+                if (count == 1) {
+                    for (type in types) {
+                        print type
+                    }
+                }
+            }
+        ' "$ANDROID_FSTAB"
+    )"
+fi
+if [[ -z "$DYNAMIC_FS_TYPE" ]]; then
+    echo "Error: cannot select one dynamic partition filesystem type from $ANDROID_FSTAB." >&2
+    echo "       Pass --dynamic-fs-type or provide system_fs_type in misc_info.txt." >&2
+    exit 1
+fi
+
 build_bootconfig_args() {
     local boot_device="$1"
     BOOTCONFIG_ARGS=(
@@ -219,7 +272,7 @@ build_bootconfig_args() {
         "androidboot.lcd_density=320"
         "androidboot.setupwizard_mode=DISABLED"
         "androidboot.enable_bootanimation=1"
-        "androidboot.fstab_suffix=cf.f2fs.hctr2"
+        "androidboot.fstab_suffix=$FSTAB_SUFFIX"
         "androidboot.boot_devices=$boot_device"
         "androidboot.hypervisor.version=crosvm"
         "androidboot.hypervisor.vm.supported=1"
@@ -227,6 +280,8 @@ build_bootconfig_args() {
         "androidboot.openthread_node_id=1"
         "androidboot.vsock_lights_port=6900"
         "androidboot.vsock_lights_cid=$CID"
+        "androidboot.vendor.apex.com.android.hardware.graphics.composer=com.android.hardware.graphics.composer.ranchu"
+        "androidboot.vendor.apex.com.google.emulated.camera.provider.hal=com.google.emulated.camera.provider.hal"
         "androidboot.vendor.apex.com.android.hardware.keymint=com.android.hardware.keymint.rust_nonsecure"
         "androidboot.vendor.apex.com.android.hardware.gatekeeper=com.android.hardware.gatekeeper.nonsecure"
     )
@@ -266,7 +321,9 @@ build_bootconfig_args() {
         )
     fi
 
-    BOOTCONFIG_ARGS+=("${EXTRA_BOOTCONFIG[@]}")
+    if [[ "${#EXTRA_BOOTCONFIG[@]}" -gt 0 ]]; then
+        BOOTCONFIG_ARGS+=("${EXTRA_BOOTCONFIG[@]}")
+    fi
 }
 
 prepare_writable_images() {
@@ -322,11 +379,11 @@ write_initrd() {
         "$extra_dir/first_stage_ramdisk" \
         "$extra_dir/first_stage_ramdisk/system/etc" \
         "$extra_dir/system/etc"
-    for fstab_name in fstab.cf.f2fs.hctr2 fstab.cutf_cvm; do
-        install -m 0644 "$ANDROID_FSTAB" "$extra_dir/$fstab_name"
-        install -m 0644 "$ANDROID_FSTAB" "$extra_dir/first_stage_ramdisk/$fstab_name"
-        install -m 0644 "$ANDROID_FSTAB" "$extra_dir/first_stage_ramdisk/system/etc/$fstab_name"
-        install -m 0644 "$ANDROID_FSTAB" "$extra_dir/system/etc/$fstab_name"
+    for fstab_name in "fstab.$FSTAB_SUFFIX"; do
+        install -m 0644 "$ANDROID_DT_FSTAB" "$extra_dir/$fstab_name"
+        install -m 0644 "$ANDROID_DT_FSTAB" "$extra_dir/first_stage_ramdisk/$fstab_name"
+        install -m 0644 "$ANDROID_DT_FSTAB" "$extra_dir/first_stage_ramdisk/system/etc/$fstab_name"
+        install -m 0644 "$ANDROID_DT_FSTAB" "$extra_dir/system/etc/$fstab_name"
     done
 
     (
@@ -394,15 +451,25 @@ prepare_disk() {
 write_android_dt_fstab() {
     local data_fs_type="$DATA_FS_TYPE"
     if [[ "$data_fs_type" == "auto" ]]; then
-        if file "$PRODUCT_DIR/userdata.img" | grep -qi 'F2FS'; then
+        data_fs_type=""
+        if [[ -f "$PRODUCT_DIR/misc_info.txt" ]]; then
+            data_fs_type="$(sed -n 's/^userdata_fs_type=//p' "$PRODUCT_DIR/misc_info.txt" | head -n 1)"
+        fi
+        if [[ -z "$data_fs_type" ]] && file "$PRODUCT_DIR/userdata.img" | grep -qi 'F2FS'; then
             data_fs_type="f2fs"
-        elif file "$PRODUCT_DIR/userdata.img" | grep -qi 'ext[234]'; then
+        elif [[ -z "$data_fs_type" ]] && file "$PRODUCT_DIR/userdata.img" | grep -qi 'ext[234]'; then
             data_fs_type="ext4"
-        else
+        elif [[ -z "$data_fs_type" ]]; then
             data_fs_type=""
         fi
     fi
-    python3 - "$ANDROID_FSTAB" "$ANDROID_DT_FSTAB" "$DISABLE_AVB" "$DYNAMIC_FS_TYPE" "$data_fs_type" <<'PY'
+    python3 - \
+        "$ANDROID_FSTAB" \
+        "$ANDROID_DT_FSTAB" \
+        "$DISABLE_AVB" \
+        "$DYNAMIC_FS_TYPE" \
+        "$data_fs_type" \
+        "$DATA_ENCRYPTION" <<'PY'
 import pathlib
 import sys
 
@@ -411,9 +478,11 @@ dst = pathlib.Path(sys.argv[2])
 disable_avb = sys.argv[3] == "1"
 dynamic_fs_type = sys.argv[4]
 data_fs_type = sys.argv[5]
+data_encryption = sys.argv[6]
 dst.parent.mkdir(parents=True, exist_ok=True)
 
 lines = []
+mount_filesystems = {}
 for raw_line in src.read_text(encoding="utf-8").splitlines():
     line = raw_line.strip()
     if not line or line.startswith("#"):
@@ -434,12 +503,70 @@ for raw_line in src.read_text(encoding="utf-8").splitlines():
         continue
     if data_fs_type and columns[1] == "/data" and columns[2] != data_fs_type:
         continue
+    if columns[1] == "/data" and data_encryption == "none":
+        mount_flags = [
+            flag for flag in columns[3].split(",")
+            if flag != "inlinecrypt"
+        ]
+        fs_mgr_flags = [
+            flag for flag in columns[4].split(",")
+            if not flag.startswith("keydirectory=")
+            and not flag.startswith("fileencryption=")
+            and flag != "latemount"
+        ]
+        if "first_stage_mount" not in fs_mgr_flags:
+            fs_mgr_flags.append("first_stage_mount")
+        columns[3] = ",".join(mount_flags)
+        columns[4] = ",".join(fs_mgr_flags)
     if disable_avb:
         columns[4] = ",".join(
             flag for flag in columns[4].split(",")
             if flag != "avb" and not flag.startswith("avb=") and not flag.startswith("avb_keys=")
         )
+    mount_filesystems.setdefault(columns[1], set()).add(columns[2])
     lines.append("\t".join(columns))
+
+ambiguous = {
+    mount_point: sorted(filesystems)
+    for mount_point, filesystems in mount_filesystems.items()
+    if len(filesystems) > 1
+}
+if ambiguous:
+    raise SystemExit(
+        "filtered fstab retains conflicting filesystem types: "
+        + ", ".join(
+            f"{mount_point}={filesystems}"
+            for mount_point, filesystems in sorted(ambiguous.items())
+        )
+    )
+for required_mount in ("/system", "/data", "/metadata"):
+    if required_mount not in mount_filesystems:
+        raise SystemExit(f"filtered fstab is missing required mount {required_mount}")
+
+data_lines = [
+    line.split()
+    for line in lines
+    if line.split()[1] == "/data"
+]
+if len(data_lines) != 1:
+    raise SystemExit(f"filtered fstab must contain exactly one /data entry, found {len(data_lines)}")
+data_flags = set(data_lines[0][3].split(",")) | set(data_lines[0][4].split(","))
+has_encryption = (
+    "inlinecrypt" in data_flags
+    or any(flag.startswith("keydirectory=") for flag in data_flags)
+    or any(flag.startswith("fileencryption=") for flag in data_flags)
+)
+if data_encryption == "metadata" and not has_encryption:
+    raise SystemExit("metadata encryption profile selected but /data has no encryption flags")
+if data_encryption == "none" and has_encryption:
+    raise SystemExit("unencrypted development profile still contains /data encryption flags")
+if data_encryption == "none":
+    data_fs_mgr_flags = set(data_lines[0][4].split(","))
+    if "first_stage_mount" not in data_fs_mgr_flags or "latemount" in data_fs_mgr_flags:
+        raise SystemExit(
+            "unencrypted development profile must mount /data in first stage "
+            "so crosvm DT-fstab is not mounted twice"
+        )
 
 dst.write_text("\n".join(lines) + "\n", encoding="utf-8")
 PY
@@ -522,7 +649,14 @@ if [[ "$ENABLE_NETWORK" -eq 1 ]]; then
     fi
 fi
 
-BOOT_DEVICE="pci0000:00/0000:00:03.0"
+if [[ -z "$BOOT_DEVICE" ]]; then
+    if file -b "$KERNEL" | grep -qi 'ARM64'; then
+        # On ARM64 crosvm all PCI block devices sit below this platform bridge.
+        BOOT_DEVICE="10000.pci"
+    else
+        BOOT_DEVICE="pci0000:00/0000:00:03.0"
+    fi
+fi
 resolve_cf_host_features
 build_bootconfig_args "$BOOT_DEVICE"
 
@@ -576,9 +710,11 @@ CROSVM_CMD=(
 if [[ "$MODE" == "gpu" ]]; then
     CROSVM_CMD+=(--x-display "$X_DISPLAY")
 fi
+CROSVM_CMD+=("${GPU_ARGS[@]}")
+if [[ "${#NET_ARGS[@]}" -gt 0 ]]; then
+    CROSVM_CMD+=("${NET_ARGS[@]}")
+fi
 CROSVM_CMD+=(
-    "${GPU_ARGS[@]}"
-    "${NET_ARGS[@]}"
     --block "path=$DISK_IMAGE,ro=false,lock=false,sparse=false,pci-address=00:03.0"
     --serial "type=file,path=$LOG_DIR/serial.txt,hardware=serial,num=1,earlycon=true"
     --serial "type=sink,hardware=serial,num=2"
@@ -586,9 +722,11 @@ CROSVM_CMD+=(
     --android-fstab "$ANDROID_DT_FSTAB"
     --initrd "$INITRD_IMAGE"
     --params "$KERNEL_PARAMS"
-    "${EXTRA_CROSVM_ARGS[@]}"
-    "$KERNEL"
 )
+if [[ "${#EXTRA_CROSVM_ARGS[@]}" -gt 0 ]]; then
+    CROSVM_CMD+=("${EXTRA_CROSVM_ARGS[@]}")
+fi
+CROSVM_CMD+=("$KERNEL")
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
     printf 'LD_LIBRARY_PATH=%s\n' "$(IFS=:; echo "${LD_PATHS[*]}")"
@@ -623,7 +761,11 @@ prepare_writable_images
 prepare_hvc_inputs
 write_android_dt_fstab
 write_initrd
-prepare_disk
+if [[ "$REBUILD_DISK" -eq 1 ]]; then
+    prepare_disk
+else
+    require_file "$DISK_IMAGE" "existing aggregate disk"
+fi
 
 if [[ "$RUN_VM" -eq 0 ]]; then
     echo "Prepared:"

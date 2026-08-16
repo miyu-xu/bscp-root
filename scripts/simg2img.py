@@ -2,6 +2,18 @@
 """Convert Android sparse image to raw."""
 import struct, os, sys
 
+def write_fill(out, value, count):
+    if value == 0:
+        out.seek(count, os.SEEK_CUR)
+        return
+    pattern = struct.pack('<I', value)
+    chunk = pattern * (1024 * 1024 // len(pattern))
+    while count:
+        size = min(count, len(chunk))
+        out.write(chunk[:size])
+        count -= size
+
+
 def simg2img(src, dst):
     with open(src, 'rb') as f:
         magic = struct.unpack('<I', f.read(4))[0]
@@ -37,11 +49,10 @@ def simg2img(src, dst):
                     out_blocks += chunk_sectors
                 elif chunk_type == 0xCAC2:  # FILL
                     fill_val = struct.unpack('<I', f.read(data_size))[0]
-                    fill_data = struct.pack('<I', fill_val) * (block_size // 4) * chunk_sectors
-                    out.write(fill_data)
+                    write_fill(out, fill_val, block_size * chunk_sectors)
                     out_blocks += chunk_sectors
                 elif chunk_type == 0xCAC3:  # DONTCARE
-                    out.write(b'\x00' * chunk_sectors * block_size)
+                    out.seek(chunk_sectors * block_size, os.SEEK_CUR)
                     out_blocks += chunk_sectors
                 elif chunk_type == 0xCAC4:  # CRC32
                     f.read(data_size)
@@ -50,6 +61,7 @@ def simg2img(src, dst):
                     pct = out_blocks * 100 // total_blocks
                     print(f'\r  {pct}%', end='', flush=True)
 
+            out.truncate(total_blocks * block_size)
             print(f'\r  100%')
 
         actual = os.path.getsize(dst)

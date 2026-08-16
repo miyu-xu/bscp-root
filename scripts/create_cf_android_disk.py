@@ -15,6 +15,14 @@ GPT_ENTRY_COUNT = 128
 ALIGN_LBA = 2048
 ANDROID_BASIC_DATA_GUID = uuid.UUID("EBD0A0A2-B9E5-4433-87C0-68B6B72699C7")
 
+ANDROID_SPARSE_MAGIC = 0xED26FF3A
+ANDROID_SPARSE_HEADER = struct.Struct("<I4H4I")
+ANDROID_SPARSE_CHUNK_HEADER = struct.Struct("<2H2I")
+CHUNK_TYPE_RAW = 0xCAC1
+CHUNK_TYPE_FILL = 0xCAC2
+CHUNK_TYPE_DONT_CARE = 0xCAC3
+CHUNK_TYPE_CRC32 = 0xCAC4
+
 
 def align_up(value, alignment):
     return ((value + alignment - 1) // alignment) * alignment
@@ -24,15 +32,141 @@ def sectors_for_size(size):
     return max(1, align_up(size, SECTOR_SIZE) // SECTOR_SIZE)
 
 
+def android_sparse_info(path):
+    with Path(path).open("rb") as image:
+        header = image.read(ANDROID_SPARSE_HEADER.size)
+    if len(header) < 4 or struct.unpack_from("<I", header)[0] != ANDROID_SPARSE_MAGIC:
+        return None
+    if len(header) != ANDROID_SPARSE_HEADER.size:
+        raise ValueError(f"truncated Android sparse header: {path}")
+
+    (
+        _magic,
+        major_version,
+        minor_version,
+        file_header_size,
+        chunk_header_size,
+        block_size,
+        total_blocks,
+        total_chunks,
+        _checksum,
+    ) = ANDROID_SPARSE_HEADER.unpack(header)
+    if major_version != 1:
+        raise ValueError(
+            f"unsupported Android sparse version {major_version}.{minor_version}: {path}"
+        )
+    if file_header_size < ANDROID_SPARSE_HEADER.size:
+        raise ValueError(f"invalid Android sparse file header size: {path}")
+    if chunk_header_size < ANDROID_SPARSE_CHUNK_HEADER.size:
+        raise ValueError(f"invalid Android sparse chunk header size: {path}")
+    if block_size == 0 or total_blocks == 0:
+        raise ValueError(f"invalid Android sparse geometry: {path}")
+    return {
+        "file_header_size": file_header_size,
+        "chunk_header_size": chunk_header_size,
+        "block_size": block_size,
+        "total_blocks": total_blocks,
+        "total_chunks": total_chunks,
+        "logical_size": block_size * total_blocks,
+    }
+
+
 def image_size(path):
-    return Path(path).stat().st_size
+    sparse = android_sparse_info(path)
+    return sparse["logical_size"] if sparse else Path(path).stat().st_size
 
 
 def write_zeroes(out_file, count):
     out_file.seek(count, os.SEEK_CUR)
 
 
+def write_fill(out_file, fill_value, count):
+    if fill_value == 0:
+        write_zeroes(out_file, count)
+        return
+    pattern = struct.pack("<I", fill_value)
+    chunk = pattern * ((8 * 1024 * 1024) // len(pattern))
+    while count:
+        size = min(count, len(chunk))
+        out_file.write(chunk[:size])
+        count -= size
+
+
+def copy_sparse_raw(in_file, out_file, count):
+    zero_chunk = b"\0" * (8 * 1024 * 1024)
+    while count:
+        chunk = in_file.read(min(count, len(zero_chunk)))
+        if not chunk:
+            raise ValueError("unexpected end of Android sparse raw chunk")
+        if chunk == zero_chunk[: len(chunk)]:
+            write_zeroes(out_file, len(chunk))
+        else:
+            out_file.write(chunk)
+        count -= len(chunk)
+
+
+def copy_android_sparse(src, dst, sparse):
+    with Path(src).open("rb") as in_file:
+        in_file.seek(sparse["file_header_size"])
+        output_blocks = 0
+        for chunk_index in range(sparse["total_chunks"]):
+            header = in_file.read(sparse["chunk_header_size"])
+            if len(header) != sparse["chunk_header_size"]:
+                raise ValueError(
+                    f"truncated Android sparse chunk {chunk_index}: {src}"
+                )
+            chunk_type, _reserved, chunk_blocks, total_size = (
+                ANDROID_SPARSE_CHUNK_HEADER.unpack_from(header)
+            )
+            if total_size < sparse["chunk_header_size"]:
+                raise ValueError(f"invalid sparse chunk size at {chunk_index}: {src}")
+            data_size = total_size - sparse["chunk_header_size"]
+            output_size = chunk_blocks * sparse["block_size"]
+
+            if chunk_type == CHUNK_TYPE_RAW:
+                if data_size != output_size:
+                    raise ValueError(f"invalid raw sparse chunk at {chunk_index}: {src}")
+                copy_sparse_raw(in_file, dst, output_size)
+                output_blocks += chunk_blocks
+            elif chunk_type == CHUNK_TYPE_FILL:
+                if data_size != 4:
+                    raise ValueError(f"invalid fill sparse chunk at {chunk_index}: {src}")
+                fill_data = in_file.read(4)
+                if len(fill_data) != 4:
+                    raise ValueError(f"truncated fill sparse chunk at {chunk_index}: {src}")
+                write_fill(dst, struct.unpack("<I", fill_data)[0], output_size)
+                output_blocks += chunk_blocks
+            elif chunk_type == CHUNK_TYPE_DONT_CARE:
+                if data_size != 0:
+                    raise ValueError(
+                        f"invalid don't-care sparse chunk at {chunk_index}: {src}"
+                    )
+                write_zeroes(dst, output_size)
+                output_blocks += chunk_blocks
+            elif chunk_type == CHUNK_TYPE_CRC32:
+                if data_size != 4 or len(in_file.read(4)) != 4:
+                    raise ValueError(f"invalid CRC sparse chunk at {chunk_index}: {src}")
+            else:
+                raise ValueError(
+                    f"unknown sparse chunk type 0x{chunk_type:04x} at {chunk_index}: {src}"
+                )
+
+        if output_blocks != sparse["total_blocks"]:
+            raise ValueError(
+                f"sparse block count mismatch for {src}: "
+                f"{output_blocks} != {sparse['total_blocks']}"
+            )
+
+
 def copy_image(src, dst):
+    sparse = android_sparse_info(src)
+    if sparse:
+        print(
+            f"  expanding Android sparse image "
+            f"({Path(src).stat().st_size} -> {sparse['logical_size']} bytes)"
+        )
+        copy_android_sparse(src, dst, sparse)
+        return
     zero_chunk = b"\0" * (8 * 1024 * 1024)
     with open(src, "rb") as in_file:
         while True:

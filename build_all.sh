@@ -78,8 +78,9 @@ case "$OS_NAME" in
         RUST_TARGET="${RUST_TARGET:-aarch64-apple-darwin}"
         LIB_EXT="dylib"
         DIST_DIR_NAME="macos"
-        DEFAULT_CROSVM_FEATURES="hvf,default-no-sandbox,config-file,qcow,balloon,android-sparse,composite-disk,tokio"
+        DEFAULT_CROSVM_FEATURES="hvf,default-no-sandbox,config-file,qcow,balloon,android-sparse,composite-disk,tokio,net,audio"
         CROSVM_CARGO_TOOLCHAIN="${CROSVM_CARGO_TOOLCHAIN:-nightly}"
+        DEFAULT_ENABLE_GFXSTREAM_ANGLE=1
         HOST_APEX_TREE_SOURCE="${MACOS_AVF_APEX_TREE_SOURCE:-${HOST_APEX_TREE_SOURCE:-}}"
         ;;
     Linux)
@@ -93,6 +94,7 @@ case "$OS_NAME" in
         DIST_DIR_NAME="linux"
         DEFAULT_CROSVM_FEATURES="default-no-sandbox,config-file,qcow,balloon,android-sparse,composite-disk,net"
         CROSVM_CARGO_TOOLCHAIN="${CROSVM_CARGO_TOOLCHAIN:-stable}"
+        DEFAULT_ENABLE_GFXSTREAM_ANGLE=0
         ;;
     *)
         echo "Error: unsupported OS from uname: $OS_NAME (use Linux/macOS or build_all.bat on Windows)"
@@ -111,10 +113,11 @@ ANGLE_ROOT="${ANGLE_ROOT:-$REPO_ROOT/../angle}"
 AEMU_COMMON_PATH="${AEMU_COMMON_PATH:-$REPO_ROOT/hardware/google/aemu}"
 FLATBUFFERS_PATH="${FLATBUFFERS_PATH:-$REPO_ROOT/external/flatbuffers}"
 ANGLE_RUNTIME_DIR="${ANGLE_RUNTIME_DIR:-}"
-ENABLE_GFXSTREAM_ANGLE="${ENABLE_GFXSTREAM_ANGLE:-0}"
+ENABLE_GFXSTREAM_ANGLE="${ENABLE_GFXSTREAM_ANGLE:-$DEFAULT_ENABLE_GFXSTREAM_ANGLE}"
 GFXSTREAM_PATH="${GFXSTREAM_PATH:-}"
 MOLTENVK_ROOT="${MOLTENVK_ROOT:-$REPO_ROOT/../MoltenVK}"
 MOLTENVK_RUNTIME_DIR="${MOLTENVK_RUNTIME_DIR:-}"
+VULKAN_LOADER_PATH="${VULKAN_LOADER_PATH:-}"
 MACOS_CROSVM_ENTITLEMENTS="$REPO_ROOT/scripts/macos_crosvm.entitlements"
 PREPARE_APEX_TREE_SCRIPT="$REPO_ROOT/scripts/prepare_host_apex_tree.sh"
 DIST_APEX_TREE="$OUT_ROOT/dist/apex_dir"
@@ -177,6 +180,30 @@ find_moltenvk_runtime_dir() {
         return 0
     fi
 
+    return 1
+}
+
+find_macos_vulkan_loader() {
+    local candidate=""
+    if [[ -n "$VULKAN_LOADER_PATH" && -f "$VULKAN_LOADER_PATH" ]]; then
+        printf '%s\n' "$VULKAN_LOADER_PATH"
+        return 0
+    fi
+    for candidate in /opt/homebrew/lib/libvulkan.dylib /usr/local/lib/libvulkan.dylib; do
+        if [[ -f "$candidate" ]]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+    if command -v brew >/dev/null 2>&1; then
+        local prefix=""
+        prefix="$(brew --prefix vulkan-loader 2>/dev/null || true)"
+        candidate="$prefix/lib/libvulkan.dylib"
+        if [[ -n "$prefix" && -f "$candidate" ]]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    fi
     return 1
 }
 
@@ -414,6 +441,14 @@ if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
     echo "Error: missing $GFXSTREAM_LIB under $GFXSTREAM_BUILD_DIR"
     exit 1
   fi
+  if [[ "$OS_NAME" == "Darwin" ]]; then
+    if ! macos_vulkan_loader="$(find_macos_vulkan_loader)"; then
+      echo "Error: macOS gfxstream requires libvulkan.dylib; set VULKAN_LOADER_PATH." >&2
+      exit 1
+    fi
+    cp -f "$macos_vulkan_loader" "$DIST_LIB/libvulkan.dylib"
+    echo "Staged macOS Vulkan loader: $macos_vulkan_loader"
+  fi
 fi
 if [[ -f "$TGT_OUT/virtmgr" ]]; then
   cp -f "$TGT_OUT/virtmgr" "$DIST_BIN/"
@@ -435,6 +470,18 @@ if [[ "$ENABLE_GFXSTREAM_ANGLE" == "1" ]]; then
 fi
 
 if [[ "$OS_NAME" == "Darwin" ]]; then
+  if [[ -f "$DIST_BIN/crosvm" ]]; then
+    CROSVM_RUNTIME_RPATH="@loader_path/../lib"
+    if ! otool -l "$DIST_BIN/crosvm" |
+      grep -Fq "path $CROSVM_RUNTIME_RPATH "; then
+      if ! command -v install_name_tool >/dev/null 2>&1; then
+        echo "Error: install_name_tool not found" >&2
+        exit 1
+      fi
+      echo "[rpath] adding $CROSVM_RUNTIME_RPATH to crosvm"
+      install_name_tool -add_rpath "$CROSVM_RUNTIME_RPATH" "$DIST_BIN/crosvm"
+    fi
+  fi
   if ! command -v codesign >/dev/null 2>&1; then
     echo "Error: codesign not found"
     exit 1

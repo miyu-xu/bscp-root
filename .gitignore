@@ -2,6 +2,11 @@
 out
 external
 frameworks
+hardware
 packages
 system
+hd
+device
 .DS_Store
+__pycache__/
+*.py[cod]

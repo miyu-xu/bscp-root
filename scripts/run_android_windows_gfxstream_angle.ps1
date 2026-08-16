@@ -22,6 +22,7 @@ param(
     [switch]$NoNetwork,
     [switch]$NoBluetooth,
     [switch]$NoNfc,
+    [switch]$AllowDeviceStubs,
     [switch]$NoModem,
     [switch]$NoSensors,
     [string]$AospHostBin = "",
@@ -195,7 +196,7 @@ function Start-CfHostDaemons {
         [int]$ModemBasePort
     )
 
-    $bridgeScript = Join-Path $PSScriptRoot "cf_hvc_tcp_bridge.ps1"
+    $bridgeScript = Join-Path $PSScriptRoot "cf_hvc_bridge.py"
     if (-not (Test-Path $bridgeScript)) {
         throw "Missing bridge script: $bridgeScript"
     }
@@ -231,14 +232,13 @@ function Start-CfHostDaemons {
             -ArgumentList $rootArgs `
             -RedirectStandardOutput $rootStdout -RedirectStandardError $rootStderr -PassThru
         Start-Sleep -Seconds 1
-        $script:HostDaemonProcesses += Start-Process -FilePath "powershell.exe" `
+        $script:HostDaemonProcesses += Start-Process -FilePath "python" `
             -ArgumentList @(
-                "-NoProfile", "-ExecutionPolicy", "Bypass",
-                "-File", $bridgeScript,
-                "-PipeOut", $BtOutPipe,
-                "-PipeIn", $BtInPipe,
-                "-TcpPort", "$BtHciPort",
-                "-BufferSize", "2050"
+                $bridgeScript,
+                "--guest-out", $BtOutPipe,
+                "--guest-in", $BtInPipe,
+                "--tcp-port", "$BtHciPort",
+                "--reconnect"
             ) `
             -RedirectStandardOutput $btStdout -RedirectStandardError $btStderr -PassThru
         $script:BluetoothEnabled = $true
@@ -273,14 +273,13 @@ function Start-CfHostDaemons {
             -ArgumentList $casimirArgs `
             -RedirectStandardOutput $casimirStdout -RedirectStandardError $casimirStderr -PassThru
         Start-Sleep -Seconds 1
-        $script:HostDaemonProcesses += Start-Process -FilePath "powershell.exe" `
+        $script:HostDaemonProcesses += Start-Process -FilePath "python" `
             -ArgumentList @(
-                "-NoProfile", "-ExecutionPolicy", "Bypass",
-                "-File", $bridgeScript,
-                "-PipeOut", $NfcOutPipe,
-                "-PipeIn", $NfcInPipe,
-                "-TcpPort", "$CasimirNciPort",
-                "-BufferSize", "1024"
+                $bridgeScript,
+                "--guest-out", $NfcOutPipe,
+                "--guest-in", $NfcInPipe,
+                "--tcp-port", "$CasimirNciPort",
+                "--reconnect"
             ) `
             -RedirectStandardOutput $nfcStdout -RedirectStandardError $nfcStderr -PassThru
         $script:NfcEnabled = $true
@@ -342,6 +341,49 @@ function Stop-CfHostDaemons {
         }
     }
     $script:HostDaemonProcesses = @()
+}
+
+function Stop-ExactCrosvmProcessTree {
+    param(
+        [Parameter(Mandatory = $true)][System.Diagnostics.Process]$RootProcess,
+        [Parameter(Mandatory = $true)][string]$ExpectedExecutable
+    )
+
+    $expected = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $ExpectedExecutable).Path)
+    $snapshot = @(Get-CimInstance Win32_Process |
+        Select-Object ProcessId, ParentProcessId, ExecutablePath, CommandLine)
+    $tree = [Collections.Generic.List[uint32]]::new()
+    $known = [Collections.Generic.HashSet[uint32]]::new()
+    [void]$known.Add([uint32]$RootProcess.Id)
+    do {
+        $added = $false
+        foreach ($entry in $snapshot) {
+            $pid = [uint32]$entry.ProcessId
+            if ($known.Contains([uint32]$entry.ParentProcessId) -and $known.Add($pid)) {
+                if (-not $entry.ExecutablePath -or
+                    -not [IO.Path]::GetFullPath($entry.ExecutablePath).Equals(
+                        $expected, [StringComparison]::OrdinalIgnoreCase)) {
+                    throw "Refusing to terminate unexpected child pid $pid of crosvm pid $($RootProcess.Id): $($entry.CommandLine)"
+                }
+                $tree.Add($pid)
+                $added = $true
+            }
+        }
+    } while ($added)
+
+    $pids = @($tree.ToArray())
+    [array]::Reverse($pids)
+    $pids += [uint32]$RootProcess.Id
+    foreach ($pid in $pids) {
+        Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+    }
+    $deadline = (Get-Date).AddSeconds(10)
+    do {
+        $alive = @($pids | Where-Object { Get-Process -Id $_ -ErrorAction SilentlyContinue })
+        if ($alive.Count -eq 0) { return }
+        Start-Sleep -Milliseconds 100
+    } while ((Get-Date) -lt $deadline)
+    throw "Timed out terminating exact crosvm process tree: $($alive -join ', ')"
 }
 
 if (-not $ArtifactDir) {
@@ -439,7 +481,9 @@ $angleCandidates = @(
     (Join-Path $RepoRoot "..\angle\out\Release-GfxAngle-Clang")
 )
 $AngleDir = $angleCandidates | Where-Object {
-    (Test-Path (Join-Path $_ "libEGL.dll")) -and (Test-Path (Join-Path $_ "libGLESv2.dll"))
+    (Test-Path (Join-Path $_ "libEGL.dll")) -and
+    (Test-Path (Join-Path $_ "libGLESv2.dll")) -and
+    (Test-Path (Join-Path $_ "vulkan-1.dll"))
 } | Select-Object -First 1
 if ($AngleDir) {
     $env:GFXSTREAM_ANGLE_ROOT = $AngleDir
@@ -452,11 +496,22 @@ $env:GFXSTREAM_PATH = $BinDir
 $GfxstreamBuildDll = Join-Path $RepoRoot "out\gfxstream_build_windows\libgfxstream_backend.dll"
 if (Test-Path $GfxstreamBuildDll) {
     $buildTime = (Get-Item $GfxstreamBuildDll).LastWriteTimeUtc
-    $distLib = Join-Path $BinDir "libgfxstream_backend.dll"
-    $needsSync = -not (Test-Path $distLib) -or ((Get-Item $distLib).LastWriteTimeUtc -lt $buildTime)
+    $distDlls = @(
+        (Join-Path $BinDir "libgfxstream_backend.dll"),
+        (Join-Path $BinDir "gfxstream_backend.dll")
+    )
+    # Keep both loader names coherent. Checking only the GNU-prefixed destination allowed the
+    # compatibility alias to remain on an older graphics protocol indefinitely.
+    $needsSync = @(
+        $distDlls | Where-Object {
+            -not (Test-Path -LiteralPath $_ -PathType Leaf) -or
+                (Get-Item -LiteralPath $_).LastWriteTimeUtc -lt $buildTime
+        }
+    ).Count -ne 0
     if ($needsSync) {
-        Copy-Item -Force $GfxstreamBuildDll $distLib
-        Copy-Item -Force $GfxstreamBuildDll (Join-Path $BinDir "gfxstream_backend.dll")
+        foreach ($distDll in $distDlls) {
+            Copy-Item -Force -LiteralPath $GfxstreamBuildDll -Destination $distDll
+        }
         Write-Host "Synced gfxstream backend DLLs from $GfxstreamBuildDll"
     }
 }
@@ -507,13 +562,19 @@ $HostBinSearchDirs = @(
     $AospHostBin
 ) | Where-Object { $_ -and (Test-Path $_) }
 
-if ($script:BluetoothEnabled -and -not (Resolve-HostBinary -Name "root-canal" -SearchDirs $HostBinSearchDirs)) {
-    Write-Host "Warning: root-canal not found; disabling Bluetooth HVC pipes."
+if ($script:BluetoothEnabled -and
+    -not $AllowDeviceStubs -and
+    -not (Resolve-HostBinary -Name "root-canal" -SearchDirs $HostBinSearchDirs)) {
+    Write-Host "Warning: root-canal not found; disabling Bluetooth HVC pipes. Use -AllowDeviceStubs for protocol development only."
     $script:BluetoothEnabled = $false
+    $script:BluetoothBackend = "disabled"
 }
-if ($script:NfcEnabled -and -not (Resolve-HostBinary -Name "casimir" -SearchDirs $HostBinSearchDirs)) {
-    Write-Host "Warning: casimir not found; disabling NFC HVC pipes."
+if ($script:NfcEnabled -and
+    -not $AllowDeviceStubs -and
+    -not (Resolve-HostBinary -Name "casimir" -SearchDirs $HostBinSearchDirs)) {
+    Write-Host "Warning: casimir not found; disabling NFC HVC pipes. Use -AllowDeviceStubs for protocol development only."
     $script:NfcEnabled = $false
+    $script:NfcBackend = "disabled"
 }
 
 $Disk = Join-Path $WorkDir "aggregate_android.img"
@@ -665,6 +726,7 @@ $commandFile = Join-Path $LogDir "crosvm-command.txt"
     "BLUETOOTH_BACKEND=$($script:BluetoothBackend)",
     "NFC_ENABLED=$($script:NfcEnabled)",
     "NFC_BACKEND=$($script:NfcBackend)",
+    "ALLOW_DEVICE_STUBS=$AllowDeviceStubs",
     "MODEM_ENABLED=$($script:ModemEnabled)",
     "SENSORS_ENABLED=$($script:SensorsEnabled)",
     "SENSORS_OUT_PIPE=$SensorsOutPipe",
@@ -736,7 +798,7 @@ if ($TimeoutSecs -gt 0) {
     }
     if (-not $process.HasExited) {
         Write-Host "Timeout reached (${TimeoutSecs}s); stopping crosvm pid $($process.Id)"
-        Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
+        Stop-ExactCrosvmProcessTree -RootProcess $process -ExpectedExecutable $Crosvm
         exit 124
     }
     exit $process.ExitCode
