@@ -4,8 +4,8 @@ set -e
 rm -rf /tmp/initramfs
 mkdir -p /tmp/initramfs/{bin,proc,sys,dev,newroot}
 
-BUSYBOX=/mnt/c/Users/developer/AppData/Local/Temp/busybox
-MOUNT_ROOT=/mnt/c/Users/developer/AppData/Local/Temp/mount_root
+BUSYBOX="${BUSYBOX:-${TMPDIR:-/tmp}/busybox}"
+MOUNT_ROOT="${MOUNT_ROOT:-${TMPDIR:-/tmp}/mount_root}"
 
 # Copy busybox and create copies for each command
 cp "$BUSYBOX" /tmp/initramfs/bin/busybox

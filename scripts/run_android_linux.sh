@@ -6,7 +6,9 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/start_cf_host_daemons.sh"
 
-PRODUCT_DIR="/opt/workspace/aosp/out/target/product/vsoc_x86_64"
+AOSP_ROOT="${AOSP_ROOT:-$REPO_ROOT/../aosp}"
+ANGLE_ROOT="${ANGLE_ROOT:-$REPO_ROOT/external/angle}"
+PRODUCT_DIR="${PRODUCT_DIR:-$AOSP_ROOT/out/target/product/vsoc_x86_64}"
 DIST_ROOT="$REPO_ROOT/out/dist"
 WORK_DIR="$REPO_ROOT/out/android-linux"
 LOG_DIR="$REPO_ROOT/out/dist/logs/android-linux"
@@ -45,7 +47,7 @@ MODEM_BASE_PORT=9600
 BT_HCI_PORT="${CROSVM_ANDROID_BT_HCI_PORT:-7300}"
 CASIMIR_NCI_PORT="${CROSVM_ANDROID_CASIMIR_NCI_PORT:-7800}"
 CASIMIR_RF_PORT="${CROSVM_ANDROID_CASIMIR_RF_PORT:-7900}"
-AOSP_HOST_BIN="${AOSP_HOST_BIN:-/opt/workspace/aosp/out/host/linux-x86/bin}"
+AOSP_HOST_BIN="${AOSP_HOST_BIN:-$AOSP_ROOT/out/host/linux-x86/bin}"
 HOST_DAEMON_PIDS=()
 EXTRA_BOOTCONFIG=()
 EXTRA_CROSVM_ARGS=()
@@ -212,7 +214,7 @@ MISC_IMAGE="$WORK_DIR/misc.img"
 METADATA_IMAGE="$WORK_DIR/metadata.img"
 FRP_IMAGE="$WORK_DIR/factory_reset_protected.img"
 MKFS_EXT4="${MKFS_EXT4:-/usr/sbin/mkfs.ext4}"
-LZ4_BIN="${LZ4_BIN:-/opt/workspace/aosp/out/host/linux-x86/bin/lz4}"
+LZ4_BIN="${LZ4_BIN:-$AOSP_HOST_BIN/lz4}"
 
 require_file() {
     local path="$1"
@@ -574,7 +576,7 @@ PY
 
 ANGLE_RUNTIME_DIR="${ANGLE_RUNTIME_DIR:-}"
 if [[ "$MODE" == "gpu" && -z "$ANGLE_RUNTIME_DIR" ]]; then
-    for candidate in "$DIST_ROOT/linux/gfx/angle" /opt/workspace/angle/out/*; do
+    for candidate in "$DIST_ROOT/linux/gfx/angle" "$ANGLE_ROOT"/out/*; do
         if [[ -f "$candidate/libEGL.so" && -f "$candidate/libGLESv2.so" ]]; then
             ANGLE_RUNTIME_DIR="$candidate"
             break
@@ -593,7 +595,7 @@ if [[ "$MODE" == "gpu" ]]; then
     fi
     if [[ -z "$ANGLE_RUNTIME_DIR" ]]; then
         echo "Error: --mode gpu requires ANGLE_RUNTIME_DIR with libEGL.so and libGLESv2.so" >&2
-        echo "       Current ~/angle checkout has no built runtime under /opt/workspace/angle/out." >&2
+        echo "       No built runtime was found under $ANGLE_ROOT/out." >&2
         echo "       Run scripts/build_angle_linux.sh first, or set ANGLE_RUNTIME_DIR explicitly." >&2
         exit 1
     fi

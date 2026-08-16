@@ -7,7 +7,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${REPO_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
-AOSP_HOST_BIN="${AOSP_HOST_BIN:-/opt/workspace/aosp/out/host/linux-x86/bin}"
+AOSP_ROOT="${AOSP_ROOT:-$REPO_ROOT/../aosp}"
+AOSP_HOST_BIN="${AOSP_HOST_BIN:-$AOSP_ROOT/out/host/linux-x86/bin}"
 
 cf_resolve_host_bin() {
     local name="$1"

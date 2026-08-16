@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 DIST_ROOT="$REPO_ROOT/out/dist"
-OUTPUT_ROOT="/mnt/workspace/Windows/bscp-vm-debug-logs"
+OUTPUT_ROOT="${OUTPUT_ROOT:-$REPO_ROOT/out/exports}"
 EXPORT_NAME="bscp-vm-debug-logs-$(date +%Y%m%d-%H%M%S)"
 CREATE_ARCHIVE=0
 ANDROID_LOG_DIR="$DIST_ROOT/logs/android-linux"

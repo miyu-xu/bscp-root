@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PRODUCT_DIR="/opt/workspace/aosp/out/target/product/vsoc_x86_64"
-KERNEL_DIST="/opt/workspace/android-kernel-6.6/out/virtual_device_x86_64/dist"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+AOSP_ROOT="${AOSP_ROOT:-$REPO_ROOT/../aosp}"
+KERNEL_ROOT="${KERNEL_ROOT:-$REPO_ROOT/../android-kernel-6.6}"
+PRODUCT_DIR="${PRODUCT_DIR:-$AOSP_ROOT/out/target/product/vsoc_x86_64}"
+KERNEL_DIST="${KERNEL_DIST:-$KERNEL_ROOT/out/virtual_device_x86_64/dist}"
 OUTPUT=""
-LZ4_BIN="${LZ4_BIN:-/opt/workspace/aosp/out/host/linux-x86/bin/lz4}"
+LZ4_BIN="${LZ4_BIN:-$AOSP_ROOT/out/host/linux-x86/bin/lz4}"
 
 usage() {
     cat <<EOF

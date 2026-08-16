@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-ANGLE_ROOT="${ANGLE_ROOT:-/opt/workspace/angle}"
+ANGLE_ROOT="${ANGLE_ROOT:-$REPO_ROOT/external/angle}"
 ANGLE_OUT_DIR="${ANGLE_OUT_DIR:-$ANGLE_ROOT/out/Release-GfxAngle-Linux}"
 DIST_ROOT="${DIST_ROOT:-$REPO_ROOT/out/dist}"
 JOBS="${JOBS:-$(nproc)}"
@@ -56,15 +56,16 @@ if [[ -z "$GN_BIN" || ! -x "$GN_BIN" ]]; then
     exit 1
 fi
 
+DEPOT_TOOLS_HINT="${DEPOT_TOOLS_ROOT:-$REPO_ROOT/external/depot_tools}"
 DEPOT_TOOLS_ROOT=""
-for candidate in /opt/workspace/depot_tools "$ANGLE_ROOT/third_party/depot_tools"; do
+for candidate in "$DEPOT_TOOLS_HINT" "$ANGLE_ROOT/third_party/depot_tools"; do
     if [[ -x "$candidate/autoninja" && -f "$candidate/python3_bin_reldir.txt" ]]; then
         DEPOT_TOOLS_ROOT="$candidate"
         break
     fi
 done
 if [[ -z "$DEPOT_TOOLS_ROOT" ]]; then
-    for candidate in "$ANGLE_ROOT/third_party/depot_tools" /opt/workspace/depot_tools; do
+    for candidate in "$ANGLE_ROOT/third_party/depot_tools" "$DEPOT_TOOLS_HINT"; do
         if [[ -x "$candidate/autoninja" ]]; then
             DEPOT_TOOLS_ROOT="$candidate"
             break

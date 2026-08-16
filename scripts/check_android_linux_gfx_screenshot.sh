@@ -10,7 +10,7 @@ LOCAL_PORT="8555"
 WAIT_SECS="120"
 SCREENSHOT_RETRIES="10"
 SCREENSHOT_DELAY_SECS="2"
-ADB_BIN="/opt/workspace/aosp/out/host/linux-x86/bin/adb"
+ADB_BIN="${ADB_BIN:-$(command -v adb || true)}"
 REMOTE_SCREENSHOT="/data/local/tmp/gfxstream-angle.png"
 
 usage() {

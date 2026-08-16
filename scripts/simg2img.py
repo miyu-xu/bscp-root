@@ -70,6 +70,7 @@ def simg2img(src, dst):
         return actual == expected
 
 if __name__ == '__main__':
-    src = sys.argv[1] if len(sys.argv) > 1 else 'C:/Users/developer/Desktop/super_sparse.img'
-    dst = sys.argv[2] if len(sys.argv) > 2 else 'C:/Users/developer/Desktop/super_ext4_raw.img'
-    simg2img(src, dst)
+    if len(sys.argv) != 3:
+        print(f'Usage: {sys.argv[0]} INPUT_SPARSE_IMAGE OUTPUT_RAW_IMAGE', file=sys.stderr)
+        raise SystemExit(2)
+    simg2img(sys.argv[1], sys.argv[2])

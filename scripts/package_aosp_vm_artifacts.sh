@@ -4,9 +4,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-AOSP_ROOT="/opt/workspace/aosp"
+AOSP_ROOT="${AOSP_ROOT:-$REPO_ROOT/../aosp}"
 DIST_ROOT="$REPO_ROOT/out/dist"
-OUTPUT_ROOT="/mnt/workspace/Windows/bscp-vm-artifacts"
+OUTPUT_ROOT="${OUTPUT_ROOT:-$REPO_ROOT/out/packages}"
 PACKAGE_NAME="bscp-vm-artifacts-$(date +%Y%m%d-%H%M%S)"
 PRODUCTS=("vsoc_x86_64" "vsoc_arm64_only")
 CREATE_ARCHIVE=0
