@@ -93,6 +93,10 @@ wrappers. Keep generated images and writable overlays outside Git.
 
 Read [Contributing](CONTRIBUTING.md), [Security](SECURITY.md), and the bilingual
 [documentation index](doc/README.md) before submitting changes.
+
+The optional HD product integration is documented in [HD feature branch](doc/HD_FEATURE.md) and is
+available only from `hd-feature`.
+
 ## License and commercial use
 
 BSCP-original orchestration, scripts, tests, configuration, and documentation tracked by this

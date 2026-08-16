@@ -73,6 +73,9 @@ MACOS_AVF_APEX_TREE_SOURCE=/path/to/arm64/apex_tree ./build_all.sh
 
 提交修改前请阅读[贡献指南](CONTRIBUTING.zh-CN.md)、[安全说明](SECURITY.zh-CN.md)和
 [中英文文档索引](doc/README.zh-CN.md)。
+
+可选 HD 产品集成只存在于 `hd-feature`，参见 [HD 功能分支](doc/HD_FEATURE.zh-CN.md)。
+
 ## 许可证与商业使用
 
 本仓库直接跟踪的 BSCP 原创编排、脚本、测试、配置和文档采用
