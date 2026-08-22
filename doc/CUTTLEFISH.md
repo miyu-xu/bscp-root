@@ -5,6 +5,10 @@
 The Cuttlefish-derived full Android path is an optional compatibility feature. The supported
 baseline, documentation order, and release gate remain Microdroid-first.
 
+For the reviewed three-platform implementation matrix, guest disk layout, graphics architecture,
+virtual devices, source changes, security limits, and release gates, see
+[Full Android / Cuttlefish Cross-Platform Implementation](ANDROID.md).
+
 Use this path for framework-level application compatibility, graphics scanout testing, or device
 simulation that cannot be represented by the minimal guest. It requires AOSP product images,
 additional host daemons, larger writable storage, and a broader security review.

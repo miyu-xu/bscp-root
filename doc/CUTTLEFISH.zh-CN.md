@@ -5,6 +5,9 @@
 基于 Cuttlefish 的完整 Android 路径是附带兼容能力。支持基线、文档顺序和发布门禁始终以
 Microdroid 为先。
 
+三平台实现矩阵、Guest 磁盘、图形架构、虚拟设备、代码修改、安全限制与发布门禁详见
+[完整 Android / Cuttlefish 跨平台实现详解](ANDROID.zh-CN.md)。
+
 该路径适合 Framework 级应用兼容、图形扫描输出验证，或精简 Guest 无法表达的设备模拟。
 它需要 AOSP 产品镜像、更多主机守护进程、更大的可写存储和更完整的安全审查。
 
