@@ -117,7 +117,7 @@ pipes plus explicit state files.
 | Console | File or persistent-service PTY | File or persistent-service PTY | File/named-pipe duplex console; separate serial capture |
 | Optional ADB bridge | localhost TCP to guest vsock | localhost TCP to UDS-vsock | localhost TCP to named-pipe-vsock |
 | Protected VM | Conditional on KVM/pKVM, pvmfw, and host capability; not a default gate | No release proof equivalent to Android pVM | Wrapper explicitly rejects `-Protected` |
-| Graphics | Not part of the Microdroid baseline | Not part of the baseline | Not part of the baseline |
+| Vulkan offscreen rendering | Host source path ready; graphics profile/guest pending | Host path ready; guest pending | Host source path ready; graphics runtime/guest pending |
 | Automated gate | `run_linux_avf_regression.sh` | `run_macos_avf_regression.sh` | `run_windows_avf_regression.ps1` |
 
 ### 5.1 Linux/KVM
@@ -197,7 +197,48 @@ adds CPU-count and file-handle path resolution.
 | `system/core` | Atomic and thread portability required by host builds; guest security semantics remain Android-derived |
 | Root repository | Three-platform builds, APEX staging, launch wrappers, regression, logging, and release orchestration |
 
-## 8. Security Boundary and Explicit Limitations
+## 8. Microdroid Vulkan Offscreen-Rendering Readiness
+
+The current implementation status is **host foundation ready; guest enablement pending**. Across
+the three hosts, crosvm already provides virtio-gpu, rutabaga/gfxstream, command and resource
+transport, synchronization, and the platform graphics backends. Microdroid offscreen rendering can
+reuse that implementation without a new host graphics architecture or a windowed display scanout.
+
+“Host ready” means that the source path and build profile exist; it does not mean every default
+distribution contains the graphics runtime. macOS enables the graphics build by default. Linux and
+Windows releases must use the existing `ENABLE_GFXSTREAM_ANGLE=1` profile or stage matching
+prebuilt gfxstream/ANGLE runtime. Once that artifact configuration is present, the remaining code
+work is guest-side and no new host backend is required.
+
+```mermaid
+flowchart LR
+    P["Microdroid payload"] --> VK["Guest Vulkan loader + ICD"]
+    VK --> VG["virtio-gpu"]
+    VG --> R["crosvm rutabaga"]
+    R --> G["gfxstream / host graphics backend"]
+    G --> O["offscreen image or buffer"]
+    O --> X["controlled readback / export"]
+```
+
+The remaining work is concentrated in the Microdroid guest and runtime profile:
+
+- enable and package the Vulkan loader, guest ICD/driver, and required runtime libraries in the
+  Microdroid image;
+- configure virtio-gpu discovery, device-node access, SELinux/permissions, and required Android
+  features or properties;
+- select the host's existing GPU capability in the VM profile while retaining a windowless,
+  no-scanout execution mode;
+- gate `vkEnumeratePhysicalDevices`, device and queue creation, compute or render-to-image,
+  synchronization, readback/export, and failure cleanup;
+- enforce memory, command-buffer, execution-time, and concurrency quotas, and validate malicious
+  shaders, device reset, and VMM/guest failures against the instance boundary.
+
+Microdroid Vulkan should therefore no longer be described as lacking host support. The precise
+status is that the host implementation is ready, while guest-image integration and end-to-end
+release evidence remain incomplete. It becomes a supported capability only after guest Vulkan API
+behavior, offscreen output correctness, cross-platform parity, and security/resource gates pass.
+
+## 9. Security Boundary and Explicit Limitations
 
 Current usable boundaries include a separate guest kernel and memory, explicit virtual devices,
 binding of kernel/initrd/super/vbmeta and payload identity, per-instance writable data and control
@@ -217,7 +258,7 @@ The following are **not** current cross-platform guarantees:
 - Host bridges should bind only to loopback; broader listeners expose guest services to a larger
   attack surface.
 
-## 9. Build and Run
+## 10. Build and Run
 
 Linux:
 
@@ -246,7 +287,7 @@ Windows:
 .\scripts\run_windows_avf_regression.ps1
 ```
 
-## 10. Validation Levels
+## 11. Validation Levels
 
 1. **Static**: Shell, PowerShell, Python, Rust/C++ build, links, and prohibited-information scan.
 2. **Artifact**: non-empty, correctly targeted `virtmgr`, `vm`, `crosvm`, and Binder RPC libraries.
@@ -259,7 +300,7 @@ Windows:
 A marker checker is evidence-evaluation logic, not evidence that it has run. Releases must retain
 logs, host facts, artifact digests, and exit status from each target machine.
 
-## 11. Known Alignment Gaps
+## 12. Known Alignment Gaps
 
 | Item | Current conclusion |
 | --- | --- |
@@ -268,10 +309,10 @@ logs, host facts, artifact digests, and exit status from each target machine.
 | crosvm process sandbox | Disabled by current launchers; requires host sandboxing or implementation work |
 | VFIO/device assignment | Linux/Android-specific; rejected on Windows and has no macOS equivalent |
 | hugepages/uclamp | Platform semantics differ; parameter presence does not establish parity |
-| Microdroid graphics | Not a default objective; the full Android graphics path is maintained separately |
+| Microdroid Vulkan | Host source path is ready; graphics artifact profile, guest image, and end-to-end gates need confirmation |
 | Production certification | Requires signed artifacts, hardware capabilities, keys/attestation, and target-host evidence |
 
-## 12. Code Entry Points
+## 13. Code Entry Points
 
 - Builds: [build_all.sh](../build_all.sh), [build_all.bat](../build_all.bat)
 - Linux wrapper: [vm_linux.sh](../scripts/vm_linux.sh)

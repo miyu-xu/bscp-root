@@ -115,7 +115,7 @@ sequenceDiagram
 | Console | 文件或持久服务 PTY | 文件或持久服务 PTY | 文件/named-pipe 双向控制台，可抓取独立串口 |
 | ADB bridge | 可选 localhost TCP→Guest vsock | 可选 localhost TCP→UDS-vsock | 可选 localhost TCP→named-pipe-vsock |
 | Protected VM | 取决于 KVM/pKVM、pvmfw 与 host capability；非默认门禁 | 没有与 Android pVM 等价的发布证明 | 包装器明确拒绝 `-Protected` |
-| 图形 | Microdroid 基线无图形；自定义 VM 可请求 GPU | 基线无图形 | 基线无图形 |
+| Vulkan 离屏渲染 | Host 源码路径已具备；图形 profile/Guest 待启用 | Host 路径已具备；Guest 待启用 | Host 源码路径已具备；图形 runtime/Guest 待启用 |
 | 自动门禁 | `run_linux_avf_regression.sh` | `run_macos_avf_regression.sh` | `run_windows_avf_regression.ps1` |
 
 ### 5.1 Linux/KVM
@@ -190,9 +190,44 @@ debug policy，并提供 CPU 数与文件句柄路径解析。主要修改分布
 | `system/core` | Host 构建所需 atomic/thread portability，Guest 安全语义仍以 Android 基线为准 |
 | 根仓库 | 三平台构建、APEX staging、运行包装、回归、日志和发布编排 |
 
-## 8. 安全边界与必须明确的限制
+## 8. Microdroid Vulkan 离屏渲染准备度
 
-### 8.1 当前可依赖的边界
+当前实现结论是 **Host 已具备基础能力，Guest 尚待启用**。三平台 Host 侧已有 crosvm
+virtio-gpu、rutabaga/gfxstream、命令与资源传输、同步机制及对应平台图形后端。Microdroid
+离屏渲染可以复用这些现有能力，不需要新增一套 Host 图形架构或依赖窗口 scanout。
+
+这里的“Host 已具备”指源码与构建 profile 已存在，不代表每个默认 dist 都包含图形 runtime。
+macOS 默认启用图形构建；Linux/Windows 发布物需要按现有 `ENABLE_GFXSTREAM_ANGLE=1` profile
+构建或装入匹配的预编译 gfxstream/ANGLE runtime。对于已经完成这一制品配置的 Host，后续
+代码改动集中在 Guest，不需要新增 Host 后端。
+
+```mermaid
+flowchart LR
+    P["Microdroid Payload"] --> VK["Guest Vulkan loader + ICD"]
+    VK --> VG["virtio-gpu"]
+    VG --> R["crosvm rutabaga"]
+    R --> G["gfxstream / host graphics backend"]
+    G --> O["offscreen image or buffer"]
+    O --> X["controlled readback / export"]
+```
+
+剩余工作主要位于 Microdroid Guest 与运行 profile：
+
+- 在 Microdroid 镜像中启用并打包 Vulkan loader、Guest ICD/驱动和所需运行库；
+- 配置 virtio-gpu 设备发现、设备节点访问、SELinux/权限与必要 Android feature/property；
+- 让 VM profile 选择 Host 已有的 GPU 设备能力，同时保持无窗口、无显示 scanout；
+- 建立 `vkEnumeratePhysicalDevices`、device/queue 创建、compute 或 render-to-image、同步、
+  readback/export 和异常清理门禁；
+- 对显存、command buffer、执行时间和并发设置配额，验证恶意 shader、设备重置和 VMM/Guest
+  故障不会突破实例边界。
+
+因此，当前不能再把 Microdroid Vulkan 描述为“Host 不支持”；准确状态是 Host 实现已经就绪，
+Guest 镜像集成及端到端发布证据尚未完成。只有 Guest Vulkan API、离屏输出正确性、跨平台
+一致性和安全/资源门禁全部通过后，才能把它列为正式支持能力。
+
+## 9. 安全边界与必须明确的限制
+
+### 9.1 当前可依赖的边界
 
 - Guest 使用独立 kernel、内存和显式虚拟设备。
 - Kernel/initrd/super/vbmeta 和 Payload 身份在启动计划中明确绑定。
@@ -200,7 +235,7 @@ debug policy，并提供 CPU 数与文件句柄路径解析。主要修改分布
 - Protected 请求在不能满足时应失败；Windows 已在 wrapper 中强制这一行为。
 - typed death reason 区分 Payload 变化、验证失败、无效配置、连接失败、VMM crash 与正常关机。
 
-### 8.2 当前不能宣称的保证
+### 9.2 当前不能宣称的保证
 
 - 桌面 Linux、macOS 和 Windows 的 Permission/SELinux provider 当前是环境驱动的 mock，
   不等价于 Android system_server + SELinux policy。
@@ -212,7 +247,7 @@ debug policy，并提供 CPU 数与文件句柄路径解析。主要修改分布
   profile 中显式关闭或重新审查。
 - Host bridge 只应绑定 loopback；扩大监听地址会扩大 Guest 服务攻击面。
 
-## 9. 构建与运行
+## 10. 构建与运行
 
 Linux：
 
@@ -241,7 +276,7 @@ Windows：
 .\scripts\run_windows_avf_regression.ps1
 ```
 
-## 10. 验证层级
+## 11. 验证层级
 
 1. **静态层**：Shell/PowerShell/Python 语法、Rust/C++ 编译、文档链接与禁止信息扫描。
 2. **产物层**：`virtmgr`、`vm`、`crosvm`、Binder RPC 动态库非空且架构正确。
@@ -254,7 +289,7 @@ Windows：
 仓库中的 marker checker 是证据判定逻辑，不是已经执行的证据。发布时必须保存目标机器上
 本次运行产生的日志、主机信息、制品摘要和退出状态。
 
-## 11. 已知未对齐项
+## 12. 已知未对齐项
 
 | 项目 | 当前结论 |
 | --- | --- |
@@ -263,10 +298,10 @@ Windows：
 | crosvm process sandbox | 当前 launcher 禁用，需额外 host sandbox 或后续实现 |
 | VFIO/device assignment | Linux/Android 专属；Windows launcher 拒绝，macOS 无等价路径 |
 | hugepages/uclamp | 平台语义不同，不能只凭参数存在声明对齐 |
-| Microdroid 图形 | 非默认目标；完整 Android 图形路径单独维护 |
+| Microdroid Vulkan | Host 源码路径已具备；图形制品 profile、Guest 镜像与端到端门禁待确认 |
 | 生产认证 | 需要签名制品、硬件能力、密钥/证明链和平台实机证据 |
 
-## 12. 关键代码入口
+## 13. 关键代码入口
 
 - 构建：[build_all.sh](../build_all.sh)、[build_all.bat](../build_all.bat)
 - Linux：[vm_linux.sh](../scripts/vm_linux.sh)
