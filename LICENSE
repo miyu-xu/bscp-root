@@ -1,0 +1,32 @@
+BSCP ORIGINAL MATERIAL LICENSE
+
+SPDX-License-Identifier: PolyForm-Noncommercial-1.0.0
+
+The BSCP-original material in this repository is licensed under the
+PolyForm Noncommercial License 1.0.0:
+
+https://polyformproject.org/licenses/noncommercial/1.0.0
+
+Required Notice: Copyright (c) 2026 miyu-xu. All rights reserved except as
+expressly granted under the PolyForm Noncommercial License 1.0.0 or a separate
+written commercial license.
+
+COMMERCIAL USE
+
+Any use that is not a permitted purpose under the PolyForm Noncommercial
+License 1.0.0 requires a separate commercial license or prior written
+authorization from the applicable BSCP copyright holder before that use
+begins. See COMMERCIAL_LICENSING.md.
+
+SCOPE AND THIRD-PARTY MATERIAL
+
+This license applies only to material for which the BSCP copyright holder has
+the authority to grant a license. Files, directories, nested repositories,
+prebuilt binaries, and dependencies that identify another license or copyright
+holder remain governed by their own terms. Nothing in this file replaces,
+restricts, or relicenses Apache-2.0, BSD, MIT, GPL, or other third-party
+material. See LICENSE_POLICY.md.
+
+The Simplified Chinese documents are explanatory translations. If a
+translation conflicts with the English license terms, the English terms and
+the applicable third-party license control.

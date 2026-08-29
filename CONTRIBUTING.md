@@ -17,3 +17,12 @@ Before committing:
 
 Do not add hosted CI workflow files to this repository. Downstream automation may invoke the same
 documented commands without changing the source tree.
+
+## Contribution licensing
+
+You must have the right to submit every contribution. Unless a file is governed by a compatible
+third-party license, contributions to BSCP-original material are distributed under the repository
+license. Submission does not transfer copyright or automatically permit the project owner to offer
+your contribution under a separate commercial license. Maintainers may require a separate written
+contributor agreement before merging material that must remain commercially licensable. See the
+[license policy](LICENSE_POLICY.md).

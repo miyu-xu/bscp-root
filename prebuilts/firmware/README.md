@@ -37,3 +37,13 @@ crosvm run --bios prebuilts/firmware/OVMF_CODE.fd ...
 - Target: OVMF X64
 - Toolchain: GCC5
 - Features: VirtioBlk, VirtioNet, VirtioSerial, NVMe, TPM2
+
+## License and provenance
+
+These firmware binaries are derived from TianoCore EDK II/OVMF stable202408. They are third-party
+material and are not relicensed under the BSCP PolyForm Noncommercial license. Redistribution is
+subject to the upstream [EDK II/OVMF license](LICENSE.EDK2), primarily
+`BSD-2-Clause-Patent` with the listed MIT-covered portions. Preserve that license with source and
+binary distributions.
+
+Upstream source: <https://github.com/tianocore/edk2/tree/edk2-stable202408/OvmfPkg>

@@ -329,6 +329,7 @@ of relying on developer-machine defaults.
 ## 14. Code Entry Points
 
 - Artifact packager: [package_aosp_vm_artifacts.sh](../scripts/package_aosp_vm_artifacts.sh)
+- Packaging workflow: [AOSP Artifact Packaging](AOSP_ARTIFACT_PACKAGING.md)
 - GPT disk builder: [create_cf_android_disk.py](../scripts/create_cf_android_disk.py)
 - Linux: [run_android_linux.sh](../scripts/run_android_linux.sh)
 - macOS: [run_android_macos.sh](../scripts/run_android_macos.sh)

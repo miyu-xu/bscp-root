@@ -93,3 +93,14 @@ wrappers. Keep generated images and writable overlays outside Git.
 
 Read [Contributing](CONTRIBUTING.md), [Security](SECURITY.md), and the bilingual
 [documentation index](doc/README.md) before submitting changes.
+## License and commercial use
+
+BSCP-original orchestration, scripts, tests, configuration, and documentation tracked by this
+repository are available under the
+[PolyForm Noncommercial License 1.0.0](LICENSE). Commercial use requires prior written
+authorization under a separate [commercial license](COMMERCIAL_LICENSING.md).
+
+This commercial restriction means the BSCP-original portion is source-available, not
+OSI-approved open-source software. Independent AOSP, crosvm, gfxstream, aemu, firmware, and other
+third-party components retain their own licenses and notices; the BSCP license does not replace or
+restrict them. Read the complete [license policy](LICENSE_POLICY.md) before use or redistribution.

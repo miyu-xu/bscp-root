@@ -421,6 +421,21 @@ copy_selected_host_tools() {
     copy_file "$AOSP_HOST_ROOT/linux_musl-arm64/bin/adb" "$PACKAGE_DIR/host-tools/linux-arm64/bin/adb"
 }
 
+copy_license_metadata() {
+    copy_file "$REPO_ROOT/LICENSE" "$PACKAGE_DIR/licenses/bscp-root/LICENSE"
+    copy_file "$REPO_ROOT/LICENSE_POLICY.md" "$PACKAGE_DIR/licenses/bscp-root/LICENSE_POLICY.md"
+    copy_file "$REPO_ROOT/LICENSE_POLICY.zh-CN.md" "$PACKAGE_DIR/licenses/bscp-root/LICENSE_POLICY.zh-CN.md"
+    copy_file "$REPO_ROOT/COMMERCIAL_LICENSING.md" "$PACKAGE_DIR/licenses/bscp-root/COMMERCIAL_LICENSING.md"
+    copy_file "$REPO_ROOT/COMMERCIAL_LICENSING.zh-CN.md" "$PACKAGE_DIR/licenses/bscp-root/COMMERCIAL_LICENSING.zh-CN.md"
+    copy_file "$REPO_ROOT/prebuilts/firmware/LICENSE.EDK2" "$PACKAGE_DIR/licenses/firmware/LICENSE.EDK2"
+    copy_file "$REPO_ROOT/external/crosvm/LICENSE" "$PACKAGE_DIR/licenses/external-crosvm/LICENSE"
+    copy_file "$REPO_ROOT/frameworks/native/NOTICE" "$PACKAGE_DIR/licenses/frameworks-native/NOTICE"
+    copy_file "$REPO_ROOT/hardware/google/gfxstream/LICENSE" "$PACKAGE_DIR/licenses/hardware-google-gfxstream/LICENSE"
+    copy_file "$REPO_ROOT/hardware/google/aemu/LICENSE" "$PACKAGE_DIR/licenses/hardware-google-aemu/LICENSE"
+    copy_file "$REPO_ROOT/hd/LICENSE" "$PACKAGE_DIR/licenses/bscp-hd/LICENSE"
+    copy_file "$REPO_ROOT/hd/web/NOTICE.md" "$PACKAGE_DIR/licenses/bscp-hd/NOTICE.md"
+}
+
 write_summary() {
     local head
     head="$(git -C "$REPO_ROOT" rev-parse --short HEAD 2>/dev/null || true)"
@@ -443,6 +458,8 @@ Contents:
 - products/microdroid/soong/<arch>: architecture-specific Microdroid kernel/initrd/super/vbmeta/json/fstab.
 - host/linux-x86_64: current bscp Linux host runtime only.
 - host-tools: selected AOSP tools that exist in this workspace, not full host output trees.
+- licenses: BSCP licensing terms and selected top-level third-party notices. This is not a
+  substitute for a complete generated SBOM and license inventory.
 
 This package was produced from existing AOSP artifacts without a clean or full rebuild. Direct-boot
 aggregate disks were regenerated from the packaged product images and structurally validated.
@@ -485,6 +502,7 @@ copy_microdroid_soong_arch "x86_64" "android_x86_64_silvermont"
 copy_microdroid_soong_arch "arm64" "android_arm64_armv8-a_cortex-a53"
 copy_host_runtime
 copy_selected_host_tools
+copy_license_metadata
 write_summary
 create_archive
 

@@ -73,3 +73,12 @@ MACOS_AVF_APEX_TREE_SOURCE=/path/to/arm64/apex_tree ./build_all.sh
 
 提交修改前请阅读[贡献指南](CONTRIBUTING.zh-CN.md)、[安全说明](SECURITY.zh-CN.md)和
 [中英文文档索引](doc/README.zh-CN.md)。
+## 许可证与商业使用
+
+本仓库直接跟踪的 BSCP 原创编排、脚本、测试、配置和文档采用
+[PolyForm Noncommercial License 1.0.0](LICENSE)。商业使用必须事先取得书面授权，并另行
+签订或获得[商业许可证](COMMERCIAL_LICENSING.zh-CN.md)。
+
+由于限制商业用途，BSCP 原创部分属于 source-available，而不是 OSI 批准的开源软件。独立
+AOSP、crosvm、gfxstream、aemu、固件和其他第三方组件继续适用其自身许可证与声明；BSCP
+许可证不会替换或限制它们。使用或再分发前请阅读完整[许可证策略](LICENSE_POLICY.zh-CN.md)。

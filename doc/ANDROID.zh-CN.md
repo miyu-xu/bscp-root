@@ -328,6 +328,7 @@ Get-Help .\scripts\run_android_windows_gfxstream_angle.ps1 -Full
 ## 14. 关键入口
 
 - 制品打包：[package_aosp_vm_artifacts.sh](../scripts/package_aosp_vm_artifacts.sh)
+- 打包流程：[AOSP 产物打包说明](AOSP_ARTIFACT_PACKAGING.zh-CN.md)
 - GPT 磁盘：[create_cf_android_disk.py](../scripts/create_cf_android_disk.py)
 - Linux：[run_android_linux.sh](../scripts/run_android_linux.sh)
 - macOS：[run_android_macos.sh](../scripts/run_android_macos.sh)
