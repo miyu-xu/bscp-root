@@ -58,6 +58,25 @@ MACOS_AVF_APEX_TREE_SOURCE=/path/to/arm64/apex_tree ./build_all.sh
 `run_windows_avf_regression.ps1` 运行对应平台回归。工具链、产物、APEX 准备与生产加固
 要求见[部署指南](doc/DEPLOYMENT.zh-CN.md)。
 
+## 无硬件 AVF 检查器测试
+
+Linux/macOS 日志检查器要求 Ready 证据，不能只凭创建或启动消息放行；按 CID 字段或
+完整控制台行匹配目标 CID，并保留持久模式重试失败的退出码。超时、场景选择和清理
+策略保持不变。
+
+使用 Python 3、Bash、grep 和 awk 运行以下专项检查，不会启动虚拟机：
+
+```bash
+python3 tests/check_avf_markers_fixtures.py
+python3 tests/check_avf_gate_boundaries.py --repo-root .
+python3 tests/test_retry_exit_status.py --repo-root .
+python3 -m unittest discover -s tests -v
+```
+
+合成日志与模拟重试测试不能证明原生 macOS/Windows 运行、Guest 启停、虚拟化后端、
+图形或发布就绪。macOS UDS 单元测试在其他主机上跳过；平台前置条件和完整回归检查
+仍须另行执行。
+
 ## 附带的完整 Android 路径
 
 基于 Cuttlefish 的路径用于兼容性验证、图形链路调试及必须依赖完整 Android Framework
@@ -82,3 +101,4 @@ MACOS_AVF_APEX_TREE_SOURCE=/path/to/arm64/apex_tree ./build_all.sh
 由于限制商业用途，BSCP 原创部分属于 source-available，而不是 OSI 批准的开源软件。独立
 AOSP、crosvm、gfxstream、aemu、固件和其他第三方组件继续适用其自身许可证与声明；BSCP
 许可证不会替换或限制它们。使用或再分发前请阅读完整[许可证策略](LICENSE_POLICY.zh-CN.md)。
+

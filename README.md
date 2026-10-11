@@ -75,6 +75,25 @@ Run the platform regression wrapper after a successful build:
 See [Deployment](doc/DEPLOYMENT.md) for toolchain prerequisites, artifacts, APEX staging, and
 production hardening.
 
+## No-hardware AVF checker tests
+
+The Linux/macOS log checkers require Ready evidence rather than creation/start messages,
+match the requested CID field or complete console line, and preserve persistent-retry
+failure exit codes. Timeout, scenario selection, and cleanup policies are unchanged.
+
+Run these focused checks with Python 3 and Bash, grep, and awk; no VM is started:
+
+```bash
+python3 tests/check_avf_markers_fixtures.py
+python3 tests/check_avf_gate_boundaries.py --repo-root .
+python3 tests/test_retry_exit_status.py --repo-root .
+python3 -m unittest discover -s tests -v
+```
+
+Synthetic log and mocked retry tests do not verify native macOS/Windows execution,
+guest boot/exit, hypervisors, graphics, or release readiness. The macOS UDS unit test
+is skipped on other hosts. Platform prerequisite and full regression checks are still required.
+
 ## Optional full Android path
 
 The Cuttlefish-derived path is for compatibility testing, graphics bring-up, and workloads that
