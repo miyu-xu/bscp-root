@@ -93,12 +93,17 @@ step_timeout() {
     shift
     local label="$1"
     shift
+    # Exit status alone cannot distinguish our deadline from an external signal.
+    local timeout_evidence
+    timeout_evidence="$(mktemp -d "${TMPDIR:-/tmp}/bscp-timeout.XXXXXX")" || return 1
     set +e
     "$@" &
     local cmd_pid=$!
     (
-        sleep "$timeout_secs"
+        sleep "$timeout_secs" || exit 0
         kill -TERM "$cmd_pid" 2>/dev/null || exit 0
+        # Record only a successful deadline-triggered signal, not merely elapsed time.
+        : > "$timeout_evidence/fired"
         sleep 2
         kill -KILL "$cmd_pid" 2>/dev/null || true
     ) &
@@ -108,10 +113,12 @@ step_timeout() {
     kill "$watchdog_pid" 2>/dev/null || true
     wait "$watchdog_pid" 2>/dev/null || true
     set -e
-    if [[ $rc -eq 143 || $rc -eq 137 ]]; then
+    if [[ $rc -eq 143 || $rc -eq 137 ]] && [[ -f "$timeout_evidence/fired" ]]; then
         echo "  TIMEOUT after ${timeout_secs}s: $label" >&2
+        rm -rf "$timeout_evidence"
         return 124
     fi
+    rm -rf "$timeout_evidence"
     return "$rc"
 }
 
