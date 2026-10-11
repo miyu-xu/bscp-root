@@ -81,12 +81,24 @@ The Linux/macOS log checkers require Ready evidence rather than creation/start m
 match the requested CID field or complete console line, and preserve persistent-retry
 failure exit codes. Timeout, scenario selection, and cleanup policies are unchanged.
 
+Trace-based checks require this run’s client Ready callback or persistent detach line,
+use the current run log’s Created CID, and require successful
+`notify_payload_ready` evidence after that CID’s creation in the latest virtmgr session.
+RPC-entry `notifyPayloadReady` text, other VMs, and earlier sessions do not count.
+Incomplete or rotated traces missing the required session/context records fail closed;
+keep the complete trace and current run log together. Trace writes can silently fail,
+so retained trace alone cannot prove freshness. These conservative checks can reject a
+Ready VM when trace evidence is incomplete. This is log correlation under the
+wrapper’s per-service trace ownership convention, not independent VM liveness proof.
+No-trace guest/client Ready fallbacks remain supported.
+
 Run these focused checks with Python 3 and Bash, grep, and awk; no VM is started:
 
 ```bash
 python3 tests/check_avf_markers_fixtures.py
 python3 tests/check_avf_gate_boundaries.py --repo-root .
 python3 tests/test_retry_exit_status.py --repo-root .
+python3 -m unittest discover -s tests -p test_avf_trace_correlation.py -v
 python3 tests/test_service_status_validation.py --repo-root .
 python3 -m unittest discover -s tests -v
 ```

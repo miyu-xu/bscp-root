@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/avf_trace_evidence.sh"
+
 COMMAND="help"
 REPO_ROOT=""
 CID=0
@@ -59,17 +61,12 @@ service_trace_path() {
     printf '%s\n' "$SERVICE_ROOT/virtmgr-trace.log"
 }
 
-resolve_cid_from_trace() {
+wait_for_payload_trace_ready() {
     local trace_path="$1"
-    grep -o 'cid=[0-9]\+' "$trace_path" | tail -n 1 | cut -d= -f2
-}
-
-wait_for_trace_pattern() {
-    local trace_path="$1"
-    local pattern="$2"
+    local run_log="$2"
     local deadline=$((SECONDS + 90))
     while (( SECONDS < deadline )); do
-        [[ -f "$trace_path" ]] && grep -q "$pattern" "$trace_path" && return 0
+        avf_trace_has_event "$trace_path" "$run_log" ready && return 0
         sleep 1
     done
     return 1
@@ -137,10 +134,10 @@ EOF
             if [[ "$PERSIST_VIRTMGR" -eq 1 ]]; then
                 trace_path="$(service_trace_path)"
             fi
-            wait_for_trace_pattern "$trace_path" "notifyPayloadReady"
+            wait_for_payload_trace_ready "$trace_path" "$LOG_DIR/vm-run-microdroid.log"
             CID="${CID:-0}"
             if [[ "$CID" -eq 0 ]]; then
-                CID="$(resolve_cid_from_trace "$trace_path")"
+                CID="$(avf_run_cid "$LOG_DIR/vm-run-microdroid.log")"
             fi
             echo "CID                 : $CID"
             echo "ADB tcp bridge      : localhost:$ADB_PORT"
