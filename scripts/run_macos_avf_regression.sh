@@ -113,6 +113,22 @@ step_timeout() {
     return "$rc"
 }
 
+verify_service_status_stopped() {
+    local status_output
+    if ! status_output="$("$VM_WRAPPER" -Command service-status "${VM_COMMON_ARGS[@]}" -ServiceRoot "$SERVICE_ROOT")"; then
+        echo "Service-status failed after stop-service; stopped state is unverified." >&2
+        return 1
+    fi
+    # Require exactly one explicit stopped field; absent, malformed, duplicate,
+    # or conflicting Running fields are not successful verification.
+    if [[ "$(printf '%s\n' "$status_output" | grep '^Running:' || true)" != 'Running: 0' ]]; then
+        echo "Service-status did not report an unambiguous stopped state after stop-service." >&2
+        return 1
+    fi
+    # The wrapper reports registration state, not independent process-exit proof.
+    echo "  [OK]   Service status reports not running after stop-service"
+}
+
 collect_failure_logs() {
     local output_root="$1"
     local collect_dir="$output_root/failure-logs-$(date +%s)"
@@ -378,15 +394,16 @@ else
         step_timeout 15 "stop-service" \
             "$VM_WRAPPER" -Command stop-service "${VM_COMMON_ARGS[@]}" -ServiceRoot "$SERVICE_ROOT"
 
-    # Verify stop-service succeeded: service-status should report not running.
-    if ! "$VM_WRAPPER" -Command service-status "${VM_COMMON_ARGS[@]}" -ServiceRoot "$SERVICE_ROOT" 2>/dev/null | grep -q 'Running: 1'; then
-        echo "  [OK]   Service stopped cleanly after stop-service"
-    else
-        echo "  [WARN] Service still appears running after stop-service"
-    fi
+    # A failed/malformed status read must not count as stopped. Always perform
+    # final cleanup before propagating this validation failure.
+    service_status_result=0
+    verify_service_status_stopped || service_status_result=$?
 
     run_step "cleanup (final)" \
         "$VM_WRAPPER" -Command cleanup "${VM_COMMON_ARGS[@]}"
+    if [[ "$service_status_result" -ne 0 ]]; then
+        exit "$service_status_result"
+    fi
 fi
 
 echo "macOS AVF regression completed successfully."
