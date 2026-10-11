@@ -216,13 +216,13 @@ wait_for_payload_ready() {
     local run_log="$3"
     local deadline=$((SECONDS + 120))
     while (( SECONDS < deadline )); do
-        if [[ -f "$guest_log" ]] && grep -Eq 'Notified host payload ready successfully|payload ready' "$guest_log"; then
+        if [[ -f "$guest_log" ]] && grep -Eq 'Notified host payload ready successfully[[:space:]]*$' "$guest_log"; then
             return 0
         fi
         if [[ -f "$trace_path" ]] && grep -q 'notifyPayloadReady' "$trace_path"; then
             return 0
         fi
-        if [[ -f "$run_log" ]] && grep -Eq 'payload is ready|Persistent host virtmgr mode: leaving VM running after READY\.' "$run_log"; then
+        if [[ -f "$run_log" ]] && grep -Eq '^(payload is ready|Persistent host virtmgr mode: leaving VM running after READY\.)[[:space:]]*$' "$run_log"; then
             return 0
         fi
         sleep 1
@@ -256,8 +256,9 @@ run_persistent_microdroid_with_retry() {
             -PersistVirtmgr \
             -ServiceRoot "$SERVICE_ROOT"; then
             return 0
+        else
+            status=$?
         fi
-        status=$?
 
         if (( attempt == max_attempts )) || ! run_log_has_guest_cid_conflict "$log_dir/vm-run-microdroid.log"; then
             return "$status"

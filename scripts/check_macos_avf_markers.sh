@@ -18,6 +18,32 @@ assert_contains() {
     grep -Eq "$pattern" "$path" || { echo "missing pattern '$pattern' in $path" >&2; exit 1; }
 }
 
+
+assert_expected_cid() {
+    local path="$1"
+    local kind="$2"
+    [[ -z "$EXPECTED_CID" ]] && return 0
+    # CID is a decimal field, never a regular expression or arbitrary substring.
+    [[ "$EXPECTED_CID" =~ ^[0-9]+$ ]] || {
+        echo "invalid expected CID: $EXPECTED_CID" >&2; exit 1;
+    }
+    if [[ "$kind" == "list" ]]; then
+        # vm list uses pretty Rust Debug output: a named cid field on its own line.
+        # Match the field rather than requesterPid, paths, or another CID's digits.
+        awk -v expected="$EXPECTED_CID" '
+            /^[[:space:]]*cid:[[:space:]]*[0-9]+,[[:space:]]*$/ {
+                value = $0
+                sub(/^[[:space:]]*cid:[[:space:]]*/, "", value)
+                sub(/,[[:space:]]*$/, "", value)
+                if (value == expected) found = 1
+            }
+            END { exit !found }
+        ' "$path" || { echo "missing CID $EXPECTED_CID in $path" >&2; exit 1; }
+    else
+        assert_contains "$path" "^Connecting to host VM console for CID ${EXPECTED_CID}[[:space:]]*$"
+    fi
+}
+
 if [[ -z "$TRACE_PATH" ]]; then
     TRACE_PATH="$LOG_DIR/virtmgr-trace.log"
 fi
@@ -36,8 +62,15 @@ case "$SCENARIO" in
         else
             assert_contains "$RUN_LOG" 'Created .* with CID [0-9]+'
             assert_contains "$RUN_LOG" 'vm: after vm.start'
-            if [[ -s "$GUEST_LOG" ]]; then
-                assert_contains "$GUEST_LOG" 'notifying payload started|payload started|Notified host payload ready successfully|payload ready'
+            # VM creation and payload start are not evidence of payload readiness.
+            # The wrapper captures the vm client's Ready callback in RUN_LOG.
+            if [[ -s "$GUEST_LOG" ]] && grep -Eq 'Notified host payload ready successfully[[:space:]]*$' "$GUEST_LOG"; then
+                :
+            elif grep -Eq '^payload is ready[[:space:]]*$' "$RUN_LOG"; then
+                :
+            else
+                echo "missing payload-ready evidence in $GUEST_LOG and $RUN_LOG" >&2
+                exit 1
             fi
         fi
         ;;
@@ -47,27 +80,27 @@ case "$SCENARIO" in
         if [[ -f "$TRACE_PATH" ]]; then
             assert_contains "$TRACE_PATH" 'notifyPayloadReady'
         elif [[ -s "$GUEST_LOG" ]]; then
-            assert_contains "$GUEST_LOG" 'Notified host payload ready successfully|payload ready'
+            assert_contains "$GUEST_LOG" 'Notified host payload ready successfully[[:space:]]*$'
         else
-            assert_contains "$RUN_LOG" 'payload is ready|Persistent host virtmgr mode: leaving VM running after READY\.'
+            assert_contains "$RUN_LOG" '^(payload is ready|Persistent host virtmgr mode: leaving VM running after READY\.)[[:space:]]*$'
         fi
         ;;
     start-microdroid-adb)
         if [[ -f "$TRACE_PATH" ]]; then
             assert_contains "$TRACE_PATH" 'notifyPayloadReady'
         else
-            assert_contains "$GUEST_LOG" 'Notified host payload ready successfully|payload ready'
+            assert_contains "$GUEST_LOG" 'Notified host payload ready successfully[[:space:]]*$'
         fi
         assert_contains "$LOG_DIR/adb-connect.log" 'connected to|already connected to'
         assert_contains "$LOG_DIR/adb-connect.log" '^device$'
         ;;
     list)
         assert_contains "$LOG_DIR/vm-list.log" 'Running VMs:'
-        [[ -z "$EXPECTED_CID" ]] || assert_contains "$LOG_DIR/vm-list.log" "$EXPECTED_CID"
+        assert_expected_cid "$LOG_DIR/vm-list.log" list
         ;;
     console)
         assert_contains "$LOG_DIR/vm-console.log" 'Connecting to host VM console for CID'
-        [[ -z "$EXPECTED_CID" ]] || assert_contains "$LOG_DIR/vm-console.log" "$EXPECTED_CID"
+        assert_expected_cid "$LOG_DIR/vm-console.log" console
         ;;
     *)
         echo "unsupported scenario: $SCENARIO" >&2
