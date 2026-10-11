@@ -70,12 +70,17 @@ Linux/macOS 日志检查器要求 Ready 证据，不能只凭创建或启动消�
 python3 tests/check_avf_markers_fixtures.py
 python3 tests/check_avf_gate_boundaries.py --repo-root .
 python3 tests/test_retry_exit_status.py --repo-root .
+python3 tests/test_service_status_validation.py --repo-root .
 python3 -m unittest discover -s tests -v
 ```
 
 合成日志与模拟重试测试不能证明原生 macOS/Windows 运行、Guest 启停、虚拟化后端、
 图形或发布就绪。macOS UDS 单元测试在其他主机上跳过；平台前置条件和完整回归检查
 仍须另行执行。
+
+macOS 完整回归要求停止服务后的状态命令执行成功，且只有一个明确的 `Running: 0`
+字段。状态读取失败或输出含糊时，先执行最终清理，再使验证失败。此检查验证封装脚本
+报告的状态，不能独立证明宿主进程退出或 Guest 正常关机。
 
 ## 附带的完整 Android 路径
 

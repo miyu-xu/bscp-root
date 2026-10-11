@@ -87,12 +87,18 @@ Run these focused checks with Python 3 and Bash, grep, and awk; no VM is started
 python3 tests/check_avf_markers_fixtures.py
 python3 tests/check_avf_gate_boundaries.py --repo-root .
 python3 tests/test_retry_exit_status.py --repo-root .
+python3 tests/test_service_status_validation.py --repo-root .
 python3 -m unittest discover -s tests -v
 ```
 
 Synthetic log and mocked retry tests do not verify native macOS/Windows execution,
 guest boot/exit, hypervisors, graphics, or release readiness. The macOS UDS unit test
 is skipped on other hosts. Platform prerequisite and full regression checks are still required.
+
+The macOS full regression requires a successful post-stop status command with one
+explicit `Running: 0` field. Failed or ambiguous status output fails validation
+after final cleanup. This verifies the wrapper's status report, not independent
+process-exit or guest-shutdown evidence.
 
 ## Optional full Android path
 
