@@ -4,10 +4,14 @@ import argparse
 import json
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import tempfile
 
-START = 'Created VM with CID 42\nvm: after vm.start\n'
+START = 'Created VM from payload with CID 42, state is STARTED.\nvm: after vm.start\n'
+TRACE = ('virtmgr: run start\n'
+         'virtmgr: create_vm_internal vm_context cid=42 temp_dir=/tmp/virtmgr/42\n'
+         'virtmgr: notify_payload_started cid=42\nvirtmgr: notify_payload_ready cid=42\n')
 READY = 'I microdroid_manager: Notified host payload ready successfully\n'
 CALLBACK = 'payload is ready\n'
 DETACH = 'Persistent host virtmgr mode: leaving VM running after READY.\n'
@@ -36,6 +40,7 @@ def main():
                 assert function
                 # Advance Bash's clock on the first sleep; no actual 120-second wait.
                 script = 'set -euo pipefail\nsleep() { SECONDS=$((SECONDS + 121)); }\n'
+                script += 'source ' + shlex.quote(str(args.repo_root.resolve() / 'scripts/avf_trace_evidence.sh')) + '\n'
                 script += function.group() + '\nwait_for_payload_ready "$1/guest-log.txt" "$1/virtmgr-trace.log" "$1/vm-run-microdroid.log"\n'
                 command = ['bash', '-c', script, 'test', tmp]
             else:
@@ -59,7 +64,7 @@ def main():
             ]:
                 record(platform, scenario, name, {**base, 'guest-log.txt': guest}, expected)
             record(platform, scenario, 'missing_guest', base, 1)
-            record(platform, scenario, 'trace_ready', {**base, 'virtmgr-trace.log': 'notifyPayloadReady\n'}, 0)
+            record(platform, scenario, 'trace_ready', {**base, 'vm-run-microdroid.log': START + CALLBACK, 'virtmgr-trace.log': TRACE}, 0)
             record(platform, scenario, 'empty_trace_not_fallback', {**base, 'virtmgr-trace.log': '', 'guest-log.txt': READY}, 1)
         for name, output, expected in [
             ('callback_exact', CALLBACK, 0), ('callback_crlf', 'payload is ready\t\r\n', 0),
@@ -111,7 +116,7 @@ def main():
             ('detach', {'vm-run-microdroid.log': DETACH}, 0),
             ('callback_error', {'vm-run-microdroid.log': 'Error: ' + CALLBACK}, 1),
             ('callback_suffix', {'vm-run-microdroid.log': 'payload is ready: false\n'}, 1),
-            ('trace_ready', {'virtmgr-trace.log': 'notifyPayloadReady\n'}, 0),
+            ('trace_ready', {'vm-run-microdroid.log': START + CALLBACK, 'virtmgr-trace.log': TRACE}, 0),
             ('missing_all', {}, 1),
             ('guest_success_trailing_space', {'guest-log.txt': READY.rstrip('\n') + '\t\r\n'}, 0),
         ]:

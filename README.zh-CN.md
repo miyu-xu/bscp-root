@@ -64,12 +64,22 @@ Linux/macOS 日志检查器要求 Ready 证据，不能只凭创建或启动消�
 完整控制台行匹配目标 CID，并保留持久模式重试失败的退出码。超时、场景选择和清理
 策略保持不变。
 
+trace 检查要求当次客户端 Ready callback 或持久 detach 成功行，从运行日志的 Created
+记录取得 CID，仅接受最新 virtmgr 会话中该 CID
+创建之后的成功 `notify_payload_ready` 事件。RPC 入口的 `notifyPayloadReady`、其他 VM
+或旧会话记录不能证明本次 Ready。截断或轮转导致会话/创建记录缺失时拒绝通过；应保留
+完整 trace 与对应运行日志。trace 写入可能静默失败，因此旧 trace 单独不能证明新鲜度；
+这些保守检查可能拒绝已经 Ready、但 trace 证据不完整的 VM。
+这是在包装脚本每个服务独占 trace 的约定下关联日志，
+不独立证明 VM 仍在运行。无 trace 时原有 Guest/客户端 Ready 回退仍受支持。
+
 使用 Python 3、Bash、grep 和 awk 运行以下专项检查，不会启动虚拟机：
 
 ```bash
 python3 tests/check_avf_markers_fixtures.py
 python3 tests/check_avf_gate_boundaries.py --repo-root .
 python3 tests/test_retry_exit_status.py --repo-root .
+python3 -m unittest discover -s tests -p test_avf_trace_correlation.py -v
 python3 tests/test_service_status_validation.py --repo-root .
 python3 -m unittest discover -s tests -v
 ```

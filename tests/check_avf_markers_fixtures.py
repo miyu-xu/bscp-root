@@ -20,7 +20,9 @@ from pathlib import Path
 
 START = "Created VM from payload with CID 42, state is STARTED.\nvm: after vm.start\n"
 READY = "Notified host payload ready successfully\n"
-TRACE = "notifyPayloadStarted\nnotifyPayloadReady\n"
+TRACE = ("virtmgr: run start\n"
+         "virtmgr: create_vm_internal vm_context cid=42 temp_dir=/tmp/virtmgr/42\n"
+         "virtmgr: notify_payload_started cid=42\nvirtmgr: notify_payload_ready cid=42\n")
 
 
 def main() -> int:
@@ -69,8 +71,8 @@ def main() -> int:
                 ("empty_trace_is_authoritative", {log: START, "virtmgr-trace.log": "", "guest-log.txt": READY}, 1, ()),
                 ("started_trace_is_not_ready", {log: START, "virtmgr-trace.log": "notifyPayloadStarted\n", "guest-log.txt": READY}, 1, ()),
                 ("ready_trace_requires_started", {"virtmgr-trace.log": "notifyPayloadReady\n"}, 1, ()),
-                ("complete_trace", {"virtmgr-trace.log": TRACE}, 0, ()),
-                ("explicit_trace_path", {"custom-trace.log": TRACE}, 0, ("@custom-trace.log",)),
+                ("complete_trace", {log: START + "payload is ready\n", "virtmgr-trace.log": TRACE}, 0, ()),
+                ("explicit_trace_path", {log: START + "payload is ready\n", "custom-trace.log": TRACE}, 0, ("@custom-trace.log",)),
                 ("other_scenario_log_not_accepted", {"vm-run.log": START, "guest-log.txt": READY}, 1, ()),
             ]
             for name, files, expected, extra in cases:
@@ -78,13 +80,13 @@ def main() -> int:
 
         # Positive controls use producer-shaped output; scenario selection remains unchanged.
         controls = [
-            ("persistent-run-microdroid", "persistent_trace_ready", {"vm-run-microdroid.log": START, "virtmgr-trace.log": "notifyPayloadReady\n"}, 0, ()),
+            ("persistent-run-microdroid", "persistent_trace_ready", {"vm-run-microdroid.log": START + "payload is ready\n", "virtmgr-trace.log": TRACE}, 0, ()),
             ("persistent-run-microdroid", "persistent_guest_ready", {"vm-run-microdroid.log": START, "guest-log.txt": READY}, 0, ()),
             ("persistent-run-microdroid", "persistent_callback_ready", {"vm-run-microdroid.log": START + "payload is ready\n"}, 0, ()),
             ("persistent-run-microdroid", "persistent_detach_ready", {"vm-run-microdroid.log": START + "Persistent host virtmgr mode: leaving VM running after READY.\n"}, 0, ()),
             ("persistent-run-microdroid", "persistent_missing_ready", {"vm-run-microdroid.log": START}, 1, ()),
-            ("start-microdroid-adb", "adb_ready", {"virtmgr-trace.log": "notifyPayloadReady\n", "adb-connect.log": "connected to 127.0.0.1:8035\ndevice\n"}, 0, ()),
-            ("start-microdroid-adb", "adb_requires_device", {"virtmgr-trace.log": "notifyPayloadReady\n", "adb-connect.log": "connected to 127.0.0.1:8035\n"}, 1, ()),
+            ("start-microdroid-adb", "adb_ready", {"vm-run-microdroid.log": START + "payload is ready\n", "virtmgr-trace.log": TRACE, "adb-connect.log": "connected to 127.0.0.1:8035\ndevice\n"}, 0, ()),
+            ("start-microdroid-adb", "adb_requires_device", {"vm-run-microdroid.log": START + "payload is ready\n", "virtmgr-trace.log": TRACE, "adb-connect.log": "connected to 127.0.0.1:8035\n"}, 1, ()),
             ("list", "list_expected_cid", {"vm-list.log": "Running VMs: [\n    VirtualMachineDebugInfo {\n        cid: 42,\n    },\n]\n"}, 0, ("", "42")),
             ("list", "list_wrong_cid", {"vm-list.log": "Running VMs: [\n    VirtualMachineDebugInfo {\n        cid: 43,\n    },\n]\n"}, 1, ("", "42")),
             ("console", "console_expected_cid", {"vm-console.log": "Connecting to host VM console for CID 42\n"}, 0, ("", "42")),

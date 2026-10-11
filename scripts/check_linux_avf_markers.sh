@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/avf_trace_evidence.sh"
+
 SCENARIO="${1:-}"
 LOG_DIR="${2:-}"
 TRACE_PATH="${3:-}"
@@ -57,8 +59,8 @@ case "$SCENARIO" in
             RUN_LOG="$LOG_DIR/vm-run-app.log"
         fi
         if [[ -f "$TRACE_PATH" ]]; then
-            assert_contains "$TRACE_PATH" 'notifyPayloadStarted'
-            assert_contains "$TRACE_PATH" 'notifyPayloadReady'
+            avf_trace_has_event "$TRACE_PATH" "$RUN_LOG" started "$EXPECTED_CID" || { echo "missing current-run payload-started trace evidence" >&2; exit 1; }
+            avf_trace_has_event "$TRACE_PATH" "$RUN_LOG" ready "$EXPECTED_CID" || { echo "missing current-run payload-ready trace evidence" >&2; exit 1; }
         else
             assert_contains "$RUN_LOG" 'Created .* with CID [0-9]+'
             assert_contains "$RUN_LOG" 'vm: after vm.start'
@@ -78,7 +80,7 @@ case "$SCENARIO" in
         assert_contains "$RUN_LOG" 'Created .* with CID [0-9]+'
         assert_contains "$RUN_LOG" 'vm: after vm.start'
         if [[ -f "$TRACE_PATH" ]]; then
-            assert_contains "$TRACE_PATH" 'notifyPayloadReady'
+            avf_trace_has_event "$TRACE_PATH" "$RUN_LOG" ready "$EXPECTED_CID" || { echo "missing current-run payload-ready trace evidence" >&2; exit 1; }
         elif [[ -s "$GUEST_LOG" ]]; then
             assert_contains "$GUEST_LOG" 'Notified host payload ready successfully[[:space:]]*$'
         else
@@ -87,7 +89,7 @@ case "$SCENARIO" in
         ;;
     start-microdroid-adb)
         if [[ -f "$TRACE_PATH" ]]; then
-            assert_contains "$TRACE_PATH" 'notifyPayloadReady'
+            avf_trace_has_event "$TRACE_PATH" "$RUN_LOG" ready "$EXPECTED_CID" || { echo "missing current-run payload-ready trace evidence" >&2; exit 1; }
         else
             assert_contains "$GUEST_LOG" 'Notified host payload ready successfully[[:space:]]*$'
         fi

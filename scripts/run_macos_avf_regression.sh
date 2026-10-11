@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/avf_trace_evidence.sh"
+
 REPO_ROOT=""
 DIST_ROOT=""
 OUTPUT_ROOT=""
@@ -91,12 +93,17 @@ step_timeout() {
     shift
     local label="$1"
     shift
+    # Exit status alone cannot distinguish our deadline from an external signal.
+    local timeout_evidence
+    timeout_evidence="$(mktemp -d "${TMPDIR:-/tmp}/bscp-timeout.XXXXXX")" || return 1
     set +e
     "$@" &
     local cmd_pid=$!
     (
-        sleep "$timeout_secs"
+        sleep "$timeout_secs" || exit 0
         kill -TERM "$cmd_pid" 2>/dev/null || exit 0
+        # Record only a successful deadline-triggered signal, not merely elapsed time.
+        : > "$timeout_evidence/fired"
         sleep 2
         kill -KILL "$cmd_pid" 2>/dev/null || true
     ) &
@@ -106,10 +113,12 @@ step_timeout() {
     kill "$watchdog_pid" 2>/dev/null || true
     wait "$watchdog_pid" 2>/dev/null || true
     set -e
-    if [[ $rc -eq 143 || $rc -eq 137 ]]; then
+    if [[ $rc -eq 143 || $rc -eq 137 ]] && [[ -f "$timeout_evidence/fired" ]]; then
         echo "  TIMEOUT after ${timeout_secs}s: $label" >&2
+        rm -rf "$timeout_evidence"
         return 124
     fi
+    rm -rf "$timeout_evidence"
     return "$rc"
 }
 
@@ -214,16 +223,8 @@ run_step "cleanup (pre)" \
 BASELINE_CROSVM_PIDS="$(list_process_pids_for_binary "$CROSVM_BIN")"
 BASELINE_VIRTMGR_PIDS="$(list_process_pids_for_binary "$VIRTMGR_BIN")"
 
-resolve_cid_from_trace() {
-    local trace_path="$1"
-    if [[ ! -f "$trace_path" ]]; then
-        return 0
-    fi
-    grep -o 'cid=[0-9]\+' "$trace_path" | tail -n 1 | cut -d= -f2
-}
-
 resolve_cid_from_run_log() {
-    grep -Eo 'with CID [0-9]+' "$1" | tail -n 1 | awk '{print $3}'
+    avf_run_cid "$1"
 }
 
 wait_for_payload_ready() {
@@ -232,13 +233,14 @@ wait_for_payload_ready() {
     local run_log="$3"
     local deadline=$((SECONDS + 120))
     while (( SECONDS < deadline )); do
-        if [[ -f "$guest_log" ]] && grep -Eq 'Notified host payload ready successfully[[:space:]]*$' "$guest_log"; then
+        if [[ -f "$trace_path" ]]; then
+            # Match the checker: an existing trace must satisfy the shared contract.
+            if avf_trace_has_event "$trace_path" "$run_log" ready; then
+                return 0
+            fi
+        elif [[ -f "$guest_log" ]] && grep -Eq 'Notified host payload ready successfully[[:space:]]*$' "$guest_log"; then
             return 0
-        fi
-        if [[ -f "$trace_path" ]] && grep -q 'notifyPayloadReady' "$trace_path"; then
-            return 0
-        fi
-        if [[ -f "$run_log" ]] && grep -Eq '^(payload is ready|Persistent host virtmgr mode: leaving VM running after READY\.)[[:space:]]*$' "$run_log"; then
+        elif [[ -f "$run_log" ]] && grep -Eq '^(payload is ready|Persistent host virtmgr mode: leaving VM running after READY\.)[[:space:]]*$' "$run_log"; then
             return 0
         fi
         sleep 1
@@ -358,10 +360,7 @@ else
         run_step "check persistent run markers" \
             "$CHECK_MARKERS" persistent-run-microdroid "$OUTPUT_ROOT/persistent-run-microdroid" "$SERVICE_TRACE"
 
-        CID="$(resolve_cid_from_trace "$SERVICE_TRACE")"
-        if [[ -z "$CID" ]]; then
-            CID="$(resolve_cid_from_run_log "$OUTPUT_ROOT/persistent-run-microdroid/vm-run-microdroid.log")"
-        fi
+        CID="$(resolve_cid_from_run_log "$OUTPUT_ROOT/persistent-run-microdroid/vm-run-microdroid.log")"
 
         run_step "vm list" \
             step_timeout 30 "vm list" \
