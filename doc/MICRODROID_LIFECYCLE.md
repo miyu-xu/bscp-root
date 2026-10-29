@@ -1,5 +1,7 @@
 # Foreground Microdroid lifecycle integration
 
+Microdroid integration is published on r14; GitHub default remains main and lifecycle activation is opt-in. See [current delivery status](MICRODROID_STATUS.md) for version-bound three-platform capability, normal/fault evidence and limits.
+
 This repository entry integrates the tested common lifecycle implementation while
 retaining the platform's original Job/HANDLE, pidfd, or audit-token/kqueue backend.
 It is opt-in. Existing `vm_<platform>` defaults and low-level commands are unchanged.
@@ -57,7 +59,7 @@ Observation/API failures can retain resources. Windows external controller death
 and Job-close behavior remain a limitation.
 
 Regression: `python3 -B -m unittest discover -s tests/microdroid -p 'test_*.py' -v`.
-The existing regression workflow runs this no-VM suite on its three OS runners.
+The dedicated microdroid-lifecycle.yml workflow runs this no-VM suite on its three OS runners.
 Real pipeline tests use harmless bounded subprocesses and inject native probes;
 they do not replace actual Job/pidfd/audit-token or GPU acceptance. No new runner
 privileges, credentials, network permissions or branch-protection changes are used.
@@ -65,5 +67,5 @@ privileges, credentials, network permissions or branch-protection changes are us
 Rollback is a revert of the isolated integration commit or selecting the prior
 explicit entry for compatible healthy instances. No machine default is changed by
 this patch. Failed integration instances must not be opened by older entries.
-Push, merge and default activation are separate deployment decisions. A/H3/UI,
+The r14 code and manifest have been published. Default activation remains a separate deployment decision. A/H3/UI,
 arbitrary faults, disk recovery, long stress and performance claims are out of scope.

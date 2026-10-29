@@ -1,5 +1,7 @@
 # Microdroid Cross-Platform Implementation
 
+Microdroid integration is published on r14; GitHub default remains main and lifecycle activation is opt-in. See [current delivery status](MICRODROID_STATUS.md) for version-bound three-platform capability, normal/fault evidence and limits.
+
 [简体中文](MICRODROID.zh-CN.md) | English
 
 This document is derived from the current build scripts, `packages/modules/Virtualization`,
@@ -117,7 +119,7 @@ pipes plus explicit state files.
 | Console | File or persistent-service PTY | File or persistent-service PTY | File/named-pipe duplex console; separate serial capture |
 | Optional ADB bridge | localhost TCP to guest vsock | localhost TCP to UDS-vsock | localhost TCP to named-pipe-vsock |
 | Protected VM | Conditional on KVM/pKVM, pvmfw, and host capability; not a default gate | No release proof equivalent to Android pVM | Wrapper explicitly rejects `-Protected` |
-| Vulkan offscreen rendering | Host source path ready; graphics profile/guest pending | Host path ready; guest pending | Host source path ready; graphics runtime/guest pending |
+| Vulkan offscreen/compute | Fixed-profile limited native PASS | Fixed-profile limited native PASS | Fixed-profile limited native PASS |
 | Automated gate | `run_linux_avf_regression.sh` | `run_macos_avf_regression.sh` | `run_windows_avf_regression.ps1` |
 
 ### 5.1 Linux/KVM
@@ -197,46 +199,9 @@ adds CPU-count and file-handle path resolution.
 | `system/core` | Atomic and thread portability required by host builds; guest security semantics remain Android-derived |
 | Root repository | Three-platform builds, APEX staging, launch wrappers, regression, logging, and release orchestration |
 
-## 8. Microdroid Vulkan Offscreen-Rendering Readiness
+## 8. Vulkan offscreen and compute status
 
-The current implementation status is **host foundation ready; guest enablement pending**. Across
-the three hosts, crosvm already provides virtio-gpu, rutabaga/gfxstream, command and resource
-transport, synchronization, and the platform graphics backends. Microdroid offscreen rendering can
-reuse that implementation without a new host graphics architecture or a windowed display scanout.
-
-“Host ready” means that the source path and build profile exist; it does not mean every default
-distribution contains the graphics runtime. macOS enables the graphics build by default. Linux and
-Windows releases must use the existing `ENABLE_GFXSTREAM_ANGLE=1` profile or stage matching
-prebuilt gfxstream/ANGLE runtime. Once that artifact configuration is present, the remaining code
-work is guest-side and no new host backend is required.
-
-```mermaid
-flowchart LR
-    P["Microdroid payload"] --> VK["Guest Vulkan loader + ICD"]
-    VK --> VG["virtio-gpu"]
-    VG --> R["crosvm rutabaga"]
-    R --> G["gfxstream / host graphics backend"]
-    G --> O["offscreen image or buffer"]
-    O --> X["controlled readback / export"]
-```
-
-The remaining work is concentrated in the Microdroid guest and runtime profile:
-
-- enable and package the Vulkan loader, guest ICD/driver, and required runtime libraries in the
-  Microdroid image;
-- configure virtio-gpu discovery, device-node access, SELinux/permissions, and required Android
-  features or properties;
-- select the host's existing GPU capability in the VM profile while retaining a windowless,
-  no-scanout execution mode;
-- gate `vkEnumeratePhysicalDevices`, device and queue creation, compute or render-to-image,
-  synchronization, readback/export, and failure cleanup;
-- enforce memory, command-buffer, execution-time, and concurrency quotas, and validate malicious
-  shaders, device reset, and VMM/guest failures against the instance boundary.
-
-Microdroid Vulkan should therefore no longer be described as lacking host support. The precise
-status is that the host implementation is ready, while guest-image integration and end-to-end
-release evidence remain incomplete. It becomes a supported capability only after guest Vulkan API
-behavior, offscreen output correctness, cross-platform parity, and security/resource gates pass.
+Fixed normal images and ordinary UID6000 payloads passed finite three-platform Vulkan offscreen/coherent/VADD and real GPU-on/off acceptance. This does not enable every default dist: exact runtime/HAL, reviewed access and profiles remain required. See [current status](MICRODROID_STATUS.md) for versions and limits. No additional security permission or Android-derived acceptance is implied.
 
 ## 9. Security Boundary and Explicit Limitations
 
@@ -309,7 +274,7 @@ logs, host facts, artifact digests, and exit status from each target machine.
 | crosvm process sandbox | Disabled by current launchers; requires host sandboxing or implementation work |
 | VFIO/device assignment | Linux/Android-specific; rejected on Windows and has no macOS equivalent |
 | hugepages/uclamp | Platform semantics differ; parameter presence does not establish parity |
-| Microdroid Vulkan | Host source path is ready; graphics artifact profile, guest image, and end-to-end gates need confirmation |
+| Microdroid Vulkan | Fixed-profile limited PASS; general packaging, security, performance and concurrency remain unqualified |
 | Production certification | Requires signed artifacts, hardware capabilities, keys/attestation, and target-host evidence |
 
 ## 13. Code Entry Points

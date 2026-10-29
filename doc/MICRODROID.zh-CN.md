@@ -1,5 +1,7 @@
 # Microdroid 跨平台实现详解
 
+当前 Microdroid 工程线已发布到 r14，GitHub 默认分支仍为 main；入口为显式 opt-in。三端正常/异常有限验收、版本、能力和未覆盖边界见[现行交付状态](MICRODROID_STATUS.zh-CN.md)。历史实验不替代当前版本证据。
+
 简体中文 | [English](MICRODROID.md)
 
 本文依据当前仓库中的构建脚本、`packages/modules/Virtualization`、`crosvm`、Binder RPC
@@ -115,7 +117,7 @@ sequenceDiagram
 | Console | 文件或持久服务 PTY | 文件或持久服务 PTY | 文件/named-pipe 双向控制台，可抓取独立串口 |
 | ADB bridge | 可选 localhost TCP→Guest vsock | 可选 localhost TCP→UDS-vsock | 可选 localhost TCP→named-pipe-vsock |
 | Protected VM | 取决于 KVM/pKVM、pvmfw 与 host capability；非默认门禁 | 没有与 Android pVM 等价的发布证明 | 包装器明确拒绝 `-Protected` |
-| Vulkan 离屏渲染 | Host 源码路径已具备；图形 profile/Guest 待启用 | Host 路径已具备；Guest 待启用 | Host 源码路径已具备；图形 runtime/Guest 待启用 |
+| Vulkan 离屏/计算 | 固定配置有限实测通过 | 固定配置有限实测通过 | 固定配置有限实测通过 |
 | 自动门禁 | `run_linux_avf_regression.sh` | `run_macos_avf_regression.sh` | `run_windows_avf_regression.ps1` |
 
 ### 5.1 Linux/KVM
@@ -190,40 +192,9 @@ debug policy，并提供 CPU 数与文件句柄路径解析。主要修改分布
 | `system/core` | Host 构建所需 atomic/thread portability，Guest 安全语义仍以 Android 基线为准 |
 | 根仓库 | 三平台构建、APEX staging、运行包装、回归、日志和发布编排 |
 
-## 8. Microdroid Vulkan 离屏渲染准备度
+## 8. Vulkan 离屏与计算现状
 
-当前实现结论是 **Host 已具备基础能力，Guest 尚待启用**。三平台 Host 侧已有 crosvm
-virtio-gpu、rutabaga/gfxstream、命令与资源传输、同步机制及对应平台图形后端。Microdroid
-离屏渲染可以复用这些现有能力，不需要新增一套 Host 图形架构或依赖窗口 scanout。
-
-这里的“Host 已具备”指源码与构建 profile 已存在，不代表每个默认 dist 都包含图形 runtime。
-macOS 默认启用图形构建；Linux/Windows 发布物需要按现有 `ENABLE_GFXSTREAM_ANGLE=1` profile
-构建或装入匹配的预编译 gfxstream/ANGLE runtime。对于已经完成这一制品配置的 Host，后续
-代码改动集中在 Guest，不需要新增 Host 后端。
-
-```mermaid
-flowchart LR
-    P["Microdroid Payload"] --> VK["Guest Vulkan loader + ICD"]
-    VK --> VG["virtio-gpu"]
-    VG --> R["crosvm rutabaga"]
-    R --> G["gfxstream / host graphics backend"]
-    G --> O["offscreen image or buffer"]
-    O --> X["controlled readback / export"]
-```
-
-剩余工作主要位于 Microdroid Guest 与运行 profile：
-
-- 在 Microdroid 镜像中启用并打包 Vulkan loader、Guest ICD/驱动和所需运行库；
-- 配置 virtio-gpu 设备发现、设备节点访问、SELinux/权限与必要 Android feature/property；
-- 让 VM profile 选择 Host 已有的 GPU 设备能力，同时保持无窗口、无显示 scanout；
-- 建立 `vkEnumeratePhysicalDevices`、device/queue 创建、compute 或 render-to-image、同步、
-  readback/export 和异常清理门禁；
-- 对显存、command buffer、执行时间和并发设置配额，验证恶意 shader、设备重置和 VMM/Guest
-  故障不会突破实例边界。
-
-因此，当前不能再把 Microdroid Vulkan 描述为“Host 不支持”；准确状态是 Host 实现已经就绪，
-Guest 镜像集成及端到端发布证据尚未完成。只有 Guest Vulkan API、离屏输出正确性、跨平台
-一致性和安全/资源门禁全部通过后，才能把它列为正式支持能力。
+固定独立 normal 镜像、普通 UID6000 payload 的三端 Vulkan 离屏/coherent/VADD 及 GPU 开关已有限实测通过。不是所有默认 dist 自动具备能力，仍需精确 runtime/HAL、权限和 profile。完整版本与安全边界见[现行状态](MICRODROID_STATUS.zh-CN.md)。不新增或扩大权限，不以 Android 结果替代。
 
 ## 9. 安全边界与必须明确的限制
 
@@ -298,7 +269,7 @@ Windows：
 | crosvm process sandbox | 当前 launcher 禁用，需额外 host sandbox 或后续实现 |
 | VFIO/device assignment | Linux/Android 专属；Windows launcher 拒绝，macOS 无等价路径 |
 | hugepages/uclamp | 平台语义不同，不能只凭参数存在声明对齐 |
-| Microdroid Vulkan | Host 源码路径已具备；图形制品 profile、Guest 镜像与端到端门禁待确认 |
+| Microdroid Vulkan | 固定配置有限通过；默认制品泛化、安全/性能/并发仍未验证 |
 | 生产认证 | 需要签名制品、硬件能力、密钥/证明链和平台实机证据 |
 
 ## 13. 关键代码入口

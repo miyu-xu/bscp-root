@@ -1,5 +1,7 @@
 # BSCP
 
+Microdroid integration is published on r14; GitHub default remains main and lifecycle activation is opt-in. See [current delivery status](doc/MICRODROID_STATUS.md) for version-bound three-platform capability, normal/fault evidence and limits.
+
 [简体中文](README.zh-CN.md) | English
 
 BSCP is a cross-platform, security-isolated Android compute platform. It brings the Android

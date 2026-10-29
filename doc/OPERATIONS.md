@@ -1,5 +1,7 @@
 # Operations
 
+Microdroid integration is published on r14; GitHub default remains main and lifecycle activation is opt-in. See [current delivery status](MICRODROID_STATUS.md) for version-bound three-platform capability, normal/fault evidence and limits.
+
 [简体中文](OPERATIONS.zh-CN.md) | English
 
 ## Supported entry points

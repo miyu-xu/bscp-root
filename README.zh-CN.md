@@ -1,5 +1,7 @@
 # BSCP
 
+当前 Microdroid 工程线已发布到 r14，GitHub 默认分支仍为 main；入口为显式 opt-in。三端正常/异常有限验收、版本、能力和未覆盖边界见[现行交付状态](doc/MICRODROID_STATUS.zh-CN.md)。历史实验不替代当前版本证据。
+
 简体中文 | [English](README.md)
 
 BSCP 是一个跨平台、安全隔离的 Android 通用算力平台。项目把 Android Virtualization

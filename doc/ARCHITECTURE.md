@@ -1,5 +1,7 @@
 # Architecture
 
+Microdroid integration is published on r14; GitHub default remains main and lifecycle activation is opt-in. See [current delivery status](MICRODROID_STATUS.md) for version-bound three-platform capability, normal/fault evidence and limits.
+
 [简体中文](ARCHITECTURE.zh-CN.md) | English
 
 ## Design goals
