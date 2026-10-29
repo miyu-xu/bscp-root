@@ -1,0 +1,20 @@
+name: Microdroid lifecycle contracts
+on:
+  push:
+    branches: [bscp-android-15.0.0_r14]
+  pull_request:
+    branches: [bscp-android-15.0.0_r14]
+  workflow_dispatch:
+jobs:
+  contracts:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Lifecycle contracts and pipe fixtures (no VM)
+        run: python -B -m unittest discover -s tests/microdroid -p "test_*.py" -v

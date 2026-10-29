@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("validate-prereqs", "run-microdroid", "run-app", "run", "info", "list", "console", "check-feature-enabled", "create-partition", "create-idsig", "service-status", "stop-service")]
+    [ValidateSet("lifecycle", "validate-prereqs", "run-microdroid", "run-app", "run", "info", "list", "console", "check-feature-enabled", "create-partition", "create-idsig", "service-status", "stop-service")]
     [string]$Command = "run-microdroid",
     [string]$RepoRoot = "",
     [string]$DistRoot = "",
@@ -39,6 +39,12 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+if ($Command -eq 'lifecycle') {
+    if ([string]::IsNullOrWhiteSpace($WorkDir)) { throw 'lifecycle requires explicit -WorkDir state root' }
+    if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) { $PSNativeCommandUseErrorActionPreference = $false }
+    & python -B (Join-Path $PSScriptRoot 'microdroid.py') --platform windows --state-root $WorkDir @VmArgs
+    exit $LASTEXITCODE
+}
 if (Get-Variable -Name PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
     $PSNativeCommandUseErrorActionPreference = $false
 }

@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Explicit lifecycle integration; existing default command is unchanged.
+if [[ "${1:-}" == "--lifecycle" ]]; then
+    shift
+    exec python3 -B "$(dirname "$0")/microdroid.py" --platform macos "$@"
+fi
+
 shopt -s nullglob
 
 COMMAND="run-microdroid"
