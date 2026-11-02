@@ -19,3 +19,4 @@ jobs:
         with:
           python-version: '3.11'
       - run: python -B releases/aosp17/verify_snapshot.py
+      - run: python -B releases/aosp17/verify_host_sources.py
