@@ -1,0 +1,20 @@
+{
+  "url": "https://github.com/KhronosGroup/MoltenVK/releases/download/v1.4.2/MoltenVK-macos.tar",
+  "archive_sha256": "f95765a6229cb7b915990a2890ce12ebe36a730b021545d3d52ae69ce4c4024e",
+  "expected_runtime_sha256": "768325c65cdb6b6c9ce814dcce5d962d6e675135e6d48700f8488b54ac2fbdf8",
+  "libraries": [
+    {
+      "path": "MoltenVK/MoltenVK/dynamic/dylib/macOS/libMoltenVK.dylib",
+      "sha256": "aef00b13bcc808adf15b85bef9ae67393d92be7ed5dfe41cad16fa809e4a4c5f",
+      "matches_accepted": false
+    }
+  ],
+  "notices": [
+    {
+      "source": "MoltenVK/LICENSE",
+      "file": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\third-party-notices\\MoltenVK-1.4.2\\7779177db730-LICENSE",
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    }
+  ],
+  "executed": false
+}

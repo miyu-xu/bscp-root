@@ -1,0 +1,14 @@
+{
+  "artifact": {
+    "url": "https://storage.googleapis.com/chromeos-localmirror/distfiles/prebuilts/windows/x86_64/gnu/libslirp/release/1/libslirp-0.dll?generation=1664833652503310",
+    "path": "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\libslirp\\release\\1\\libslirp-0.dll",
+    "generation": "1664833652503310",
+    "expected_bytes": 3281706,
+    "status": "VERIFIED",
+    "bytes": 3281706,
+    "sha256": "592390eb3c6d8d15ecde18585e33bd0770b617221339910cd2fed5f041535cb7",
+    "crc32c": "jaRdUw=="
+  },
+  "recipe": "third_party/libslirp-rs/upload_libslirp.ps1",
+  "observation": "Recipe clones floating libslirp and installs unpinned MSYS2 dependencies, then statically links glib/iconv. Receipt pins Google object generation and binary hash but not its complete source versions. Rust wrapper MIT license is not evidence for all DLL constituents."
+}

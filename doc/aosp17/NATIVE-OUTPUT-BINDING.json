@@ -1,0 +1,40 @@
+{
+  "scope": "Observed original build outputs match accepted closure; current source-root CMake linkage and snapshots, not retroactive full build-time source seals",
+  "files": [
+    {
+      "platform": "windows",
+      "file": "libgfxstream_backend.dll",
+      "sha256": "b775e5da32c89605debf28d5f2ae8ad80d43ac6f6756b9deadc1255181af0d35",
+      "accepted_runtime_path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host\\libgfxstream_backend.dll",
+      "original_build_output_matches": true
+    },
+    {
+      "platform": "linux",
+      "file": "libgfxstream_backend.so",
+      "sha256": "5fc398dfc5e936bb91dbd9b4f345a912d2ff739c1d3ff3e8dcd849645c522f79",
+      "accepted_runtime_path": "/home/mark/bscp/out/a17l/v6/dist/linux/lib/libgfxstream_backend.so",
+      "original_build_output_matches": true
+    },
+    {
+      "platform": "macos",
+      "file": "libgfxstream_backend.dylib",
+      "sha256": "2cb3a478a0802a55bb1ea4478546c5d20242328b700ad670db5dbb531af07e43",
+      "accepted_runtime_path": "/Volumes/Mark SSD/aosp17-renderer-v558/build/libgfxstream_backend.dylib",
+      "original_build_output_matches": true
+    },
+    {
+      "platform": "linux",
+      "file": "libbinder_sdk.so",
+      "sha256": "677087a6c46fcac88e8849fbc3eebdf668db617742839c6b5287e6a494ebddef",
+      "accepted_runtime_path": "/home/mark/bscp/out/a17l/v6/dist/linux/lib/libbinder_sdk.so",
+      "original_build_output_matches": true
+    },
+    {
+      "platform": "macos",
+      "file": "libbinder_sdk.dylib",
+      "sha256": "a20ccde971c4cfc19b07c3350b51336e8f308e612295c9987894c287347a6641",
+      "accepted_runtime_path": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_sdk.dylib",
+      "original_build_output_matches": true
+    }
+  ]
+}
