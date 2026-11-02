@@ -1,0 +1,119 @@
+{
+  "root": "/Users/huangxiaoling/Workspace/MoltenVK",
+  "head": {
+    "exit": 0,
+    "stdout": "3afb1b3be8f508cee8ed67aad4bd2f3088826b79\n",
+    "stderr": ""
+  },
+  "status": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "external_revisions": {
+    "Vulkan-Tools_repo_revision": "fe3764e18f0f743abb235bb2fda4efaa57ec3fe0\n",
+    "SPIRV-Headers_repo_revision": "126038020c2bd47efaa942ccc364ca5353ffccde\n",
+    "SPIRV-Cross_repo_revision": "1a6169566c73d3da552748fc372fe2bbb856e46e\n",
+    "Volk_repo_revision": "3ca312a4f38baa63d8006b6905abbeeb89c8087d\n",
+    "Vulkan-Headers_repo_revision": "8864cdc896bbc2a9b6eb36b3218fc9ef57908d77\n",
+    "README.md": "<a class=\"site-logo\" href=\"https://github.com/KhronosGroup/MoltenVK\" title=\"MoltenVK\">\n\t<img src=\"../Docs/images/MoltenVK-Logo-Banner.png\" alt=\"MoltenVK\" style=\"width:256px;height:auto\">\n</a>\n\n\n#MoltenVK External Dependencies\n\nCopyright (c) 2015-2026 [The Brenwill Workshop Ltd.](http://www.brenwill.com)\n\n[comment]: # \"This document is written in Markdown (http://en.wikipedia.org/wiki/Markdown) format.\"\n[comment]: # \"For best results, use a Markdown reader.\"\n\n\n\nTable of Contents\n-----------------\n\n- [Fetching and Building External Libraries](#fetching)\n- [Updating External Library Versions](#updating)\n- [Adding the *cereal* Library to the *MoltenVK Xcode* Project](#add_cereal)\n- [Adding the *SPIRV-Tools* Library to the *ExternalDependencies Xcode* Project](#add_spirv-tools)\n- [Adding the *SPIRV-Cross* Library to the *ExternalDependencies Xcode* Project](#add_spirv-cross)\n\n\n\n<a name=\"fetching\"></a>\nFetching and Building External Libraries\n----------------------------------------\n\n**MoltenVK** uses technology from the following external open-source libraries:\n\n- [*cereal*](https://github.com/USCiLab/cereal)\n- [*SPIRV-Cross*](https://github.com/KhronosGroup/SPIRV-Cross)\n- [*SPIRV-Headers*](https://github.com/KhronosGroup/SPIRV-Headers)\n- [*SPIRV-Tools*](https://github.com/KhronosGroup/SPIRV-Tools)\n- [*volk*](https://github.com/zeux/volk)\n- [*Vulkan-Headers*](https://github.com/KhronosGroup/Vulkan-Headers)\n- [*Vulkan-Tools*](https://github.com/KhronosGroup/Vulkan-Tools)\n\nThese external open-source libraries are maintained in the `External` directory.\nTo retrieve and build these libraries from their sources, run the `fetchDependencies`\nscript in the main repository directory:\n\n\t./fetchDependencies --all [--debug]\n\nThe `--debug` option will build the external libraries in Debug mode, which may\nbe useful when debugging and tracing calls into those libraries.\n\n\n<a name=\"updating\"></a>\nUpdating External Library Versions\n----------------------------------\n\nTo maintain consistency between the libraries, **MoltenVK** retrieves specific \nversions of each external library. The version of each external library is \ndetermined as follows:\n\n- **_cereal_**: a GitHub repository commit identifier found in the\n  `ExternalRevisions/cereal_repo_revision` file. \n\n- **_SPIRV-Cross_**: a GitHub repository commit identifier found in the\n  `ExternalRevisions/SPIRV-Cross_repo_revision` file. \n  \n- **_SPIRV-Headers_**: a GitHub repository commit identifier found\n  in the `ExternalRevisions/SPIRV-Headers_repo_revision` file.\n  \n- **_SPIRV-Tools_**: a GitHub repository commit identifier found\n  in the `ExternalRevisions/_SPIRV-Tools__repo_revision` file.\n\n- **_volk_**: a GitHub repository commit identifier found in the\n  `ExternalRevisions/Volk_repo_revision` file.\n\n- **_Vulkan-Headers_**: a GitHub repository commit identifier found in the\n  `ExternalRevisions/Vulkan-Headers_repo_revision` file.\n\n- **_Vulkan-Tools_**: a GitHub repository commit identifier found in the\n  `ExternalRevisions/Vulkan-Tools_repo_revision` file.\n\nYou can update which versions of the external libraries are retrieved by changing \nthe value held in the corresponding `*_repo_revision` file listed above.\n\nOnce you have made changes to the `*_repo_revision` files, you can retrieve the updated \nlibrary versions by running the `fetchDependencies` script, as described above, again.\n\n>***Note:*** If, after updating to new versions of the external libraries, you encounter \n>build errors when building **MoltenVK**, review the instructions in the sections below \n>to ensure all necessary external library files are included in the **MoltenVK** builds.\n\n>***Note:*** _Vulkan-Tools_ and _volk_ are not used by **MoltenVK** itself, but are used\n>by the _Cube_ demo app included in the **MoltenVK** repository.\n\n\n\n<a name=\"add_cereal\"></a>\nAdding the *cereal* Library to the *MoltenVK Xcode* Project\n-----------------------------------------------------------\n\nThe `MoltenVK` *Xcode* project is already configured to use the *cereal* library. However, after \nupdating the version of *cereal*, as described [above](#updating), if you encounter any building \nerrors, you may need to re-add the *cereal* library to the `MoltenVK` *Xcode* project as follows:\n\n1. In the *Project Navigator* panel, select the `MoltenVK` *Xcode* project, then the `MoltenVK`\n   project target, and open the *Build Settings* tab. Locate the build setting entry \n   **Header Search Paths** (`HEADER_SEARCH_PATHS`) and add the following paths:\n   \n\t\t\"$(SRCROOT)/../External/cereal/include\"\n\n\n\n<a name=\"add_spirv-tools\"></a>\nAdding the *SPIRV-Tools* Library to the *ExternalDependencies Xcode* Project\n----------------------------------------------------------------------------\n\nThe `ExternalDependencies` *Xcode* project is already configured to use the *SPIRV-Tools*\nlibrary. However, after updating the version of *SPIRV-Tools*, as described [above](#updating), \nif you encounter any building errors, you may need to re-add the *SPIRV-Tools* library to the \n`ExternalDependencies` *Xcode* project as follows:\n\n1. In the *Project Navigator* panel, select the `ExternalDependencies` *Xcode* project, then \n   select the `SPIRV-Tools-macOS` target, and open the *Build Settings* tab. Locate the build \n   setting entry **Header Search Paths** (`HEADER_SEARCH_PATHS`) and add the following paths:\n\n\t\t$(inherited) \n\t\t\"$(SRCROOT)/External/SPIRV-Tools/\" \n\t\t\"$(SRCROOT)/External/SPIRV-Tools/include\" \n\t\t\"$(SRCROOT)/External/SPIRV-Tools/external/spirv-headers/include\" \n\t\t\"$(SRCROOT)/External/SPIRV-Tools/build\"\n\n2. Repeat *Step 1* for the `SPIRV-Tools-iOS`, `SPIRV-Tools-tvOS`, and ` `SPIRV-Tools-xrOS` \n   targets within the `ExternalDependencies` *Xcode* project\n\n3. In the *Project Navigator*, remove the *Group* named `source` from under the *Group* named\n   `External/SPIRV-Tools`.\n\n4. Drag the `External/SPIRV-Tools/source` file folder to the `External/SPIRV-Tools` \n   group in the *Project Navigator* panel. In the _**Choose options for adding these files**_ dialog \n   that opens, select the _**Create groups**_ option, add the files to *all* of the `SPIRV-Tools-macOS`, \n   `SPIRV-Tools-iOS`, `SPIRV-Tools-tvOS`, and `SPIRV-Tools-xrOS` targets, and click the ***Finish*** button.\n\n5. Remove the following *Groups* from under the *Group* named `External/SPIRV-Tools/source`:\n   - `fuzz`\n   - `wasm`\n\n6. To avoid compilation warnings, remove the following *Files* \n   from under the *Group* named `External/SPIRV-Tools/source`:\n   - `mimalloc.cpp`\n   - `pch_source.cpp`\n   - `opt/pch_source_opt.cpp`\n   - `reduce/pch_source_reduce.cpp`\n   - `util/timer.cpp`\n\n7. In the `Scripts` folder, run `./packagePregenSpirvToolsHeaders`, which will fetch and \n   build the full `SPIRV-Tools` library and will update `Templates/spirv-tools/build.zip` \n   from the `*.h` and `*.inc` files in `External/SPIRV-Tools/build`. \n   Test by running `./fetchDependencies --all` and a **MoltenVK** build.\n\n\n\n<a name=\"add_spirv-cross\"></a>\nAdding the *SPIRV-Cross* Library to the *ExternalDependencies Xcode* Project\n----------------------------------------------------------------------------\n\nThe `ExternalDependencies` *Xcode* project is already configured to use the *SPIRV-Cross*\nlibrary. However, after updating the version of *SPIRV-Cross*, as described [above](#updating),\nif you encounter any building errors, you may need to re-add the *SPIRV-Cross* library to the\n`ExternalDependencies` *Xcode* project as follows:\n\n1. In the *Project Navigator*, remove all of the files under the *Group* named \n   `External/SPIRV-Cross`.\n\n2. Drag the following files from the `External/SPIRV-Cross` directory to the `External/SPIRV-Cross` \n   group in the *Project Navigator* panel:\n\n\t\tspirv_cfg.cpp\n\t\tspirv_cfg.hpp\n\t\tspirv_common.hpp\n\t\tspirv_cross_containers.hpp\n\t\tspirv_cross_error_handling.hpp\n\t\tspirv_cross_parsed_ir.cpp\n\t\tspirv_cross_parsed_ir.hpp\n\t\tspirv_cross_util.hpp\n\t\tspirv_cross.cpp\n\t\tspirv_cross.hpp\n\t\tspirv_glsl.cpp\n\t\tspirv_glsl.hpp\n\t\tspirv_msl.cpp\n\t\tspirv_msl.hpp\n\t\tspirv_parser.cpp\n\t\tspirv_parser.hpp\n\t\tspirv_reflect.cpp\n\t\tspirv_reflect.hpp\n\t\tspirv.hpp\n\n   In the ***Choose options for adding these files*** dialog that opens, select the ***Create groups*** option, \n   add the files to *all* of the `SPIRV-Cross-macOS`, `SPIRV-Cross-iOS`, and `SPIRV-Cross-tvOS` targets, \n   and click the ***Finish*** button.\n\n\n### Regression Testing Your Changes to *SPIRV-Cross*\n\nThe *SPIRV-Cross* library plays an important part in providing features for **_MoltenVK_**, and if \nyou are developing features for **_MoltenVK_**, you may end up making changes to *SPIRV-Cross*. \n\nIf you make changes to the `SPIRV-Cross` repository, you can build a new version of the `libSPIRVCross.a`\nstatic library by opening the `ExternalDependencies.xcodeproj` *Xcode* project, and running the \n**_ExternalDependencies_** *Xcode* scheme. You can then rebuild **MoltenVK** to include the new library.\n\nWhile makng changes to the `SPIRV-Cross` repository, you can regression test your changes using the\nfollowing steps:\n\n\t\tcd External/SPIRV-Cross\n\t\t./checkout_glslang_spirv_tools.sh\n\t\t./build_glslang_spirv_tools.sh\n\t\t./test_shaders.sh\n\n\n\n",
+    "cereal_repo_revision": "a56bad8bbb770ee266e930c95d37fff2a5be7fea\n",
+    "SPIRV-Tools_repo_revision": "c8bda961df8dcdc07cdd6fc59dac3b35a4b73739\n"
+  },
+  "dependencies": {
+    "SPIRV-Cross": {
+      "head": {
+        "exit": 0,
+        "stdout": "1a6169566c73d3da552748fc372fe2bbb856e46e\n",
+        "stderr": ""
+      },
+      "status": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "licenses": [
+        "External/SPIRV-Cross/LICENSE"
+      ]
+    },
+    "SPIRV-Tools": {
+      "head": {
+        "exit": 0,
+        "stdout": "c8bda961df8dcdc07cdd6fc59dac3b35a4b73739\n",
+        "stderr": ""
+      },
+      "status": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "licenses": [
+        "External/SPIRV-Tools/LICENSE"
+      ]
+    },
+    "Volk": {
+      "head": {
+        "exit": 0,
+        "stdout": "3ca312a4f38baa63d8006b6905abbeeb89c8087d\n",
+        "stderr": ""
+      },
+      "status": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "licenses": [
+        "External/Volk/LICENSE.md"
+      ]
+    },
+    "Vulkan-Headers": {
+      "head": {
+        "exit": 0,
+        "stdout": "8864cdc896bbc2a9b6eb36b3218fc9ef57908d77\n",
+        "stderr": ""
+      },
+      "status": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "licenses": [
+        "External/Vulkan-Headers/LICENSE.md"
+      ]
+    },
+    "Vulkan-Tools": {
+      "head": {
+        "exit": 0,
+        "stdout": "fe3764e18f0f743abb235bb2fda4efaa57ec3fe0\n",
+        "stderr": ""
+      },
+      "status": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "licenses": [
+        "External/Vulkan-Tools/LICENSE.txt"
+      ]
+    },
+    "cereal": {
+      "head": {
+        "exit": 0,
+        "stdout": "a56bad8bbb770ee266e930c95d37fff2a5be7fea\n",
+        "stderr": ""
+      },
+      "status": {
+        "exit": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      "licenses": [
+        "External/cereal/LICENSE"
+      ]
+    }
+  },
+  "binary": {
+    "path": "/Users/huangxiaoling/Workspace/MoltenVK/Package/Latest/MoltenVK/dynamic/dylib/macOS/libMoltenVK.dylib",
+    "sha256": "768325c65cdb6b6c9ce814dcce5d962d6e675135e6d48700f8488b54ac2fbdf8"
+  }
+}

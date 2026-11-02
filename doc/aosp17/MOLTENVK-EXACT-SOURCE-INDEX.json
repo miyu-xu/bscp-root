@@ -1,0 +1,141 @@
+{
+  "projects": [
+    {
+      "name": "MoltenVK",
+      "commit": "3afb1b3be8f508cee8ed67aad4bd2f3088826b79",
+      "remote": "git@github.com:KhronosGroup/MoltenVK.git",
+      "archive": "/Volumes/Mark SSD/aosp17-publication-v1827/assets/moltenvk-exact-source/MoltenVK.tar",
+      "bytes": 5017600,
+      "sha256": "5e0efdfe1b0f0803499fb536c6c0640ff9dc816c383fe516e5bbe2cd8b620cff",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "name": "SPIRV-Cross",
+      "commit": "1a6169566c73d3da552748fc372fe2bbb856e46e",
+      "remote": "https://github.com/KhronosGroup/SPIRV-Cross.git",
+      "archive": "/Volumes/Mark SSD/aosp17-publication-v1827/assets/moltenvk-exact-source/SPIRV-Cross.tar",
+      "bytes": 16189440,
+      "sha256": "c7b024fd9d99e49c6af671cf6c2d94e6a99c88394b818491c5071d7d75786c67",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "path": "LICENSES/LicenseRef-KhronosFreeUse.txt",
+          "sha256": "fbeaca472f4f70e276dd1106ca5097435967a22ad6c1d8200aef7ad9f70aaf3f"
+        }
+      ]
+    },
+    {
+      "name": "SPIRV-Headers",
+      "commit": "126038020c2bd47efaa942ccc364ca5353ffccde",
+      "remote": "https://github.com/KhronosGroup/SPIRV-Headers.git",
+      "archive": "/Volumes/Mark SSD/aosp17-publication-v1827/assets/moltenvk-exact-source/SPIRV-Headers.tar",
+      "bytes": 4147200,
+      "sha256": "872019140c1a9aae6012fa7b95d5da95c9628979d77263f1fc38ab69d5f062e4",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "ea43b1de38a6f90c488800d66dec1ed671e68cda530266bc96951fb5b6307613"
+        }
+      ]
+    },
+    {
+      "name": "SPIRV-Tools",
+      "commit": "c8bda961df8dcdc07cdd6fc59dac3b35a4b73739",
+      "remote": "https://github.com/KhronosGroup/SPIRV-Tools.git",
+      "archive": "/Volumes/Mark SSD/aosp17-publication-v1827/assets/moltenvk-exact-source/SPIRV-Tools.tar",
+      "bytes": 27381760,
+      "sha256": "6812e8ce3b3b5355d3c88b9dda856abdb5a65229cb211dc937ab4ac43fb52bee",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        },
+        {
+          "path": "utils/vscode/src/lsp/LICENSE",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "name": "Volk",
+      "commit": "3ca312a4f38baa63d8006b6905abbeeb89c8087d",
+      "remote": "https://github.com/zeux/Volk.git",
+      "archive": "/Volumes/Mark SSD/aosp17-publication-v1827/assets/moltenvk-exact-source/Volk.tar",
+      "bytes": 593920,
+      "sha256": "7fb635874b687be1afc5607c85e7f3a06846530e09c9773c3ddbf8cf74141376",
+      "notices": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "04a0693a84f19e53d281ca98bbb0c86ca77251ab13769c6168e6684feb9a1436"
+        }
+      ]
+    },
+    {
+      "name": "Vulkan-Headers",
+      "commit": "8864cdc896bbc2a9b6eb36b3218fc9ef57908d77",
+      "remote": "https://github.com/KhronosGroup/Vulkan-Headers.git",
+      "archive": "/Volumes/Mark SSD/aosp17-publication-v1827/assets/moltenvk-exact-source/Vulkan-Headers.tar",
+      "bytes": 40826880,
+      "sha256": "0263e67a9887e3a90e8bed65e697f672b2b1ba589ed9c2c22775bd9f2122bde2",
+      "notices": [
+        {
+          "path": "LICENSE.md",
+          "sha256": "ac24e5ea920e4318e4d02c4086ae51f53cfb03feed06c18df1019e7ada1ec7bc"
+        }
+      ]
+    },
+    {
+      "name": "Vulkan-Tools",
+      "commit": "fe3764e18f0f743abb235bb2fda4efaa57ec3fe0",
+      "remote": "https://github.com/KhronosGroup/Vulkan-Tools.git",
+      "archive": "/Volumes/Mark SSD/aosp17-publication-v1827/assets/moltenvk-exact-source/Vulkan-Tools.tar",
+      "bytes": 5058560,
+      "sha256": "775b50060386eadc348189c6b494df952a6703d323cc0be0dd2538cd0726bcca",
+      "notices": [
+        {
+          "path": "LICENSE.txt",
+          "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+        }
+      ]
+    },
+    {
+      "name": "cereal",
+      "commit": "a56bad8bbb770ee266e930c95d37fff2a5be7fea",
+      "remote": "https://github.com/USCiLab/cereal.git",
+      "archive": "/Volumes/Mark SSD/aosp17-publication-v1827/assets/moltenvk-exact-source/cereal.tar",
+      "bytes": 2416640,
+      "sha256": "04b95299828a72684a69eae0106845a5cbe9392af1c8394dd015063a6e114b32",
+      "notices": [
+        {
+          "path": "LICENSE",
+          "sha256": "58604a126af6a671ea390ee3d5b3e42228aa59b2858fb7af1d5b20b31739ccbb"
+        },
+        {
+          "path": "include/cereal/external/LICENSE",
+          "sha256": "642e7003561473f4f1f3dd09e053ee2a6ecfb0563e961a3392e914295f9d350c"
+        },
+        {
+          "path": "include/cereal/external/rapidjson/LICENSE",
+          "sha256": "dc2ef044e52a4c0ea784f9b54229775ce5275505cc09f21283dfa301e9c962fa"
+        },
+        {
+          "path": "include/cereal/external/rapidjson/msinttypes/LICENSE",
+          "sha256": "bf3c9bf6a176c890c7387c71f9ae5bcaf9d33324b9d4a5f8524a6f8bf3063097"
+        },
+        {
+          "path": "include/cereal/external/rapidxml/license.txt",
+          "sha256": "794bf3b2ecf5cf0c740ac6c524d66ce6284c4b1de1f983d21a242b8abbeb9720"
+        }
+      ]
+    }
+  ],
+  "scope": "Git-tracked exact clean source and notices; no build execution or binary replacement"
+}

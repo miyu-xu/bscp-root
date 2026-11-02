@@ -1,0 +1,23 @@
+{
+  "url": "https://storage.googleapis.com/chromeos-localmirror/distfiles/prebuilts/windows/x86_64/gnu/libslirp/release/1/libslirp-0.dll?generation=1664833652503310",
+  "headers": {
+    "Content-Type": "application/x-msdos-program",
+    "X-GUploader-UploadID": "AFy3sg0YJy7jqu03_Trm-m8s8zoU0sZEh4gMoOkBvLesEWbJpBaK-F0QbNfJoi-0kjImR0oi",
+    "Expires": "Mon, 02 Nov 2026 16:27:24 GMT",
+    "Date": "Mon, 02 Nov 2026 15:27:24 GMT",
+    "Cache-Control": "public, max-age=3600",
+    "Last-Modified": "Mon, 03 Oct 2022 21:47:32 GMT",
+    "ETag": "\"bb2ad1e9c4d1058a5009a19753194080\"",
+    "x-goog-generation": "1664833652503310",
+    "x-goog-metageneration": "1",
+    "x-goog-stored-content-encoding": "identity",
+    "x-goog-stored-content-length": "3281706",
+    "x-goog-hash": "crc32c=jaRdUw==",
+    "x-goog-storage-class": "STANDARD",
+    "Accept-Ranges": "bytes",
+    "Content-Length": "3281706",
+    "Server": "UploadServer",
+    "Alt-Svc": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000",
+    "Connection": "close"
+  }
+}
