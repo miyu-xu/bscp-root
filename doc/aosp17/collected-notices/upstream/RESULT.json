@@ -1,0 +1,22 @@
+[
+  {
+    "name": "prost-0.12.6",
+    "url": "https://raw.githubusercontent.com/tokio-rs/prost/d42c85e790263f78f6c626ceb0dac5fda0edcb41/LICENSE",
+    "bytes": 10847,
+    "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+    "status": "saved"
+  },
+  {
+    "name": "rust-protobuf-3.2.0",
+    "url": "https://raw.githubusercontent.com/stepancheg/rust-protobuf/7155092f3df112159d55132081937e1fe5c30490/LICENSE.txt",
+    "bytes": 1057,
+    "sha256": "97647e63047ef75a82ee2928b335df94f45c87e08777dc033393c73294f3a57a",
+    "status": "saved"
+  },
+  {
+    "name": "rust-protoc-bin-vendored-3.2.0",
+    "url": "https://raw.githubusercontent.com/stepancheg/rust-protoc-bin-vendored/895c0433c3727a552970ce961e398e20e52d6353/LICENSE",
+    "status": "failed",
+    "error": "HTTP Error 404: Not Found"
+  }
+]

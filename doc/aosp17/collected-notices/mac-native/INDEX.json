@@ -1,0 +1,10 @@
+{
+  "OpenSSL-3.1.4": {
+    "source": "/opt/homebrew/Cellar/openssl@3/3.1.4/LICENSE.txt",
+    "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a"
+  },
+  "Vulkan-Loader-1.4.350": {
+    "source": "/Volumes/Mark SSD/bscp-arm64-ranchu-20261024/loader-1.4.350-isolated/src/Vulkan-Loader-a9e72c66d5cb79911eb9a9063bf4016dd0a3a123/LICENSE.txt",
+    "sha256": "43c0a37e6a0fa7ff3c843b3ec5a4fac84b712558ddac103fbd4c1649662a9ece"
+  }
+}
