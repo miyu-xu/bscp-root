@@ -1,0 +1,9 @@
+{
+  "scope": "Exact libslirp COPYRIGHT already inside sealed source archive, now also exposed beside the 12 notice texts; original sealed INDEX unchanged",
+  "file": {
+    "path": "subprojects/libslirp/COPYRIGHT",
+    "bytes": 3022,
+    "sha256": "646d383273ad82322768993bf903b1ffb3bc4345b8a214bfd9da7e533c5a5954"
+  },
+  "original_index_sha256": "7438ec16f7dd0f43f6df69c39e4d4b6976c5ad1b6ead3bb1d1aace244ed8ba45"
+}
