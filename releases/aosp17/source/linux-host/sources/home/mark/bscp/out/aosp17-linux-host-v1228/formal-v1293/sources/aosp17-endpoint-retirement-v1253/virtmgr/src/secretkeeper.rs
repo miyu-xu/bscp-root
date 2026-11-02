@@ -1,0 +1,141 @@
+// Copyright 2025, The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+//! Proxy to Secretkeeper
+
+use crate::aidl::{self, Arc as AuthgraphArc};
+use anyhow::Context;
+use anyhow::Result;
+use binder::IntoBinderResult;
+use binder::{self, BinderFeatures, ExceptionCode, Interface, Strong};
+#[cfg(target_os="android")]
+use rustutils::android::system_properties::PropertyWatcher;
+use std::time::Duration;
+
+pub(crate) const IDENTIFIER: &str = "android.hardware.security.secretkeeper.ISecretkeeper/default";
+
+pub(crate) fn is_supported() -> bool {
+ #[cfg(target_os="android")]
+ {
+    binder::is_declared(IDENTIFIER).expect("Could not check for declared Secretkeeper interface")
+
+ }
+ #[cfg(not(target_os="android"))]
+ { false }
+}
+
+// TODO(b/377616755): Specretkeeper HAL spec does not specify expected behavior
+// in early boot, in particular at the checkpointing phase during an OTA.
+// In absence of this, ecosystem includes implementations that does not revert
+// the Secretkeeper state on failed OTA can get out of sync with reverted OTA
+// A/B partitions.
+fn wait_till_is_safe_to_call() -> Result<()> {
+    watch_for_boot_completed().context("Failed to watch for boot completed")
+}
+
+fn watch_for_boot_completed() -> Result<()> {
+ #[cfg(target_os="android")]
+ {
+    let mut w = PropertyWatcher::new("sys.boot_completed")?;
+    // Wait for 5 seconds for sys.boot_completed to be set to "1".
+    w.wait_for_value("1", Some(Duration::from_secs(5)))?;
+    Ok(())
+
+ }
+ #[cfg(not(target_os="android"))]
+ { anyhow::bail!("Secretkeeper is unavailable on this desktop backend") }
+}
+
+pub(crate) struct SecretkeeperProxy(pub Strong<dyn aidl::ISecretkeeper>);
+
+impl Interface for SecretkeeperProxy {}
+
+impl aidl::ISecretkeeper for SecretkeeperProxy {
+    fn processSecretManagementRequest(&self, req: &[u8]) -> binder::Result<Vec<u8>> {
+        wait_till_is_safe_to_call().or_binder_exception(ExceptionCode::ILLEGAL_STATE)?;
+        // Pass the request to the channel, and read the response.
+        self.0.processSecretManagementRequest(req)
+    }
+
+    fn getAuthGraphKe(&self) -> binder::Result<Strong<dyn aidl::IAuthGraphKeyExchange>> {
+        wait_till_is_safe_to_call().or_binder_exception(ExceptionCode::ILLEGAL_STATE)?;
+        let ag = AuthGraphKeyExchangeProxy(self.0.getAuthGraphKe()?);
+        Ok(aidl::BnAuthGraphKeyExchange::new_binder(ag, BinderFeatures::default()))
+    }
+
+    // SecretkeeperProxy is really a RPC binder service for PVM (It is called by
+    // MicrodroidManager). PVMs should not be allowed to trigger secrets' deletion.
+    fn deleteIds(&self, _ids: &[aidl::SecretId]) -> binder::Result<()> {
+        Err(ExceptionCode::UNSUPPORTED_OPERATION.into())
+    }
+
+    fn deleteAll(&self) -> binder::Result<()> {
+        Err(ExceptionCode::UNSUPPORTED_OPERATION.into())
+    }
+
+    fn getSecretkeeperIdentity(&self) -> binder::Result<aidl::PublicKey> {
+        // SecretkeeperProxy is really a RPC binder service for PVM (It is called by
+        // MicrodroidManager). PVMs do not & must not (for security reason) rely on
+        // getSecretKeeperIdentity, so we throw an exception if someone attempts to
+        // use this API from the proxy.
+        Err(ExceptionCode::SECURITY.into())
+    }
+}
+
+struct AuthGraphKeyExchangeProxy(Strong<dyn aidl::IAuthGraphKeyExchange>);
+
+impl Interface for AuthGraphKeyExchangeProxy {}
+
+impl aidl::IAuthGraphKeyExchange for AuthGraphKeyExchangeProxy {
+    fn create(&self) -> binder::Result<aidl::SessionInitiationInfo> {
+        self.0.create()
+    }
+
+    fn init(
+        &self,
+        peer_pub_key: &aidl::PubKey,
+        peer_id: &aidl::Identity,
+        peer_nonce: &[u8],
+        peer_version: i32,
+    ) -> binder::Result<aidl::KeInitResult> {
+        self.0.init(peer_pub_key, peer_id, peer_nonce, peer_version)
+    }
+
+    fn finish(
+        &self,
+        peer_pub_key: &aidl::PubKey,
+        peer_id: &aidl::Identity,
+        peer_signature: &aidl::SessionIdSignature,
+        peer_nonce: &[u8],
+        peer_version: i32,
+        own_key: &aidl::Key,
+    ) -> binder::Result<aidl::SessionInfo> {
+        self.0.finish(peer_pub_key, peer_id, peer_signature, peer_nonce, peer_version, own_key)
+    }
+
+    fn authenticationComplete(
+        &self,
+        peer_signature: &aidl::SessionIdSignature,
+        shared_keys: &[AuthgraphArc; 2],
+    ) -> binder::Result<[AuthgraphArc; 2]> {
+        self.0.authenticationComplete(peer_signature, shared_keys)
+    }
+}
+
+pub(crate) fn get_service() -> binder::Result<Strong<dyn aidl::ISecretkeeper>> {
+    #[cfg(target_os="android")]
+    { binder::wait_for_interface(IDENTIFIER) }
+    #[cfg(not(target_os="android"))]
+    { Err(ExceptionCode::UNSUPPORTED_OPERATION.into()) }
+}

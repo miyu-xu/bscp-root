@@ -1,0 +1,11 @@
+[package]
+name = "cros_fdt"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+indexmap = "1"
+remain = { workspace = true }
+thiserror = { workspace = true }

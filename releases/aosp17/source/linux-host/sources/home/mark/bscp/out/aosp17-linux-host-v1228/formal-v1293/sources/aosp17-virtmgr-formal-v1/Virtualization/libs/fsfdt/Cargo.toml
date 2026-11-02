@@ -1,0 +1,7 @@
+[package]
+name="fsfdt"
+version="0.1.0"
+edition="2021"
+[dependencies]
+anyhow="1"
+libfdt={path="/home/mark/bscp/out/aosp17-linux-host-v1228/formal-v1293/sources/aosp17-virtmgr-libfdt-v1/wrapper"}

@@ -1,0 +1,9 @@
+[package]
+name="libfdt"
+version="0.17.0"
+edition="2021"
+[workspace]
+[dependencies]
+static_assertions="1"
+zerocopy={version="0.8",features=["derive"]}
+libfdt_bindgen={path="../bindings"}

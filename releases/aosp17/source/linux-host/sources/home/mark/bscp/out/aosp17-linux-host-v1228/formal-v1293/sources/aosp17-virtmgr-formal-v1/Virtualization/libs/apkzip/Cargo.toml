@@ -1,0 +1,11 @@
+[package]
+name="apkzip"
+version="0.1.0"
+edition="2021"
+[lib]
+path="src/ziputil.rs"
+[dependencies]
+anyhow="1"
+bytes="1"
+log="0.4"
+zip={version="=0.6.6",default-features=false,features=["deflate"]}

@@ -1,0 +1,6 @@
+[package]
+name="android_system_virtualizationcommon"
+version="0.17.0"
+edition="2021"
+[dependencies]
+a17_virtmgr_aidl_closure={path="/home/mark/bscp/out/aosp17-linux-host-v1228/formal-v1293/sources/aosp17-host-bridge-v638/aidl-closure"}

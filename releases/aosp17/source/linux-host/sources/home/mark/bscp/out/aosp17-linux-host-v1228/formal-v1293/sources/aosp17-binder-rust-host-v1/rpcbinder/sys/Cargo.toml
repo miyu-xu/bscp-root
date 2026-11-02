@@ -1,0 +1,8 @@
+[package]
+name="binder_rpc_unstable_bindgen"
+version="0.1.0"
+edition="2021"
+[dependencies]
+binder_ndk_sys={package="android-binder-ndk-sys",path="../../sys"}
+[build-dependencies]
+bindgen="0.70.1"

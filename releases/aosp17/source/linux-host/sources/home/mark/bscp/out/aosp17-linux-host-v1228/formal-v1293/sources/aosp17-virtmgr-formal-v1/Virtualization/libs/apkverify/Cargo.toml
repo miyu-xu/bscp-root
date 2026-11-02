@@ -1,0 +1,15 @@
+[package]
+name="apkverify"
+version="0.1.0"
+edition="2021"
+[dependencies]
+anyhow="1"
+apkzip={path="../apkzip"}
+byteorder="1.5"
+bytes="1"
+hex="0.4"
+log="0.4"
+num-traits="0.2"
+num-derive="=0.4.2"
+openssl="=0.10.81"
+serde={version="1",features=["derive"]}

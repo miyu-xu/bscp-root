@@ -1,0 +1,8 @@
+[package]
+name="libfdt_bindgen"
+version="0.17.0"
+edition="2021"
+links="fdt"
+[build-dependencies]
+cc="1"
+bindgen="0.70.1"
