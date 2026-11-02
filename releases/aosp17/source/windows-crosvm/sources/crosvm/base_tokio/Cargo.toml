@@ -1,0 +1,19 @@
+[package]
+name = "base_tokio"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+cfg-if = { workspace = true }
+futures = { version = "0.3" }
+libc = { workspace = true }
+serde = { workspace = true }
+tokio = { workspace = true }
+
+base = { workspace = true }
+sync = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+winapi = "*"

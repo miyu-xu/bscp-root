@@ -1,0 +1,42 @@
+[
+  {
+    "url": "https://storage.googleapis.com/chromeos-localmirror/distfiles/prebuilts/windows/x86_64/gnu/sandbox/release/1/libsandbox.lib?generation=1665512604042660",
+    "path": "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\sandbox\\release\\1\\libsandbox.lib",
+    "generation": "1665512604042660",
+    "expected_bytes": 95612356,
+    "status": "VERIFIED",
+    "bytes": 95612356,
+    "sha256": "2a64a125b9ef49f5873ec13e9f8dfc6348d8e9596edb1a93d708f54f28ededce",
+    "crc32c": "Rpe8nA=="
+  },
+  {
+    "url": "https://storage.googleapis.com/chromeos-localmirror/distfiles/prebuilts/windows/x86_64/gnu/libslirp/release/1/libslirp.lib?generation=1664833665038441",
+    "path": "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\libslirp\\release\\1\\libslirp.lib",
+    "generation": "1664833665038441",
+    "expected_bytes": 14714,
+    "status": "VERIFIED",
+    "bytes": 14714,
+    "sha256": "9a412b84c21481887159fe9521cc13cd286de3eb52152cc7b5baf49bda1bf922",
+    "crc32c": "/wWVIQ=="
+  },
+  {
+    "url": "https://storage.googleapis.com/chromeos-localmirror/distfiles/prebuilts/windows/x86_64/gnu/libslirp/release/1/libslirp-0.dll?generation=1664833652503310",
+    "path": "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\libslirp\\release\\1\\libslirp-0.dll",
+    "generation": "1664833652503310",
+    "expected_bytes": 3281706,
+    "status": "VERIFIED",
+    "bytes": 3281706,
+    "sha256": "592390eb3c6d8d15ecde18585e33bd0770b617221339910cd2fed5f041535cb7",
+    "crc32c": "jaRdUw=="
+  },
+  {
+    "url": "https://storage.googleapis.com/chromeos-localmirror/distfiles/prebuilts/windows/x86_64/gnu/libslirp/release/1/libglib-2.0.dll.a?generation=1664834135134054",
+    "path": "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\libslirp\\release\\1\\libglib-2.0.dll.a",
+    "generation": "1664834135134054",
+    "expected_bytes": 1244358,
+    "status": "VERIFIED",
+    "bytes": 1244358,
+    "sha256": "5c2b9f09f83c8ed144873a1342005de33ab9c283e25eca28d8c5ffb1e825de5e",
+    "crc32c": "Bc1UOw=="
+  }
+]

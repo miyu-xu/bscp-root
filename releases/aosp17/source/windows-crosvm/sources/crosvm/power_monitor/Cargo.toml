@@ -1,0 +1,19 @@
+[package]
+name = "power_monitor"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[features]
+powerd = ["dbus", "system_api"]
+
+[dependencies]
+base = { workspace = true }
+dbus = { version = "0.9.7", optional = true }
+protobuf = "3.2"
+remain = { workspace = true }
+system_api = { workspace = true, optional = true }
+thiserror = { workspace = true }
+
+[build-dependencies]
+proto_build_tools = { workspace = true }

@@ -1,0 +1,19 @@
+[package]
+name = "fuse"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+base = { workspace = true }
+bitflags = "2.2.1"
+crossbeam-utils = "0.8"
+cros_tracing = { workspace = true }
+enumn = { workspace = true }
+libc = { workspace = true, features = ["extra_traits"] }
+remain = { workspace = true }
+thiserror = { workspace = true }
+zerocopy = { version = "0.8.13", features = ["derive"] }

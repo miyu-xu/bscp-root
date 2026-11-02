@@ -1,0 +1,10 @@
+[package]
+name = "virtio_sys"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+base = { workspace = true }
+data_model = { workspace = true }
+zerocopy = { version = "0.8.13", features = ["derive"] }

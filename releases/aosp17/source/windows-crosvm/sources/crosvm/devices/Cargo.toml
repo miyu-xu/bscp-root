@@ -1,0 +1,140 @@
+[package]
+name = "devices"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[features]
+android_display = ["gpu_display/android_display"]
+android_display_stub = ["gpu_display/android_display_stub"]
+arc_quota = ["dbus", "protobuf", "system_api", "fs_permission_translation"]
+fs_runtime_ugid_map = ["fs_permission_translation"]
+# Allow intercepting incoming virtio-fs requests to modify its permission, UID or GID.
+#
+# This feature is not supposed to be specified directly. Instead, this will be automatically
+# enabled when either `arc_quota` or `fs_runtime_ugid_map` is enabled.
+fs_permission_translation = []
+audio = []
+audio_aaudio = []
+audio_cras = ["libcras"]
+balloon = []
+gpu = ["gpu_display"]
+gunyah = []
+libvda-stub = ["libvda/libvda-stub"]
+net = []
+pvclock = []
+geniezone = []
+halla = []
+usb = []
+vaapi = ["cros-codecs/vaapi", "crc32fast"]
+media = ["virtio-media"]
+video-decoder = []
+video-encoder = []
+gbm = ["rutabaga_gfx/gbm"]
+x = ["gpu_display/x"]
+virgl_renderer = ["gpu", "rutabaga_gfx/virgl_renderer"]
+vtpm = ["system_api", "protobuf", "dbus"]
+registered_events = []
+slirp = ["net_util/slirp"]
+slirp-ring-capture = []
+stats = []
+seccomp_trace = []
+swap = ["swap/enable"]
+whpx = []
+pci-hotplug = []
+noncoherent-dma = []
+
+[dependencies]
+argh = { workspace = true }
+async-task = "4"
+acpi_tables = { workspace = true }
+anyhow = { workspace = true }
+async-trait = "0.1.36"
+audio_streams = { workspace = true }
+audio_util = { workspace = true }
+balloon_control = { workspace = true }
+base = { workspace = true }
+bit_field = { workspace = true }
+cfg-if = { workspace = true }
+chrono = { version = "0.4.34", features = [ "serde", "now" ], default-features = false }
+crc32fast = { version = "1.2.1", optional = true }
+cros_async = { workspace = true }
+cros-codecs = { version = "0.0.4", optional = true }
+crosvm_cli = { workspace = true }
+data_model = { workspace = true }
+dbus = { version = "0.9.7", features = ["stdfd"], optional = true }
+disk = { workspace = true }
+downcast-rs = "1.2.0"
+enumn = { workspace = true }
+ffmpeg = { workspace = true, optional = true }
+gpu_display = { workspace = true, optional = true }
+rutabaga_gfx = { workspace = true }
+hypervisor = { workspace = true }
+kvm_sys = { workspace = true }
+libc = { workspace = true }
+libvda = { path = "../media/libvda", optional = true }
+linux_input_sys = { workspace = true }
+metrics = { workspace = true }
+metrics_events = { workspace = true }
+net_util = { workspace = true }
+num-traits = "0.2"
+power_monitor = { workspace = true }
+protobuf = { version = "3.2", optional = true }
+protos = { workspace = true, optional = true }
+rand = { workspace = true }
+remain = { workspace = true }
+resources = { workspace = true }
+serde = { workspace = true, features = [ "derive", "rc" ] }
+serde_json = { workspace = true }
+serde_keyvalue = { workspace = true, features = ["argh_derive"] }
+smallvec = "1.6.1"
+snapshot = { workspace = true }
+static_assertions = { workspace = true }
+sync = { workspace = true }
+system_api = { workspace = true, optional = true }
+tempfile = "3"
+thiserror = { workspace = true }
+cros_tracing = { workspace = true }
+swap = { workspace = true }
+uuid = { version = "1", features = ["v8", "serde"] }
+vmm_vhost = { workspace = true }
+virtio_sys = { workspace = true }
+virtio-media = { version = "0.0.7", optional = true }
+vm_control = { workspace = true }
+vm_memory = { workspace = true }
+zerocopy = { version = "0.8.13", features = ["derive"] }
+ciborium = { workspace = true }
+
+[target.'cfg(any(target_os = "android", target_os = "linux"))'.dependencies]
+android_audio = { workspace = true }
+fuse = { workspace = true }
+jail = { path = "../jail" }
+libcras = { version = "*", optional = true }
+minijail = "*"
+net_sys = { workspace = true }
+p9 = "0.3.1"
+usb_util = { workspace = true }
+vfio_sys = { workspace = true }
+vhost = { workspace = true }
+
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+aarch64_sys_reg = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+proc_init = { workspace = true }
+tube_transporter = { path = "../tube_transporter" }
+win_audio = { path = "../win_audio"}
+win_util = { path = "../win_util"}
+winapi = "0.3"
+
+[dependencies.futures]
+version = "0.3"
+features = ["async-await", "std"]
+default-features = false
+
+[dev-dependencies]
+bytes = "1.1.0"
+crc32fast = "1"
+libtest-mimic = "0.6"
+named-lock = "0.3"
+tempfile = "3"

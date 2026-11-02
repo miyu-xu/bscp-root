@@ -1,0 +1,16 @@
+[package]
+name = "usb_util"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+static_assertions = { workspace = true }
+data_model = { workspace = true }
+libc = { workspace = true }
+remain = { workspace = true }
+thiserror = { workspace = true }
+base = { workspace = true }
+usb_sys = { workspace = true }
+sync = { workspace = true }
+zerocopy = { version = "0.8.13", features = ["derive"] }

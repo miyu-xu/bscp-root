@@ -1,0 +1,15 @@
+[package]
+name = "vhost"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+static_assertions = { workspace = true }
+libc = { workspace = true }
+net_util = { workspace = true }
+base = { workspace = true }
+remain = { workspace = true }
+thiserror = { workspace = true }
+virtio_sys = { workspace = true }
+vm_memory = { workspace = true }

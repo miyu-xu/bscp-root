@@ -1,0 +1,21 @@
+[package]
+name = "ext2"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+base = { workspace = true }
+enumn = { workspace = true }
+libc = { workspace = true }
+uuid = { version = "1", features = ["v4"] }
+zerocopy = { version = "0.8.13", features = ["derive"] }
+
+[[example]]
+name = "mkfs"
+
+[dev-dependencies]
+argh = { workspace = true }
+tempfile = "3"
+walkdir = "2.3"

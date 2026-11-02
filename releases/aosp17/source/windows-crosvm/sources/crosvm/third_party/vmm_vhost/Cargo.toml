@@ -1,0 +1,34 @@
+[package]
+name = "vmm_vhost"
+version = "0.1.0"
+keywords = ["vhost", "vhost-user", "virtio", "vdpa"]
+description = "a pure rust library for vdpa, vhost and vhost-user"
+authors = ["Liu Jiang <gerry@linux.alibaba.com>"]
+repository = "https://github.com/rust-vmm/vhost"
+documentation = "https://docs.rs/vhost"
+readme = "README.md"
+license = "Apache-2.0 or BSD-3-Clause"
+edition = "2021"
+
+[features]
+default = []
+
+[dependencies]
+anyhow = { workspace = true }
+base = { workspace = true }
+bit_field = { workspace = true }
+bitflags = "2.3"
+cfg-if = { workspace = true }
+enumn = { workspace = true }
+libc = { workspace = true }
+remain = { workspace = true }
+thiserror = { workspace = true }
+zerocopy = { version = "0.8.13", features = ["derive"] }
+
+[target.'cfg(windows)'.dependencies]
+serde = { workspace = true, features = [ "derive" ] }
+serde_json = { workspace = true }
+tube_transporter = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"

@@ -1,0 +1,19 @@
+[package]
+name = "protos"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[lib]
+# Cargo uses its build.rs output; Soong retains src/lib.rs and generated crates.
+path = "src/cargo.rs"
+
+[features]
+composite-disk = []
+registered_events = []
+
+[dependencies]
+protobuf = "3.2"
+
+[build-dependencies]
+proto_build_tools = { workspace = true }

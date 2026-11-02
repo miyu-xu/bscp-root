@@ -1,0 +1,154 @@
+{
+  "repository": "https://github.com/avaneev/r8brain-free-src",
+  "tag": "7.1",
+  "tag_object": "6c636ec84abcae5a401a9748c4e5db76b8361b66",
+  "commit": "c9df5ca3a9340ed79612d3d414d4860e0e0eea86",
+  "license": "MIT",
+  "files": [
+    {
+      "path": "CDSPBlockConvolver.h",
+      "bytes": 15892,
+      "sha256": "0b76631804a7bef689d899f0881ae70512993a29d1cedc1237d840632d632d31"
+    },
+    {
+      "path": "CDSPFIRFilter.h",
+      "bytes": 22034,
+      "sha256": "7a6a299da21d8bba4a8faf8e2f59110df10cc7065496b0f9cedf88485b6e3dae"
+    },
+    {
+      "path": "CDSPFracInterpolator.h",
+      "bytes": 31914,
+      "sha256": "2cd19d24261f0f06133fff656b853967548c70d50ce41790408e3024ae63c766"
+    },
+    {
+      "path": "CDSPHBDownsampler.h",
+      "bytes": 8312,
+      "sha256": "a972e6599436e26183ae73bb83921950d026bb79334c2c262df6c0555f506742"
+    },
+    {
+      "path": "CDSPHBDownsampler.inc",
+      "bytes": 25482,
+      "sha256": "c9983c315b5ad45c448f941e4c6d39c498a935e12234e3388c22cd1db501798d"
+    },
+    {
+      "path": "CDSPHBUpsampler.h",
+      "bytes": 28593,
+      "sha256": "97181995e790af48682e81be9bb44a1f9c29213862a804ad157983adb6e7970a"
+    },
+    {
+      "path": "CDSPHBUpsampler.inc",
+      "bytes": 24995,
+      "sha256": "c0bf41fe273a58ee9826cbd6a278a3a5717d332efdcbf437c6713fa176513dcd"
+    },
+    {
+      "path": "CDSPProcessor.h",
+      "bytes": 4031,
+      "sha256": "9724144ca141e0be7025430751e59e298b9570752186b7d9a768c7948f802132"
+    },
+    {
+      "path": "CDSPRealFFT.h",
+      "bytes": 18540,
+      "sha256": "a1b1f19cbf79f7738d4d7362d52ea4beb0e87d91d6320c0989a759c9ee35347e"
+    },
+    {
+      "path": "CDSPResampler.h",
+      "bytes": 24029,
+      "sha256": "468eadaf45a91ac3f13c6163a20e8839908cc4c224d1876b772a152ecc182caa"
+    },
+    {
+      "path": "CDSPSincFilterGen.h",
+      "bytes": 18023,
+      "sha256": "c5ee2159220cfeead04154aa56323fa0bd912aca10a6f71c42451510bbaa2a74"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1097,
+      "sha256": "4215edeca58072250f3013d256416e36290b5e463dbf411769fc2fcdb2d02094"
+    },
+    {
+      "path": "r8bbase.h",
+      "bytes": 30973,
+      "sha256": "f259cd7b93d8117bed34b0354379ebf90d7730ab6c7a4d9fd2add8f8083a8f30"
+    },
+    {
+      "path": "r8bconf.h",
+      "bytes": 6350,
+      "sha256": "69d7bb741a069998a20c293ec6d638627762411964cf01040ff5c24a096f4056"
+    },
+    {
+      "path": "r8butil.h",
+      "bytes": 7943,
+      "sha256": "de7b790cd0ae8fa466f1526888b945b643a7b2bdbaf594fb7c077b7a9683b5ee"
+    },
+    {
+      "path": "DLL/r8bsrc.h",
+      "bytes": 5104,
+      "sha256": "535611c49e53acf7f483ed3b97cbb2fc9101b98f78b5d7a9fb834bd8e1e66c61"
+    },
+    {
+      "path": "DLL/r8bsrc.cpp",
+      "bytes": 2758,
+      "sha256": "22bfc90dd6e84dbfbbd88f046b5870325cb31d8adf49488e71a92994cb5da964"
+    },
+    {
+      "path": "fft/fft4g.h",
+      "bytes": 38212,
+      "sha256": "f954389e9cb38886f37c174610cda4d6c2840df7e95d0c97c1d556fa7b8fd1be"
+    },
+    {
+      "path": "fft/pffft.c",
+      "bytes": 69985,
+      "sha256": "1a915a13ccaf8f33812709173df072ae1baa978eebf8c9cdf9a80ea64b226909"
+    },
+    {
+      "path": "fft/pffft.h",
+      "bytes": 7005,
+      "sha256": "cd64bb4295f180500c32f596a368b11c493dd71b2168f6fda4ab02cae694b2bc"
+    },
+    {
+      "path": "fft/pffft_double.c",
+      "bytes": 7004,
+      "sha256": "09626da18fc62b616af18026e483c244a879ef243cb7fb5a0f3e65e2955ebfac"
+    },
+    {
+      "path": "fft/pffft_double.h",
+      "bytes": 9412,
+      "sha256": "8d7e9429f26174142592563bbed34e757b6fed43278df639e8ac1bb8b73e14a3"
+    },
+    {
+      "path": "fft/pffft_priv_impl.h",
+      "bytes": 80006,
+      "sha256": "8ae346bf3168b700ec3cfda485cc323460ae539201c2bd537950a6f59eb53a82"
+    },
+    {
+      "path": "fft/simd/pf_avx_double.h",
+      "bytes": 5621,
+      "sha256": "9ece67959668817b79b8d7e522b7c84cb3a7b9e37e2b4f6b1483065eaf4c5759"
+    },
+    {
+      "path": "fft/simd/pf_double.h",
+      "bytes": 2935,
+      "sha256": "28a3415fbe85107dc7114de20f4867af7d50301b652895328c0af87993ad21d8"
+    },
+    {
+      "path": "fft/simd/pf_neon_double.h",
+      "bytes": 7191,
+      "sha256": "6558ec2f4ce95a143e4c72f0f7719294e7b64fd230130c93cfd544ec5440736b"
+    },
+    {
+      "path": "fft/simd/pf_neon_double_from_avx.h",
+      "bytes": 3179,
+      "sha256": "16808a1720c1cd720e17c16788541af75e964e96e1a52c7290aa2d5916f68d43"
+    },
+    {
+      "path": "fft/simd/pf_scalar_double.h",
+      "bytes": 5033,
+      "sha256": "f739fde72da5b7780896c14bfd545269cf8367e81b2c9b407dc6486643868bb1"
+    },
+    {
+      "path": "fft/simd/pf_sse2_double.h",
+      "bytes": 8739,
+      "sha256": "a8607bde987db21b047c8cfa1bd304ca16ad3690ba44290c135595244aac1375"
+    }
+  ]
+}

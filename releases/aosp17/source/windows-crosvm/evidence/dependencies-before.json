@@ -1,0 +1,54 @@
+{
+  "C:\\Users\\miyu1\\.rustup\\toolchains\\1.94.0-x86_64-pc-windows-gnu\\bin\\cargo.exe": {
+    "bytes": 55406888,
+    "sha256": "b1ba66b69e9aaf178910c66ce848bed3b2ba01ab86551a1d9a643b34f7e3fc0a"
+  },
+  "C:\\Users\\miyu1\\.rustup\\toolchains\\1.94.0-x86_64-pc-windows-gnu\\bin\\rustc.exe": {
+    "bytes": 45175,
+    "sha256": "2000a999cc5fdc398d64c9a4f8d4d0cddebe547a5203f4a3863e930709c0d949"
+  },
+  "C:\\workspace\\mingw64\\bin\\gcc.exe": {
+    "bytes": 3022336,
+    "sha256": "8458092eb498f0cfba0efad3c9a54d180aa7059061cd8042e6b2487cb4a729e8"
+  },
+  "C:\\workspace\\mingw64\\bin\\g++.exe": {
+    "bytes": 3025408,
+    "sha256": "b88078f0027c2e68d66e2306acd2301cf4d428c517387a3a6c522f34343b7a3c"
+  },
+  "C:\\workspace\\mingw64\\libexec\\gcc\\x86_64-w64-mingw32\\15.2.0\\cc1plus.exe": {
+    "bytes": 43779072,
+    "sha256": "5e2f11a2de53d88d1e9291e290aaa9d2f30e6570152747ac7aab78e51142b300"
+  },
+  "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\renderer-build\\libgfxstream_backend.dll": {
+    "bytes": 60436992,
+    "sha256": "b775e5da32c89605debf28d5f2ae8ad80d43ac6f6756b9deadc1255181af0d35"
+  },
+  "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\sandbox\\release\\1\\libsandbox.lib": {
+    "bytes": 95612356,
+    "sha256": "2a64a125b9ef49f5873ec13e9f8dfc6348d8e9596edb1a93d708f54f28ededce"
+  },
+  "C:\\workspace\\mingw64\\bin\\libstdc++-6.dll": {
+    "bytes": 2319872,
+    "sha256": "f6ea29bb8bee02af0c745f0592f5ab96ec94469e91d65e421c8a5d4c36fbd00e"
+  },
+  "C:\\workspace\\mingw64\\bin\\libgcc_s_seh-1.dll": {
+    "bytes": 140288,
+    "sha256": "097df5e95968f05836ac2c863ae430a1ff1936cc6703c8d28948de51f1963483"
+  },
+  "C:\\workspace\\mingw64\\bin\\libwinpthread-1.dll": {
+    "bytes": 56320,
+    "sha256": "d1cc54202f86d5e1b6d602b6f76ff4fa75cdd0d0e27a368bfd083a05e6bac32b"
+  },
+  "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\libslirp\\release\\1\\libglib-2.0.dll.a": {
+    "bytes": 1244358,
+    "sha256": "5c2b9f09f83c8ed144873a1342005de33ab9c283e25eca28d8c5ffb1e825de5e"
+  },
+  "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\libslirp\\release\\1\\libslirp-0.dll": {
+    "bytes": 3281706,
+    "sha256": "592390eb3c6d8d15ecde18585e33bd0770b617221339910cd2fed5f041535cb7"
+  },
+  "E:\\bscp\\out\\aosp17-windows-crosvm-v1462\\official-release-prebuilts-v1\\libslirp\\release\\1\\libslirp.lib": {
+    "bytes": 14714,
+    "sha256": "9a412b84c21481887159fe9521cc13cd286de3eb52152cc7b5baf49bda1bf922"
+  }
+}

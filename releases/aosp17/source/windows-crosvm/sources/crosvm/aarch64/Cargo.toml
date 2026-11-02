@@ -1,0 +1,35 @@
+[package]
+name = "aarch64"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[features]
+gdb = ["gdbstub", "gdbstub_arch", "arch/gdb"]
+swap = ["swap/enable"]
+
+[dependencies]
+aarch64_sys_reg = { workspace = true }
+anyhow = { workspace = true }
+arch = { workspace = true }
+cros_fdt = { workspace = true }
+devices = { workspace = true }
+gdbstub = { workspace = true, optional = true }
+gdbstub_arch = { workspace = true, optional = true }
+hypervisor = { workspace = true }
+jail = { workspace = true }
+kernel_cmdline = { workspace = true }
+kernel_loader = { workspace = true }
+libc = { workspace = true }
+rand = { workspace = true }
+remain = { workspace = true }
+resources = { workspace = true }
+swap = { workspace = true }
+sync = { workspace = true }
+base = { workspace = true }
+thiserror = { workspace = true }
+vm_control = { workspace = true }
+vm_memory = { workspace = true }
+
+[target.'cfg(any(target_os = "android", target_os = "linux"))'.dependencies]
+minijail = "*"
