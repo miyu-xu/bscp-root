@@ -1,0 +1,15 @@
+[package]
+name = "resources"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[dependencies]
+libc = { workspace = true }
+base = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+remain = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }

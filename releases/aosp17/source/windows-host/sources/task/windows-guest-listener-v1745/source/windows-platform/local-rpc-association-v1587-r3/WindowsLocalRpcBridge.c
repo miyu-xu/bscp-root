@@ -1,0 +1,215 @@
+#ifndef BSCP_WLR_ASSOCIATION_CORE
+#error Build this source only with the full same-version association facade.
+#endif
+#define _WIN32_WINNT 0x0A00
+#define WIN32_LEAN_AND_MEAN
+#define WLR_BUILD
+#include <windows.h>
+#include <rpc.h>
+#include <rpcasync.h>
+#include <sddl.h>
+#include <stdio.h>
+#include <bcrypt.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include "WindowsLocalRpc.h"
+#include "WindowsLocalRpcBridge.h"
+#define SESSION_TAG 0x73524c57u
+#define CHANNEL_TAG 0x63524c57u
+#define MAX_BYTES 614921u
+#define MAX_HANDLES 253u
+#define MAX_SESSIONS 32
+#define MAX_CHANNELS 128
+typedef struct Identity { unsigned char sid[SECURITY_MAX_SID_SIZE]; LUID logon; } Identity;
+typedef struct Session { ULONG tag; LONG refs; volatile LONG closing; HANDLE owner; Identity identity; uint64_t generation; } Session;
+typedef struct Channel { ULONG tag; LONG refs; SRWLOCK lock; Session* session; int closing,admitted,association; HANDLE admissionToken; DWORD admissionPid; uint64_t id,nextIn,nextOut; struct WlrRecord* in; struct WlrRecord* out; struct Channel* next; } Channel;
+enum RecordOrigin { RECORD_UNTRUSTED, RECORD_SERVER_INBOUND, RECORD_SERVER_OUTBOUND, RECORD_CLIENT_RECEIVED };
+struct WlrRecord { enum RecordOrigin origin; int popped; uint64_t sequence; unsigned char* data; ULONG bytes; HANDLE* files; ULONG fileCount; HANDLE* pipes; ULONG pipeCount; HANDLE token; HANDLE owner; DWORD actualPid; struct WlrRecord* quarantineNext; };
+struct WlrAcceptedChannel { Channel* channel; };
+static INIT_ONCE authOnce=INIT_ONCE_STATIC_INIT;
+static BOOL CALLBACK initAuth(PINIT_ONCE once,PVOID p,PVOID* ctx){RPC_STATUS e;(void)once;(void)p;(void)ctx;e=RpcServerRegisterAuthInfoW(NULL,RPC_C_AUTHN_WINNT,NULL,NULL);if(e){SetLastError(e);return FALSE;}return TRUE;}
+static DWORD ensureAuth(void){return InitOnceExecuteOnce(&authOnce,initAuth,NULL,NULL)?0:GetLastError();}
+static LONG failAcceptAllocation;
+static volatile LONG ownedAcceptorCount;
+static SRWLOCK acceptorLock=SRWLOCK_INIT;
+static WlrServerAcceptor* activeAcceptor;
+static SRWLOCK registryLock=SRWLOCK_INIT;
+static Channel* registry;
+static Identity allowed;
+static volatile LONG sessionCount,channelCount,recordCount,closeFailures,started;
+static volatile LONG64 idCounter;
+static WlrRecord* quarantined;
+static __declspec(thread) DWORD lastRpcException;
+static __declspec(thread) LONG failNdrAllocation;
+static SRWLOCK clientLock=SRWLOCK_INIT;
+static LONG clientCalls;
+static DWORD clientPoison;
+static DWORD beginClientCall(int cleanup){DWORD e=0;AcquireSRWLockExclusive(&clientLock);if(clientPoison&&!cleanup){lastRpcException=clientPoison;e=WLR_RPC_AMBIGUOUS;}else if(clientCalls>=MAX_CHANNELS)e=ERROR_BUSY;else clientCalls++;ReleaseSRWLockExclusive(&clientLock);return e;}
+static void endClientCall(void){AcquireSRWLockExclusive(&clientLock);clientCalls--;ReleaseSRWLockExclusive(&clientLock);}
+static void poisonClient(DWORD exception){AcquireSRWLockExclusive(&clientLock);if(!clientPoison)clientPoison=exception?exception:RPC_S_CALL_FAILED;ReleaseSRWLockExclusive(&clientLock);}
+void* __RPC_USER midl_user_allocate(size_t n){if(failNdrAllocation>0&&--failNdrAllocation==0)return NULL;return malloc(n);}
+void __RPC_USER midl_user_free(void* p){free(p);}
+void WlrTestFailNdrAllocation(LONG ordinal){failNdrAllocation=ordinal;}
+DWORD WlrLastRpcException(void){return lastRpcException;}
+static void closeOwned(HANDLE h){if(h&&h!=INVALID_HANDLE_VALUE&&!CloseHandle(h))InterlockedIncrement(&closeFailures);}
+static DWORD identity(HANDLE token,Identity* out){union { TOKEN_USER alignment; unsigned char bytes[sizeof(TOKEN_USER)+SECURITY_MAX_SID_SIZE]; } storage;unsigned char* b=storage.bytes;TOKEN_STATISTICS st;DWORD n=0;
+ if(!GetTokenInformation(token,TokenUser,b,sizeof(storage.bytes),&n)||!CopySid(sizeof(out->sid),out->sid,((TOKEN_USER*)b)->User.Sid)||!GetTokenInformation(token,TokenStatistics,&st,sizeof(st),&n))return GetLastError();out->logon=st.AuthenticationId;return 0;}
+static int equalIdentity(const Identity* a,const Identity* b){return EqualSid((PSID)a->sid,(PSID)b->sid)&&a->logon.LowPart==b->logon.LowPart&&a->logon.HighPart==b->logon.HighPart;}
+static DWORD closeProofToken(HANDLE token);
+static DWORD capture(Session* s,HANDLE supplied,HANDLE* snapshot,Identity* actual,DWORD* actualPid){RPC_CALL_ATTRIBUTES_V2_W a={0};HANDLE t=NULL,ambient=NULL;DWORD e=0;Identity processIdentity;HANDLE pt=NULL;HANDLE owner=s?s->owner:supplied;*snapshot=NULL;if(actualPid)*actualPid=0;
+ if(OpenThreadToken(GetCurrentThread(),TOKEN_QUERY,TRUE,&ambient)){closeProofToken(ambient);return ERROR_ACCESS_DENIED;}if(GetLastError()!=ERROR_NO_TOKEN)return ERROR_ACCESS_DENIED;
+ a.Version=2;a.Flags=RPC_QUERY_CLIENT_PID;
+ if(RpcServerInqCallAttributesW(NULL,&a)!=RPC_S_OK||a.ProtocolSequence!=RPC_PROTSEQ_LRPC||a.NullSession||(a.CallStatus&(RPC_CALL_STATUS_CANCELLED|RPC_CALL_STATUS_DISCONNECTED))||!(ULONG_PTR)a.ClientPID||(ULONG_PTR)a.ClientPID>MAXDWORD||a.AuthenticationLevel<RPC_C_AUTHN_LEVEL_PKT_INTEGRITY)return ERROR_ACCESS_DENIED;
+ if(!owner||WaitForSingleObject(owner,0)!=WAIT_TIMEOUT||GetProcessId(owner)!=(DWORD)(ULONG_PTR)a.ClientPID)return ERROR_ACCESS_DENIED;
+ if(RpcImpersonateClient(NULL)!=RPC_S_OK)return ERROR_ACCESS_DENIED;
+ if(!OpenThreadToken(GetCurrentThread(),TOKEN_QUERY|TOKEN_DUPLICATE,TRUE,&t))e=GetLastError();
+ if(!e)e=identity(t,actual);
+ if(!e&&!DuplicateTokenEx(t,TOKEN_QUERY,NULL,SecurityIdentification,TokenImpersonation,snapshot))e=GetLastError();
+ if(!e){DWORD flags=0,n=0;TOKEN_TYPE type;SECURITY_IMPERSONATION_LEVEL level;if(!GetHandleInformation(*snapshot,&flags)||(flags&HANDLE_FLAG_INHERIT)||!GetTokenInformation(*snapshot,TokenType,&type,sizeof(type),&n)||type!=TokenImpersonation||!GetTokenInformation(*snapshot,TokenImpersonationLevel,&level,sizeof(level),&n)||level<SecurityIdentification)e=ERROR_ACCESS_DENIED;}
+ {DWORD closed=closeProofToken(t);if(closed)e=closed;}
+ /* Revert failure cannot return this thread to the RPC pool with caller authority. */
+ if(RpcRevertToSelf()!=RPC_S_OK){{DWORD closed=closeProofToken(*snapshot);if(closed)e=closed;}*snapshot=NULL;RaiseFailFastException(NULL,NULL,0);}
+ if(OpenThreadToken(GetCurrentThread(),TOKEN_QUERY,TRUE,&ambient)){closeProofToken(ambient);RaiseFailFastException(NULL,NULL,0);}if(GetLastError()!=ERROR_NO_TOKEN)RaiseFailFastException(NULL,NULL,0);
+ if(!e&&!equalIdentity(actual,&allowed))e=ERROR_ACCESS_DENIED;
+ if(!e&&s&&!equalIdentity(actual,&s->identity))e=ERROR_ACCESS_DENIED;
+ if(!e){if(!OpenProcessToken(owner,TOKEN_QUERY,&pt))e=GetLastError();else{e=identity(pt,&processIdentity);{DWORD closed=closeProofToken(pt);if(closed)e=closed;}if(!e&&!equalIdentity(actual,&processIdentity))e=ERROR_ACCESS_DENIED;}}
+ if(!e&&WaitForSingleObject(owner,0)!=WAIT_TIMEOUT)e=ERROR_ACCESS_DENIED;
+ if(e){{DWORD closed=closeProofToken(*snapshot);if(closed)e=closed;}*snapshot=NULL;}else if(actualPid)*actualPid=(DWORD)(ULONG_PTR)a.ClientPID;return e;
+}
+static RPC_STATUS RPC_ENTRY security(RPC_IF_HANDLE unused,void* call){RPC_CALL_ATTRIBUTES_V2_W a={0};(void)unused;a.Version=2;
+ if(RpcServerInqCallAttributesW(call,&a)!=RPC_S_OK||a.ProtocolSequence!=RPC_PROTSEQ_LRPC||a.NullSession||a.AuthenticationLevel<RPC_C_AUTHN_LEVEL_PKT_INTEGRITY)return RPC_S_ACCESS_DENIED;return RPC_S_OK;}
+static void releaseSession(Session* s){if(InterlockedDecrement(&s->refs)==0){closeOwned(s->owner);s->tag=0;free(s);InterlockedDecrement(&sessionCount);}}
+void WlrRecordRelease(WlrRecord* r){ULONG i;if(!r)return;for(i=0;i<r->fileCount;i++)closeOwned(r->files[i]);for(i=0;i<r->pipeCount;i++)closeOwned(r->pipes[i]);closeOwned(r->token);closeOwned(r->owner);free(r->files);free(r->pipes);free(r->data);free(r);InterlockedDecrement(&recordCount);}
+static void releaseChannel(Channel* c){if(InterlockedDecrement(&c->refs)==0){WlrRecordRelease(c->in);WlrRecordRelease(c->out);closeOwned(c->admissionToken);releaseSession(c->session);c->tag=0;free(c);InterlockedDecrement(&channelCount);}}
+static Channel* lookup(uint64_t g,uint64_t id){Channel* c;AcquireSRWLockShared(&registryLock);for(c=registry;c;c=c->next)if(c->id==id&&c->session->generation==g){InterlockedIncrement(&c->refs);break;}ReleaseSRWLockShared(&registryLock);return c;}
+static DWORD copyHandle(HANDLE source,HANDLE* out,int pipe){DWORD kind=GetFileType(source);*out=NULL;if(pipe){if(kind!=FILE_TYPE_PIPE||!GetNamedPipeInfo(source,NULL,NULL,NULL,NULL))return ERROR_INVALID_HANDLE;}else if(kind!=FILE_TYPE_DISK)return ERROR_INVALID_HANDLE;
+ if(!DuplicateHandle(GetCurrentProcess(),source,GetCurrentProcess(),out,0,FALSE,DUPLICATE_SAME_ACCESS))return GetLastError();return 0;}
+static DWORD makeRecord(uint64_t sequence,const unsigned char* data,ULONG bytes,const HANDLE* files,ULONG nf,const HANDLE* pipes,ULONG np,HANDLE token,WlrRecord** out){WlrRecord* r;ULONG i;DWORD e=0;*out=NULL;
+ if(bytes>MAX_BYTES||nf>MAX_HANDLES||np>MAX_HANDLES||nf+np>MAX_HANDLES||(!data&&bytes)||(!files&&nf)||(!pipes&&np))return ERROR_INVALID_PARAMETER;
+ r=(WlrRecord*)calloc(1,sizeof(*r));if(!r)return ERROR_NOT_ENOUGH_MEMORY;InterlockedIncrement(&recordCount);r->sequence=sequence;r->bytes=bytes;
+ if(bytes){r->data=(unsigned char*)malloc(bytes);if(!r->data)e=ERROR_NOT_ENOUGH_MEMORY;else memcpy(r->data,data,bytes);}
+ if(!e&&nf){r->files=(HANDLE*)calloc(nf,sizeof(HANDLE));if(!r->files)e=ERROR_NOT_ENOUGH_MEMORY;}
+ if(!e&&np){r->pipes=(HANDLE*)calloc(np,sizeof(HANDLE));if(!r->pipes)e=ERROR_NOT_ENOUGH_MEMORY;}
+ for(i=0;!e&&i<nf;i++){e=copyHandle(files[i],&r->files[i],0);if(!e)r->fileCount++;}
+ for(i=0;!e&&i<np;i++){e=copyHandle(pipes[i],&r->pipes[i],1);if(!e)r->pipeCount++;}
+ if(!e&&token&&!DuplicateHandle(GetCurrentProcess(),token,GetCurrentProcess(),&r->token,0,FALSE,DUPLICATE_SAME_ACCESS))e=GetLastError();
+ if(e){WlrRecordRelease(r);return e;}*out=r;return 0;
+}
+DWORD WlrRecordView(const WlrRecord* r,WlrView* v){if(!r||!v)return ERROR_INVALID_PARAMETER;v->sequence=r->sequence;v->data=r->data;v->bytes=r->bytes;v->files=r->files;v->fileCount=r->fileCount;v->pipes=r->pipes;v->pipeCount=r->pipeCount;v->requestToken=r->token;v->requestProcess=r->owner;v->requestPid=r->actualPid;return 0;}
+void __RPC_USER WLR_CHANNEL_rundown(WLR_CHANNEL raw){Channel* c=(Channel*)raw;Channel** p;WlrRecord* in;WlrRecord* out;if(!c||c->tag!=CHANNEL_TAG)return;
+ AcquireSRWLockExclusive(&registryLock);for(p=&registry;*p&&*p!=c;p=&(*p)->next){}if(*p)*p=c->next;ReleaseSRWLockExclusive(&registryLock);
+ AcquireSRWLockExclusive(&c->lock);c->closing=1;in=c->in;out=c->out;c->in=c->out=NULL;ReleaseSRWLockExclusive(&c->lock);WlrRecordRelease(in);WlrRecordRelease(out);releaseChannel(c);
+}
+void __RPC_USER WLR_SESSION_rundown(WLR_SESSION raw){Session* s=(Session*)raw;Channel* c;if(!s||s->tag!=SESSION_TAG)return;InterlockedExchange(&s->closing,1);
+ AcquireSRWLockShared(&registryLock);for(c=registry;c;c=c->next)if(c->session==s){WlrRecord* in;WlrRecord* out;AcquireSRWLockExclusive(&c->lock);c->closing=1;in=c->in;out=c->out;c->in=c->out=NULL;ReleaseSRWLockExclusive(&c->lock);WlrRecordRelease(in);WlrRecordRelease(out);}ReleaseSRWLockShared(&registryLock);releaseSession(s);
+}
+unsigned long Server_OpenSession(handle_t binding,HANDLE owner,WLR_SESSION* out,__int64* generation){Session* s;HANDLE token=NULL;Identity id;DWORD e;(void)binding;*out=NULL;*generation=0;e=capture(NULL,owner,&token,&id,NULL);{DWORD closed=closeProofToken(token);if(closed)e=closed;}if(e)return e;
+ if(InterlockedIncrement(&sessionCount)>MAX_SESSIONS){InterlockedDecrement(&sessionCount);return ERROR_BUSY;}s=(Session*)calloc(1,sizeof(*s));if(!s){InterlockedDecrement(&sessionCount);return ERROR_NOT_ENOUGH_MEMORY;}s->tag=SESSION_TAG;s->refs=1;s->identity=id;
+ if(!DuplicateHandle(GetCurrentProcess(),owner,GetCurrentProcess(),&s->owner,PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,0)){e=GetLastError();releaseSession(s);return e;}
+ if(BCryptGenRandom(NULL,(PUCHAR)&s->generation,sizeof(s->generation),BCRYPT_USE_SYSTEM_PREFERRED_RNG)<0||!s->generation){releaseSession(s);return ERROR_GEN_FAILURE;}*out=s;*generation=(__int64)s->generation;return 0;
+}
+unsigned long Server_OpenChannel(WLR_SESSION raw,__int64 generation,WLR_CHANNEL* out,__int64* id){Session* s=(Session*)raw;Channel* c;HANDLE token=NULL;Identity actual;DWORD e,pid=0;*out=NULL;*id=0;if(!s||s->tag!=SESSION_TAG)return ERROR_INVALID_HANDLE;e=capture(s,NULL,&token,&actual,&pid);if(e)return e;if(s->closing||s->generation!=(uint64_t)generation){closeOwned(token);return ERROR_ACCESS_DENIED;}
+ if(InterlockedIncrement(&channelCount)>MAX_CHANNELS){InterlockedDecrement(&channelCount);closeOwned(token);return ERROR_BUSY;}c=(Channel*)calloc(1,sizeof(*c));if(!c){InterlockedDecrement(&channelCount);closeOwned(token);return ERROR_NOT_ENOUGH_MEMORY;}c->tag=CHANNEL_TAG;c->refs=1;c->session=s;c->admissionToken=token;c->admissionPid=pid;InterlockedIncrement(&s->refs);c->id=(uint64_t)InterlockedIncrement64(&idCounter);c->nextIn=c->nextOut=1;
+ AcquireSRWLockExclusive(&registryLock);c->next=registry;registry=c;ReleaseSRWLockExclusive(&registryLock);*out=c;*id=(__int64)c->id;return 0;
+}
+unsigned long Server_TrySend(WLR_CHANNEL raw,__int64 generation,__int64 sequence,ULONG bytes,unsigned char* data,ULONG nf,HANDLE* files,ULONG np,HANDLE* pipes){Channel* c=(Channel*)raw;HANDLE token=NULL;Identity actual;WlrRecord* r=NULL;DWORD e,actualPid=0;if(!c||c->tag!=CHANNEL_TAG)return ERROR_INVALID_HANDLE;e=capture(c->session,NULL,&token,&actual,&actualPid);if(e)return e;
+ AcquireSRWLockExclusive(&c->lock);if(c->closing||c->session->closing)e=ERROR_OPERATION_ABORTED;else if(c->association!=2)e=ERROR_ACCESS_DENIED;else if(c->session->generation!=(uint64_t)generation)e=ERROR_ACCESS_DENIED;else if((uint64_t)sequence!=c->nextIn)e=ERROR_INVALID_DATA;else if(c->in)e=ERROR_BUSY;else{e=makeRecord((uint64_t)sequence,data,bytes,files,nf,pipes,np,token,&r);if(!e&&!DuplicateHandle(GetCurrentProcess(),c->session->owner,GetCurrentProcess(),&r->owner,PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,0))e=GetLastError();if(!e){r->actualPid=actualPid;r->origin=RECORD_SERVER_INBOUND;c->in=r;c->nextIn++;}else{WlrRecordRelease(r);}}ReleaseSRWLockExclusive(&c->lock);closeOwned(token);return e;
+}
+unsigned long Server_TryReceive(WLR_CHANNEL raw,__int64 generation,__int64* sequence,ULONG* bytes,unsigned char** data,ULONG* nf,HANDLE** files,ULONG* np,HANDLE** pipes){Channel* c=(Channel*)raw;HANDLE token=NULL;Identity actual;WlrRecord* r=NULL;DWORD e;*sequence=0;*bytes=*nf=*np=0;*data=NULL;*files=*pipes=NULL;if(!c||c->tag!=CHANNEL_TAG)return ERROR_INVALID_HANDLE;e=capture(c->session,NULL,&token,&actual,NULL);closeOwned(token);if(e)return e;
+ AcquireSRWLockExclusive(&c->lock);if(c->closing||c->session->closing)e=ERROR_OPERATION_ABORTED;else if(c->association!=2)e=ERROR_ACCESS_DENIED;else if(c->session->generation!=(uint64_t)generation)e=ERROR_ACCESS_DENIED;else if(!c->out)e=ERROR_NO_MORE_ITEMS;else{r=c->out;c->out=NULL;e=0;}ReleaseSRWLockExclusive(&c->lock);if(e)return e;
+ *sequence=(__int64)r->sequence;*bytes=r->bytes;*data=r->data;*nf=r->fileCount;*files=r->files;*np=r->pipeCount;*pipes=r->pipes;r->data=NULL;r->files=r->pipes=NULL;r->fileCount=r->pipeCount=0;WlrRecordRelease(r);return 0;
+}
+unsigned long Server_CloseChannel(WLR_CHANNEL* raw){Channel* c=(Channel*)*raw;HANDLE token=NULL;Identity actual;DWORD e;if(!c||c->tag!=CHANNEL_TAG)return ERROR_INVALID_HANDLE;e=capture(c->session,NULL,&token,&actual,NULL);closeOwned(token);if(e)return e;*raw=NULL;WLR_CHANNEL_rundown(c);return 0;}
+unsigned long Server_CloseSession(WLR_SESSION* raw){Session* s=(Session*)*raw;HANDLE token=NULL;Identity actual;DWORD e;if(!s||s->tag!=SESSION_TAG)return ERROR_INVALID_HANDLE;e=capture(s,NULL,&token,&actual,NULL);closeOwned(token);if(e)return e;*raw=NULL;WLR_SESSION_rundown(s);return 0;}
+static DWORD popChannel(Channel* c,WlrRecord** out){DWORD e=0;if(!out)return ERROR_INVALID_PARAMETER;*out=NULL;AcquireSRWLockExclusive(&c->lock);if(c->closing||c->session->closing)e=ERROR_OPERATION_ABORTED;else if(!c->in)e=ERROR_NO_MORE_ITEMS;else{*out=c->in;(*out)->popped=1;c->in=NULL;}ReleaseSRWLockExclusive(&c->lock);return e;}
+static DWORD pushChannel(Channel* c,const WlrView* v){WlrRecord* r=NULL;DWORD e;if(!v)return ERROR_INVALID_PARAMETER;AcquireSRWLockExclusive(&c->lock);if(c->closing||c->session->closing)e=ERROR_OPERATION_ABORTED;else if(c->association!=2)e=ERROR_ACCESS_DENIED;else if(c->out)e=ERROR_BUSY;else if(v->sequence!=c->nextOut)e=ERROR_INVALID_DATA;else{e=makeRecord(v->sequence,v->data,v->bytes,v->files,v->fileCount,v->pipes,v->pipeCount,NULL,&r);if(!e){r->origin=RECORD_SERVER_OUTBOUND;c->out=r;c->nextOut++;}}ReleaseSRWLockExclusive(&c->lock);return e;}
+DWORD WlrServerPop(uint64_t generation,uint64_t id,WlrRecord** out){Channel* c;DWORD e;if(!out)return ERROR_INVALID_PARAMETER;*out=NULL;c=lookup(generation,id);if(!c)return ERROR_INVALID_HANDLE;e=popChannel(c,out);releaseChannel(c);return e;}
+DWORD WlrServerPush(uint64_t generation,uint64_t id,const WlrView* v){Channel* c;DWORD e;c=lookup(generation,id);if(!c)return ERROR_INVALID_HANDLE;e=pushChannel(c,v);releaseChannel(c);return e;}
+void WlrTestFailAcceptAllocation(void){InterlockedExchange(&failAcceptAllocation,1);}
+static DWORD tryAcceptInternal(WlrAcceptedChannel** out){WlrAcceptedChannel* a;Channel* c;Channel* chosen;DWORD e=ERROR_NO_MORE_ITEMS;if(!out)return ERROR_INVALID_PARAMETER;*out=NULL;
+ if(InterlockedExchange(&failAcceptAllocation,0))return ERROR_NOT_ENOUGH_MEMORY;a=(WlrAcceptedChannel*)calloc(1,sizeof(*a));if(!a)return ERROR_NOT_ENOUGH_MEMORY;
+ AcquireSRWLockExclusive(&registryLock);
+ for(;;){chosen=NULL;for(c=registry;c;c=c->next){AcquireSRWLockShared(&c->lock);if(!c->admitted&&c->association==2&&(!chosen||c->id<chosen->id))chosen=c;ReleaseSRWLockShared(&c->lock);}if(!chosen)break;
+  AcquireSRWLockExclusive(&chosen->lock);chosen->admitted=1;if(chosen->association==2&&!chosen->closing&&!chosen->session->closing){InterlockedIncrement(&chosen->refs);a->channel=chosen;e=0;}ReleaseSRWLockExclusive(&chosen->lock);if(!e)break;
+ }
+ ReleaseSRWLockExclusive(&registryLock);if(e){free(a);return e;}*out=a;return 0;
+}
+DWORD WlrTryAccept(WlrAcceptedChannel** out){DWORD e;if(!out)return ERROR_INVALID_PARAMETER;*out=NULL;AcquireSRWLockShared(&acceptorLock);e=ownedAcceptorCount?ERROR_ACCESS_DENIED:tryAcceptInternal(out);ReleaseSRWLockShared(&acceptorLock);return e;}
+DWORD WlrAcceptedOwnerProof(const WlrAcceptedChannel* a,HANDLE* token,HANDLE* process,DWORD* pid,uint64_t* generation){Channel* c;DWORD e=0;if(!token||!process||!pid||!generation)return ERROR_INVALID_PARAMETER;*token=*process=NULL;*pid=0;*generation=0;if(!a||!a->channel)return ERROR_INVALID_HANDLE;c=a->channel;
+ AcquireSRWLockShared(&c->lock);if(c->closing||c->session->closing)e=ERROR_OPERATION_ABORTED;else if(!c->admissionToken||!c->admissionPid||WaitForSingleObject(c->session->owner,0)!=WAIT_TIMEOUT||GetProcessId(c->session->owner)!=c->admissionPid)e=ERROR_ACCESS_DENIED;else{*token=c->admissionToken;*process=c->session->owner;*pid=c->admissionPid;*generation=c->session->generation;}ReleaseSRWLockShared(&c->lock);return e;
+}
+DWORD WlrAcceptedPop(WlrAcceptedChannel* a,WlrRecord** out){if(!out)return ERROR_INVALID_PARAMETER;*out=NULL;if(!a||!a->channel)return ERROR_INVALID_HANDLE;return popChannel(a->channel,out);}
+DWORD WlrAcceptedPush(WlrAcceptedChannel* a,const WlrView* v){if(!a||!a->channel)return ERROR_INVALID_HANDLE;return pushChannel(a->channel,v);}
+DWORD WlrAcceptedShutdown(WlrAcceptedChannel* a){Channel* c;WlrRecord* in;WlrRecord* out;LONG failures=closeFailures;if(!a||!a->channel)return ERROR_INVALID_HANDLE;c=a->channel;AcquireSRWLockExclusive(&c->lock);c->closing=1;in=c->in;out=c->out;c->in=c->out=NULL;ReleaseSRWLockExclusive(&c->lock);WlrRecordRelease(in);WlrRecordRelease(out);return closeFailures==failures?ERROR_SUCCESS:ERROR_GEN_FAILURE;}
+DWORD WlrAcceptedClose(WlrAcceptedChannel** owner){WlrAcceptedChannel* a;DWORD e;LONG failures=closeFailures;if(!owner||!*owner)return ERROR_INVALID_HANDLE;a=*owner;*owner=NULL;e=WlrAcceptedShutdown(a);releaseChannel(a->channel);a->channel=NULL;free(a);return closeFailures!=failures?ERROR_GEN_FAILURE:e;}
+void WlrCounters(LONG* s,LONG* c,LONG* r,LONG* f){*s=sessionCount;*c=channelCount;*r=recordCount;*f=closeFailures;}
+DWORD WlrStartIsolated(const wchar_t* endpoint){HANDLE token=NULL;DWORD e;RPC_STATUS r;if(!endpoint||InterlockedCompareExchange(&started,1,0))return ERROR_INVALID_PARAMETER;if(!OpenProcessToken(GetCurrentProcess(),TOKEN_QUERY,&token))return GetLastError();e=identity(token,&allowed);closeOwned(token);if(e)return e;
+ r=RpcServerUseProtseqEpW((RPC_WSTR)L"ncalrpc",16,(RPC_WSTR)endpoint,NULL);if(r)return r;r=ensureAuth();if(r)return r;r=RpcServerRegisterIf3(Server_WindowsLocalRpc_v3_0_s_ifspec,NULL,NULL,RPC_IF_ALLOW_LOCAL_ONLY|RPC_IF_SEC_NO_CACHE,16,0,security,NULL);if(r)return r;return RpcServerListen(1,16,TRUE);}
+DWORD WlrStop(void){RPC_STATUS a,b,c;if(InterlockedCompareExchange(&ownedAcceptorCount,0,0))return ERROR_BUSY;a=RpcMgmtStopServerListening(NULL);b=RpcMgmtWaitServerListen();c=RpcServerUnregisterIf(Server_WindowsLocalRpc_v3_0_s_ifspec,NULL,TRUE);return a?a:b?b:c?c:(sessionCount||channelCount||recordCount||closeFailures)?ERROR_BUSY:0;}
+DWORD WlrBind(const wchar_t* endpoint,void** out){RPC_WSTR text=NULL;RPC_STATUS r;RPC_SECURITY_QOS q={0};*out=NULL;r=RpcStringBindingComposeW(NULL,(RPC_WSTR)L"ncalrpc",NULL,(RPC_WSTR)endpoint,(RPC_WSTR)L"Security=identification dynamic true",&text);if(r)return r;r=RpcBindingFromStringBindingW(text,out);RpcStringFreeW(&text);if(r)return r;q.Version=1;q.IdentityTracking=RPC_C_QOS_IDENTITY_DYNAMIC;q.ImpersonationType=RPC_C_IMP_LEVEL_IDENTIFY;r=RpcBindingSetAuthInfoExW(*out,NULL,RPC_C_AUTHN_LEVEL_PKT_PRIVACY,RPC_C_AUTHN_WINNT,NULL,RPC_C_AUTHZ_NONE,&q);if(r)RpcBindingFree(out);return r;}
+DWORD WlrFreeBinding(void** b){return RpcBindingFree(b);}
+#define CALL_RPC(expr,cleanup) DWORD e;lastRpcException=0;e=beginClientCall(cleanup);if(e)return e;RpcTryExcept{e=(expr);}RpcExcept(1){lastRpcException=RpcExceptionCode();poisonClient(lastRpcException);e=WLR_RPC_AMBIGUOUS;}RpcEndExcept endClientCall();return e
+DWORD WlrOpen(void* b,HANDLE p,void** s,uint64_t* g){CALL_RPC(Client_OpenSession(b,p,s,(__int64*)g),0);}
+DWORD WlrConnect(void* s,uint64_t g,void** c,uint64_t* id){CALL_RPC(Client_OpenChannel(s,(__int64)g,c,(__int64*)id),0);}
+DWORD WlrSend(void* c,uint64_t g,uint64_t seq,const unsigned char* d,uint32_t n,const HANDLE* f,uint32_t nf,const HANDLE* p,uint32_t np){CALL_RPC(Client_TrySend(c,(__int64)g,(__int64)seq,n,(unsigned char*)d,nf,(HANDLE*)f,np,(HANDLE*)p),0);}
+DWORD WlrCloseChannel(void** c){CALL_RPC(Client_CloseChannel(c),1);}
+DWORD WlrCloseSession(void** s){CALL_RPC(Client_CloseSession(s),1);}
+DWORD WlrReceive(void* c,uint64_t g,WlrRecord** out){WlrRecord* r;DWORD e;*out=NULL;lastRpcException=0;e=beginClientCall(0);if(e)return e;r=(WlrRecord*)calloc(1,sizeof(*r));if(!r){endClientCall();return ERROR_NOT_ENOUGH_MEMORY;}InterlockedIncrement(&recordCount);
+ r->origin=RECORD_CLIENT_RECEIVED;
+ RpcTryExcept{e=Client_TryReceive(c,(__int64)g,(__int64*)&r->sequence,&r->bytes,&r->data,&r->fileCount,&r->files,&r->pipeCount,&r->pipes);}RpcExcept(1){lastRpcException=RpcExceptionCode();poisonClient(lastRpcException);e=WLR_RPC_AMBIGUOUS;}RpcEndExcept endClientCall();
+ /* Partial NDR output ownership is not proven after an exception. Do not read,
+    close or free its output values: runtime may already have cleaned them.
+    Retain only our wrapper object for the process lifetime, keeping recordCount
+    nonzero/Stop UNKNOWN. This is intentionally not successful reclamation. */
+ if(e==WLR_RPC_AMBIGUOUS){AcquireSRWLockExclusive(&registryLock);r->quarantineNext=quarantined;quarantined=r;ReleaseSRWLockExclusive(&registryLock);return e;}
+ if(e){WlrRecordRelease(r);return e;}*out=r;return 0;
+}
+
+DWORD WlrRecordQueryRequestIdentity(const WlrRecord* r,HANDLE* token,HANDLE* process,DWORD* pid){
+ if(!token||!process||!pid)return ERROR_INVALID_PARAMETER;*token=NULL;*process=NULL;*pid=0;
+ if(!r||r->origin!=RECORD_SERVER_INBOUND||!r->popped||!r->token||!r->owner||!r->actualPid)return ERROR_ACCESS_DENIED;
+ *token=r->token;*process=r->owner;*pid=r->actualPid;return ERROR_SUCCESS;
+}
+
+typedef struct RetainedProofToken {HANDLE token;struct RetainedProofToken* next;} RetainedProofToken;
+static SRWLOCK proofTokenLock=SRWLOCK_INIT;
+static RetainedProofToken* retainedProofTokens;
+static DWORD closeProofToken(HANDLE token){DWORD e;RetainedProofToken* retained;
+ if(!token)return 0;if(CloseHandle(token))return 0;e=GetLastError();
+ retained=(RetainedProofToken*)malloc(sizeof(*retained));
+ if(!retained){RaiseFailFastException(NULL,NULL,0);return ERROR_NOT_ENOUGH_MEMORY;}
+ retained->token=token;AcquireSRWLockExclusive(&proofTokenLock);retained->next=retainedProofTokens;retainedProofTokens=retained;ReleaseSRWLockExclusive(&proofTokenLock);InterlockedIncrement(&closeFailures);return e;
+}
+/* Major2 service proof: successful [out] system_handle transfers the duplicate. */
+unsigned long Server_QueryServiceProof(WLR_SESSION raw,__int64 generation,HANDLE* out,__int64* echoed){
+ Session* s=(Session*)raw;HANDLE token=NULL,proof=NULL;Identity actual;DWORD e,release;
+ *out=NULL;*echoed=0;
+ if(!s||s->tag!=SESSION_TAG)return ERROR_INVALID_HANDLE;
+ e=capture(s,NULL,&token,&actual,NULL);release=closeProofToken(token);if(release)return release;if(e)return e;
+ if(s->closing||s->generation!=(uint64_t)generation)return ERROR_ACCESS_DENIED;
+ if(!DuplicateHandle(GetCurrentProcess(),GetCurrentProcess(),GetCurrentProcess(),&proof,PROCESS_QUERY_LIMITED_INFORMATION|SYNCHRONIZE,FALSE,0))return GetLastError();
+ *echoed=generation;*out=proof;return 0;
+}
+DWORD WlrQueryServiceProof(void* s,uint64_t g,HANDLE* proof,uint64_t* echoed){
+ if(!proof||!echoed)return ERROR_INVALID_PARAMETER;*proof=NULL;*echoed=0;
+ {CALL_RPC(Client_QueryServiceProof(s,(__int64)g,proof,(__int64*)echoed),0);}
+}
+typedef BOOL (WINAPI *CompareObjectsFn)(HANDLE,HANDLE);
+static CompareObjectsFn compareObjects(void){HMODULE module=GetModuleHandleW(L"kernelbase.dll");return module?(CompareObjectsFn)(void*)GetProcAddress(module,"CompareObjectHandles"):NULL;}
+/* One real listener per process, one unforgeable-by-construction admission owner.
+   The pointer is compared under the lock before any dereference. No restart. */
+struct WlrServerAcceptor {DWORD marker;};
+DWORD WlrStartOwnedListener(const wchar_t* endpoint,WlrServerAcceptor** out){WlrServerAcceptor* a;DWORD e;
+ if(!out)return ERROR_INVALID_PARAMETER;*out=NULL;if(!endpoint||!*endpoint)return ERROR_INVALID_PARAMETER;
+ a=(WlrServerAcceptor*)calloc(1,sizeof(*a));if(!a)return ERROR_NOT_ENOUGH_MEMORY;
+ AcquireSRWLockExclusive(&acceptorLock);
+ if(ownedAcceptorCount||started){ReleaseSRWLockExclusive(&acceptorLock);free(a);return ERROR_ALREADY_EXISTS;}
+ ownedAcceptorCount=1;
+ e=WlrStartIsolated(endpoint);
+ if(e){ownedAcceptorCount=0;ReleaseSRWLockExclusive(&acceptorLock);free(a);return e;}
+ a->marker=1;activeAcceptor=a;*out=a;ReleaseSRWLockExclusive(&acceptorLock);return 0;
+}
+DWORD WlrAcceptorCheckLive(const WlrServerAcceptor* a){DWORD e;AcquireSRWLockShared(&acceptorLock);e=(a&&a==activeAcceptor&&ownedAcceptorCount==1&&started)?0:ERROR_INVALID_HANDLE;ReleaseSRWLockShared(&acceptorLock);return e;}
+DWORD WlrAcceptorTryAccept(WlrServerAcceptor* a,WlrAcceptedChannel** out){DWORD e;if(!out)return ERROR_INVALID_PARAMETER;*out=NULL;AcquireSRWLockShared(&acceptorLock);e=(a&&a==activeAcceptor&&ownedAcceptorCount==1&&started)?tryAcceptInternal(out):ERROR_INVALID_HANDLE;ReleaseSRWLockShared(&acceptorLock);return e;}
+DWORD WlrReleaseAcceptor(WlrServerAcceptor** owner){WlrServerAcceptor* a;if(!owner||!*owner)return ERROR_INVALID_PARAMETER;AcquireSRWLockExclusive(&acceptorLock);a=*owner;if(a!=activeAcceptor){ReleaseSRWLockExclusive(&acceptorLock);return ERROR_INVALID_HANDLE;}activeAcceptor=NULL;ownedAcceptorCount=0;*owner=NULL;free(a);ReleaseSRWLockExclusive(&acceptorLock);return 0;}

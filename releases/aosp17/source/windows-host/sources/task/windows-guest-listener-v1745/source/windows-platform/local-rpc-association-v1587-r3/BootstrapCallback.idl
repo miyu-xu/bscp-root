@@ -1,0 +1,5 @@
+import "wtypes.idl";
+[uuid(f580ac11-72e4-4fac-9c26-620e4931b194),version(1.0),pointer_default(unique)]
+interface BootstrapCallback {
+ unsigned long Offer([in] handle_t binding,[in,system_handle(sh_process,0x00101000)] HANDLE senderOriginal,[in,system_handle(sh_process,0x00101000)] HANDLE actualBusinessClient,[in] byte nonce[32],[in] hyper generation,[in] hyper channelId,[in] unsigned long protocol);
+}

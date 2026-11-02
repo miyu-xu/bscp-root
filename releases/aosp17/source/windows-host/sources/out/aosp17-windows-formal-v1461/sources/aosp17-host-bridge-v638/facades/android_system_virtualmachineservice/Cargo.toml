@@ -1,0 +1,6 @@
+[package]
+name="android_system_virtualmachineservice"
+version="0.17.0"
+edition="2021"
+[dependencies]
+a17_virtmgr_aidl_closure={path="E:/bscp/out/aosp17-windows-formal-v1461/sources/aosp17-host-bridge-v638/aidl-closure"}

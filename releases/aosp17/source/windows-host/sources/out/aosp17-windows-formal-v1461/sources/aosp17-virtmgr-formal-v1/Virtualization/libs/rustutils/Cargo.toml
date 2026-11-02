@@ -1,0 +1,11 @@
+[package]
+name = "rustutils"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+binder = { package="android-binder", path="E:/bscp/out/aosp17-windows-formal-v1461/sources/aosp17-binder-rust-host-v1" }

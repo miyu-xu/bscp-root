@@ -1,0 +1,43 @@
+[package]
+name = "swap"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+# The process tests will use fork, which requires a custom test harness to enforce single threaded
+# execution.
+[[test]]
+name = "main"
+path = "tests/main.rs"
+harness = false
+
+
+[features]
+trace_marker = ["cros_tracing/trace_marker"]
+enable = ["userfaultfd", "userfaultfd-sys"]
+
+[dependencies]
+anyhow = { workspace = true }
+base = { workspace = true }
+cfg-if = { workspace = true }
+cros_tracing = { workspace = true }
+jail = { path = "../jail" }
+metrics = { workspace = true }
+num_cpus = "1"
+remain = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sync = { workspace = true }
+thiserror = { workspace = true }
+vm_memory = { workspace = true }
+
+[target.'cfg(any(target_os = "android", target_os = "linux"))'.dependencies]
+libc = { workspace = true }
+
+[target.'cfg(target_os="linux")'.dependencies]
+userfaultfd = { version = "0.8.1", optional = true }
+userfaultfd-sys = { version = "0.5.0", optional = true }
+
+[dev-dependencies]
+libtest-mimic = "0.6"
+tempfile = "3"

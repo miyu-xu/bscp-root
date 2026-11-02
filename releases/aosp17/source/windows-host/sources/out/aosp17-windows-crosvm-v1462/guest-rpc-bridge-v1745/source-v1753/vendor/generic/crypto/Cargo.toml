@@ -1,0 +1,18 @@
+[package]
+name = "crypto_generic"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[features]
+rustcrypto = []
+
+[dependencies]
+anyhow = { workspace = true }
+base = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+zeroize = "1.5.7"
+
+[dev-dependencies]
+tempfile = "3"

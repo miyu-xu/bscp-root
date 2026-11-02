@@ -1,0 +1,9 @@
+[package]
+name="a17_virtmgr_aidl_closure"
+version="0.1.0"
+edition="2021"
+[workspace]
+[dependencies]
+zerocopy={version="0.8.54",features=["derive"]}
+binder={package="android-binder",path="E:/bscp/out/aosp17-windows-formal-v1461/sources/aosp17-binder-rust-host-v1"}
+async-trait="0.1"

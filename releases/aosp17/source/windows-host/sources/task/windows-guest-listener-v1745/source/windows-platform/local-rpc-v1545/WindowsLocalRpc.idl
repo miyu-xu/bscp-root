@@ -1,0 +1,18 @@
+import "wtypes.idl";
+[uuid(d2773ad6-d9c0-4df2-a71a-67dce1704e11),version(1.0),pointer_default(unique)]
+interface WindowsLocalRpc {
+ typedef [context_handle] void* WLR_SESSION;
+ typedef [context_handle] void* WLR_CHANNEL;
+ unsigned long OpenSession([in] handle_t binding,[in,system_handle(sh_process,0x00101000)] HANDLE owner,[out] WLR_SESSION* session,[out] hyper* generation);
+ unsigned long OpenChannel([in] WLR_SESSION session,[in] hyper generation,[out] WLR_CHANNEL* channel,[out] hyper* channelId);
+ unsigned long TrySend([in] WLR_CHANNEL channel,[in] hyper generation,[in] hyper sequence,
+   [in,range(0,614921)] unsigned long bytes,[in,unique,size_is(bytes)] byte* data,
+   [in,range(0,253)] unsigned long files,[in,unique,size_is(files),system_handle(sh_file)] HANDLE* fileHandles,
+   [in,range(0,253)] unsigned long pipes,[in,unique,size_is(pipes),system_handle(sh_pipe)] HANDLE* pipeHandles);
+ unsigned long TryReceive([in] WLR_CHANNEL channel,[in] hyper generation,[out] hyper* sequence,
+   [out,range(0,614921)] unsigned long* bytes,[out,size_is(,*bytes)] byte** data,
+   [out,range(0,253)] unsigned long* files,[out,size_is(,*files),system_handle(sh_file)] HANDLE** fileHandles,
+   [out,range(0,253)] unsigned long* pipes,[out,size_is(,*pipes),system_handle(sh_pipe)] HANDLE** pipeHandles);
+ unsigned long CloseChannel([in,out] WLR_CHANNEL* channel);
+ unsigned long CloseSession([in,out] WLR_SESSION* session);
+}
