@@ -8945,5 +8945,6 @@
     }
   ],
   "mismatches": [],
-  "scope": "Exact sealed virtmgr package closure, not the separate final crosvm/renderer closure or complete native toolchain"
+  "scope": "Exact sealed virtmgr package closure, not the separate final crosvm/renderer closure or complete native toolchain",
+  "git_attribute_storage": "Upstream .gitattributes retained byte-for-byte as GITATTRIBUTES.frozen to avoid altering nested snapshot bytes in this publication repository; reconstruct original name only in a separate build tree."
 }

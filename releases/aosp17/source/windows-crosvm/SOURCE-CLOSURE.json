@@ -30,10 +30,6 @@
       "bytes": 15,
       "sha256": "00f19aeaad28dde116d527059bf62c26bfd760ae195b37f9de7d7d74546eb840"
     },
-    "sources/crosvm/.gitattributes": {
-      "bytes": 288,
-      "sha256": "fbb922ff9a6c1d015ad3e61f57e0aa594116dd66dc23670f35364d1f32aeeac7"
-    },
     "sources/crosvm/.github/mistaken-pull-closer.yml": {
       "bytes": 442,
       "sha256": "eec3cf8af84ea7893459000dde8a50540c45083efb5a21032ce136f2a5f0c063"
@@ -7253,6 +7249,12 @@
     "evidence/result.json": {
       "bytes": 6707,
       "sha256": "485a0b7ee92dc784febcfff2bd86c22efe664e35dad84ac28327c241ffb73b2d"
+    },
+    "sources/crosvm/GITATTRIBUTES.frozen": {
+      "bytes": 288,
+      "sha256": "fbb922ff9a6c1d015ad3e61f57e0aa594116dd66dc23670f35364d1f32aeeac7",
+      "original_archive_path": "sources/crosvm/.gitattributes"
     }
-  }
+  },
+  "git_attribute_storage": "Upstream .gitattributes retained byte-for-byte as GITATTRIBUTES.frozen to avoid altering nested snapshot bytes in this publication repository; reconstruct original name only in a separate build tree."
 }

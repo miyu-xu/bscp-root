@@ -6834,5 +6834,6 @@
   ],
   "metadata_sha256": "df292c4404501b1e646eba7671bd0992d4f2ce954a19fe72241c0f64c0b1940c",
   "manifest_sha256": "ac49a926a2013faa16e001b9aa165da1d5212b67174f9c8353cc5a4b9a4a402b",
-  "lock_sha256": "fe70b0e963642f41cfe0a957265adb2d1f8cd2024db692546e570ad7460ae5fd"
+  "lock_sha256": "fe70b0e963642f41cfe0a957265adb2d1f8cd2024db692546e570ad7460ae5fd",
+  "git_attribute_storage": "Upstream .gitattributes retained byte-for-byte as GITATTRIBUTES.frozen to avoid altering nested snapshot bytes in this publication repository; reconstruct original name only in a separate build tree."
 }
