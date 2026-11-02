@@ -1,0 +1,29 @@
+[package]
+name = "crosvm_control"
+version = "0.1.0"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[features]
+hvf = ["base/hvf", "vm_control/hvf"]
+audio = ["vm_control/audio"]
+gpu = ["vm_control/gpu"]
+pci-hotplug = ["vm_control/pci-hotplug"]
+registered_events = ["vm_control/registered_events"]
+
+[lib]
+crate-type = ["rlib", "cdylib", "staticlib"]
+
+[dependencies]
+balloon_control = { workspace = true }
+base = { workspace = true }
+libc = { workspace = true }
+swap = { path = "../swap", default-features = false }
+vm_control = { workspace = true, features = [ "balloon" ] }
+zerocopy = { version = "0.8.13", features = ["derive"] }
+
+[build-dependencies]
+anyhow = { workspace = true }
+cbindgen = "0.24.3"
+cc = "1"
+tempfile = "3"

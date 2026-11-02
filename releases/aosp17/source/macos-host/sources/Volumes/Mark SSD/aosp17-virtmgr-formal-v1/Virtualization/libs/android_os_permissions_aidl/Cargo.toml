@@ -1,0 +1,7 @@
+[package]
+name = "android_os_permissions_aidl"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+binder = { package = "android-binder", path = "/Volumes/Mark SSD/aosp17-binder-rust-host-v1" }

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/huangxiaoling/.cargo/bin/cargo",
+    "+stable",
+    "check",
+    "--offline",
+    "--manifest-path",
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/Cargo.toml"
+  ],
+  "rc": 101,
+  "stdout": "",
+  "stderr": "     Locking 31 packages to latest compatible versions\n      Adding zerocopy-derive v0.8.54 (available: v0.8.63)\nerror: failed to download `downcast-rs v2.0.2`\n\nCaused by:\n  attempting to make an HTTP request, but --offline was specified\n",
+  "seconds": 0.106358,
+  "free_bytes": 946738831360
+}

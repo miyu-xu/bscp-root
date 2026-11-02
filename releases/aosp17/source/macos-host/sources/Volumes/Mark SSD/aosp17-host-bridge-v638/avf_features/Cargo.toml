@@ -1,0 +1,46 @@
+[package]
+name = "avf_features"
+version = "0.1.0"
+edition = "2021"
+authors = ["The Android Open Source Project"]
+license = "Apache-2.0"
+description = "AVF build-time feature flags handling library"
+repository = "https://android.googlesource.com/platform/packages/modules/Virtualization/"
+
+# Build configuration
+build = "build.rs"
+
+[lib]
+name = "avf_features"
+path = "src/lib.rs"
+
+# Dependencies
+[dependencies]
+android_system_virtualizationservice = { path = "/Volumes/Mark SSD/aosp17-host-bridge-v638/facades/android_system_virtualizationservice" }
+anyhow = "1.0"
+log = "0.4"
+
+# Build-time features (corresponding to cfg! macros in lib.rs)
+[features]
+default = []
+dice_changes = []
+llpvm_changes = []
+multi_tenant = []
+network = []
+remote_attestation = []
+vendor_modules = []
+
+# Development dependencies
+[dev-dependencies]
+env_logger = "0.11"
+
+# Profile configurations
+[profile.dev]
+opt-level = 0
+debug = true
+
+[profile.release]
+opt-level = 3
+debug = false
+lto = true
+codegen-units = 1

@@ -1,0 +1,191 @@
+[
+  {
+    "name": "error::tests::convert_to_binder_exception",
+    "exit": 0,
+    "elapsed": 0.007279958999999999,
+    "stdout": "\nrunning 1 test\ntest error::tests::convert_to_binder_exception ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "error::tests::convert_to_binder_exception_with",
+    "exit": 0,
+    "elapsed": 0.007012332999999999,
+    "stdout": "\nrunning 1 test\ntest error::tests::convert_to_binder_exception_with ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "error::tests::convert_to_service_specific_exception",
+    "exit": 0,
+    "elapsed": 0.007012375000000001,
+    "stdout": "\nrunning 1 test\ntest error::tests::convert_to_service_specific_exception ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "error::tests::convert_to_service_specific_exception_with",
+    "exit": 0,
+    "elapsed": 0.007051166999999997,
+    "stdout": "\nrunning 1 test\ntest error::tests::convert_to_service_specific_exception_with ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "error::tests::make_exception",
+    "exit": 0,
+    "elapsed": 0.007045416999999998,
+    "stdout": "\nrunning 1 test\ntest error::tests::make_exception ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "error::tests::make_exception_null",
+    "exit": 0,
+    "elapsed": 0.006949459000000005,
+    "stdout": "\nrunning 1 test\ntest error::tests::make_exception_null ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "error::tests::make_service_specific_error",
+    "exit": 0,
+    "elapsed": 0.006955875,
+    "stdout": "\nrunning 1 test\ntest error::tests::make_service_specific_error ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "native::tests::dump",
+    "exit": 0,
+    "elapsed": 0.007003291000000009,
+    "stdout": "\nrunning 1 test\ntest native::tests::dump ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "native::tests::shell_command",
+    "exit": 0,
+    "elapsed": 0.006955957999999998,
+    "stdout": "\nrunning 1 test\ntest native::tests::shell_command ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "parcel::parcelable::tests::test_custom_parcelable",
+    "exit": 0,
+    "elapsed": 0.006907250000000004,
+    "stdout": "\nrunning 1 test\ntest parcel::parcelable::tests::test_custom_parcelable ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "parcel::parcelable::tests::test_slice_parcelables",
+    "exit": 0,
+    "elapsed": 0.0071874999999999994,
+    "stdout": "\nrunning 1 test\ntest parcel::parcelable::tests::test_slice_parcelables ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "parcel::tests::test_append_from",
+    "exit": -6,
+    "elapsed": 0.00874183399999999,
+    "stdout": "\nrunning 1 test\n",
+    "stderr": "libbinder.Parcel: Binder kernel driver disabled at build time\n"
+  },
+  {
+    "name": "parcel::tests::test_marshal",
+    "exit": 0,
+    "elapsed": 0.007366083999999995,
+    "stdout": "\nrunning 1 test\ntest parcel::tests::test_marshal ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "parcel::tests::test_read_data",
+    "exit": 0,
+    "elapsed": 0.007449957999999993,
+    "stdout": "\nrunning 1 test\ntest parcel::tests::test_read_data ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "parcel::tests::test_read_write",
+    "exit": -6,
+    "elapsed": 0.0076957079999999956,
+    "stdout": "\nrunning 1 test\n",
+    "stderr": "libbinder.Parcel: Binder kernel driver disabled at build time\n"
+  },
+  {
+    "name": "parcel::tests::test_sized_write",
+    "exit": 0,
+    "elapsed": 0.008158542000000019,
+    "stdout": "\nrunning 1 test\ntest parcel::tests::test_sized_write ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "parcel::tests::test_unmarshal",
+    "exit": 0,
+    "elapsed": 0.007627250000000002,
+    "stdout": "\nrunning 1 test\ntest parcel::tests::test_unmarshal ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "parcel::tests::test_utf8_utf16_conversions",
+    "exit": 0,
+    "elapsed": 0.008748249999999985,
+    "stdout": "\nrunning 1 test\ntest parcel::tests::test_utf8_utf16_conversions ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::create_delete",
+    "exit": 0,
+    "elapsed": 0.007611833999999984,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::create_delete ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::duplicate_equal",
+    "exit": 0,
+    "elapsed": 0.007276666999999987,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::duplicate_equal ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::get_empty",
+    "exit": 0,
+    "elapsed": 0.007337582999999981,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::get_empty ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::get_keys",
+    "exit": 0,
+    "elapsed": 0.008218165999999999,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::get_keys ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::insert_get_bundle",
+    "exit": 0,
+    "elapsed": 0.007154250000000001,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::insert_get_bundle ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::insert_get_primitives",
+    "exit": 0,
+    "elapsed": 0.007208792000000019,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::insert_get_primitives ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::insert_get_string",
+    "exit": 0,
+    "elapsed": 0.00750279199999998,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::insert_get_string ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::insert_get_vec",
+    "exit": 0,
+    "elapsed": 0.007631292000000012,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::insert_get_vec ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  },
+  {
+    "name": "persistable_bundle::test::remove_empty",
+    "exit": 0,
+    "elapsed": 0.007150415999999993,
+    "stdout": "\nrunning 1 test\ntest persistable_bundle::test::remove_empty ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.00s\n\n",
+    "stderr": ""
+  }
+]

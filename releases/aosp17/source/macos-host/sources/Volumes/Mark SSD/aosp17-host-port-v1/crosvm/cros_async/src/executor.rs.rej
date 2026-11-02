@@ -1,0 +1,16 @@
+diff a/cros_async/src/executor.rs b/cros_async/src/executor.rs	(rejected hunks)
+@@ -6,11 +6,11 @@ use std::future::Future;
+ use std::pin::Pin;
+ use std::sync::Arc;
+ 
+-#[cfg(any(target_os = "android", target_os = "linux"))]
++#[cfg(any(target_os = "android", target_os = "linux", target_os = "macos"))]
+ use base::warn;
+-#[cfg(any(target_os = "android", target_os = "linux"))]
++#[cfg(any(target_os = "android", target_os = "linux", target_os = "macos"))]
+ use base::AsRawDescriptors;
+-#[cfg(any(target_os = "android", target_os = "linux"))]
++#[cfg(any(target_os = "android", target_os = "linux", target_os = "macos"))]
+ use base::RawDescriptor;
+ use once_cell::sync::OnceCell;
+ use serde::Deserialize;

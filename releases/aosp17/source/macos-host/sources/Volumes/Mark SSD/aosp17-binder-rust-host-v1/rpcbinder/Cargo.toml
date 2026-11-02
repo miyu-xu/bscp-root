@@ -1,0 +1,13 @@
+[package]
+name="rpcbinder"
+version="0.1.0"
+edition="2021"
+[dependencies]
+binder={package="android-binder",path=".."}
+binder_ndk_sys={package="android-binder-ndk-sys",path="../sys"}
+binder_rpc_unstable_bindgen={path="sys"}
+cfg-if="1"
+downcast-rs="2"
+foreign-types="0.3.2"
+libc="0.2.159"
+log="0.4"

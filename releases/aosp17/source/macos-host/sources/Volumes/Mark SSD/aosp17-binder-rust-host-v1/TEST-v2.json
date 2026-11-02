@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/Users/huangxiaoling/.cargo/bin/cargo",
+    "+stable",
+    "test",
+    "--offline",
+    "--locked",
+    "--lib",
+    "--manifest-path",
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/Cargo.toml"
+  ],
+  "rc": 101,
+  "stdout": "\nrunning 27 tests\ntest error::tests::convert_to_binder_exception ... ok\ntest error::tests::convert_to_service_specific_exception_with ... ok\ntest error::tests::convert_to_service_specific_exception ... ok\ntest error::tests::make_service_specific_error ... ok\ntest error::tests::convert_to_binder_exception_with ... ok\ntest error::tests::make_exception ... ok\ntest error::tests::make_exception_null ... ok\ntest native::tests::shell_command ... ok\ntest native::tests::dump ... ok\n",
+  "stderr": "   Compiling android-binder v0.1.1 (/Volumes/Mark SSD/aosp17-binder-rust-host-v1)\n   Compiling android-binder-ndk-sys v0.1.0 (/Volumes/Mark SSD/aosp17-binder-rust-host-v1/sys)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.91s\n     Running unittests src/lib.rs (/Volumes/Mark SSD/aosp17-binder-rust-host-v1/target/debug/deps/binder-9f27ebd240b0a56a)\nlibbinder.Parcel: Binder kernel driver disabled at build time\nerror: test failed, to rerun pass `--lib`\n\nCaused by:\n  process didn't exit successfully: `/Volumes/Mark SSD/aosp17-binder-rust-host-v1/target/debug/deps/binder-9f27ebd240b0a56a` (signal: 6, SIGABRT: process abort signal)\n",
+  "seconds": 2.059084291
+}

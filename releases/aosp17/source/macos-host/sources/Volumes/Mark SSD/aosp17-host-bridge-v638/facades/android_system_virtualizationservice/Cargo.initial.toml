@@ -1,0 +1,6 @@
+[package]
+name="android_system_virtualizationservice"
+version="0.1.0"
+edition="2021"
+[dependencies]
+a17_virtmgr_aidl_closure={path="/Volumes/Mark SSD/aosp17-virtmgr-aidl-closure-v3"}

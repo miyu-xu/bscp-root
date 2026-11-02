@@ -1,0 +1,16 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+cfg_if::cfg_if! {
+    if #[cfg(any(target_os = "android", target_os = "linux"))] {
+        pub mod linux;
+        pub use linux::UnixUdmabufDriver as UdmabufDriver;
+    } else if #[cfg(target_os = "macos")] {
+        pub mod macos;
+        pub use macos::MacOSUdmabufDriver as UdmabufDriver;
+    } else if #[cfg(windows)] {
+        pub mod windows;
+        pub use windows::WinUdmabufDriver as UdmabufDriver;
+    }
+}

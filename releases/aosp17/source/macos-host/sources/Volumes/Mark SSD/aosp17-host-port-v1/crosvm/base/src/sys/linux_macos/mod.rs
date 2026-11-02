@@ -1,0 +1,466 @@
+// Copyright 2017 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+//! Linux-compatible `base::linux` API for macOS (Apple Silicon HVF bring-up).
+
+#[macro_use]
+#[path = "../linux/ioctl.rs"]
+pub mod ioctl;
+pub use crate::sys::macos::ioctl as macos_ioctl;
+
+#[macro_use]
+pub mod syslog {
+    pub use crate::sys::macos::syslog::PlatformSyslog;
+}
+
+mod capabilities;
+mod event;
+mod file;
+mod file_traits;
+mod net;
+mod notifiers;
+#[path = "../linux/platform_timer_resolution.rs"]
+pub mod platform_timer_resolution;
+pub use crate::sys::macos::platform_timer_resolution as macos_platform_timer_resolution;
+mod sched;
+mod shm;
+pub mod signal;
+mod signalfd;
+mod stubs;
+
+use std::fs::remove_file;
+use std::fs::File;
+use std::fs::OpenOptions;
+use std::mem;
+use std::mem::MaybeUninit;
+use std::ops::Deref;
+use std::os::unix::io::FromRawFd;
+use std::os::unix::io::RawFd;
+use std::os::unix::net::UnixDatagram;
+use std::os::unix::net::UnixListener;
+use std::os::unix::process::ExitStatusExt;
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::ExitStatus;
+use std::ptr;
+use std::time::Duration;
+
+pub use capabilities::drop_capabilities;
+pub use event::EventExt;
+pub use file::find_next_data;
+pub use file::FileDataIterator;
+pub(crate) use file_traits::lib::*;
+pub use ioctl::*;
+use libc::c_int;
+use libc::fcntl;
+pub use libc::off_t;
+pub use libc::pread;
+pub use libc::preadv;
+pub use libc::pwrite;
+pub use libc::pwritev;
+pub use libc::sendmsg;
+use libc::waitpid;
+use libc::EINVAL;
+use libc::SIGKILL;
+use libc::WNOHANG;
+pub(in crate::sys) use net::sendmsg_nosignal;
+pub(in crate::sys) use net::sockaddr_un;
+pub(in crate::sys) use net::sockaddrv4_to_lib_c;
+pub(in crate::sys) use net::sockaddrv6_to_lib_c;
+
+pub(crate) use crate::sys::macos::event::PlatformEvent;
+pub use crate::sys::macos::fallocate;
+pub(crate) use crate::sys::macos::file_punch_hole;
+pub(crate) use crate::sys::macos::file_write_zeroes_at;
+pub use crate::sys::macos::mmap::*;
+pub use crate::sys::macos::poll::EventContext;
+pub use crate::sys::macos::FallocateMode;
+mod priority;
+pub use platform_timer_resolution::*;
+pub use priority::*;
+pub use sched::*;
+pub use shm::MemfdSeals;
+pub use shm::SharedMemoryLinux;
+pub use signal::*;
+pub use signalfd::Error as SignalFdError;
+pub use signalfd::*;
+pub use stubs::AcpiNotifyEvent;
+pub use stubs::NetlinkGenericSocket;
+#[path = "../linux/terminal.rs"]
+mod terminal;
+use log::warn;
+pub use terminal::*;
+
+use crate::descriptor::FromRawDescriptor;
+use crate::descriptor::SafeDescriptor;
+pub use crate::errno::Error;
+pub use crate::errno::Result;
+pub use crate::errno::*;
+pub use crate::errno_result;
+use crate::round_up_to_page_size;
+pub use crate::sys::unix::descriptor::*;
+use crate::syscall;
+use crate::AsRawDescriptor;
+use crate::Pid;
+
+pub type Uid = libc::uid_t;
+pub type Gid = libc::gid_t;
+pub type Mode = libc::mode_t;
+
+const RT_SIGNAL_SENTINEL_BASE: c_int = 1024;
+
+#[inline(always)]
+pub fn getpid() -> Pid {
+    // SAFETY: always successful on Darwin.
+    unsafe { libc::getpid() }
+}
+
+#[inline(always)]
+pub fn getppid() -> Pid {
+    unsafe { libc::getppid() }
+}
+
+pub fn gettid() -> Pid {
+    getpid()
+}
+
+#[inline(always)]
+pub fn geteuid() -> Uid {
+    // SAFETY: trivially safe
+    unsafe { libc::geteuid() }
+}
+
+#[inline(always)]
+pub fn getegid() -> Gid {
+    // SAFETY: trivially safe
+    unsafe { libc::getegid() }
+}
+
+pub enum FlockOperation {
+    LockShared,
+    LockExclusive,
+    Unlock,
+}
+
+pub fn flock<F: AsRawDescriptor>(file: &F, op: FlockOperation, nonblocking: bool) -> Result<()> {
+    let mut operation = match op {
+        FlockOperation::LockShared => libc::LOCK_SH,
+        FlockOperation::LockExclusive => libc::LOCK_EX,
+        FlockOperation::Unlock => libc::LOCK_UN,
+    };
+    if nonblocking {
+        operation |= libc::LOCK_NB;
+    }
+    syscall!(unsafe { libc::flock(file.as_raw_descriptor(), operation) }).map(|_| ())
+}
+
+pub fn fstat<F: AsRawDescriptor>(f: &F) -> Result<libc::stat> {
+    let mut st = MaybeUninit::<libc::stat>::zeroed();
+    syscall!(unsafe { libc::fstat(f.as_raw_descriptor(), st.as_mut_ptr()) })?;
+    Ok(unsafe { st.assume_init() })
+}
+
+pub fn is_block_file<F: AsRawDescriptor>(file: &F) -> Result<bool> {
+    let stat = fstat(file)?;
+    Ok((stat.st_mode & libc::S_IFMT) == libc::S_IFBLK)
+}
+
+ioctl_io_nr!(BLKDISCARD, 0x12u32, 119);
+
+pub fn discard_block<F: AsRawDescriptor>(_file: &F, _offset: u64, _len: u64) -> Result<()> {
+    Err(Error::new(libc::ENOTSUP))
+}
+
+pub trait AsRawPid {
+    fn as_raw_pid(&self) -> Pid;
+}
+
+impl AsRawPid for Pid {
+    fn as_raw_pid(&self) -> Pid {
+        *self
+    }
+}
+
+impl AsRawPid for std::process::Child {
+    fn as_raw_pid(&self) -> Pid {
+        self.id() as Pid
+    }
+}
+
+pub fn wait_for_pid<A: AsRawPid>(pid: A, options: c_int) -> Result<(Option<Pid>, ExitStatus)> {
+    let pid = pid.as_raw_pid();
+    let mut status: c_int = 1;
+    let ret = unsafe { libc::waitpid(pid, &mut status, options) };
+    if ret < 0 {
+        return errno_result();
+    }
+    Ok((
+        if ret == 0 { None } else { Some(ret) },
+        ExitStatus::from_raw(status),
+    ))
+}
+
+pub fn reap_child() -> Result<Pid> {
+    let ret = unsafe { waitpid(-1, ptr::null_mut(), WNOHANG) };
+    if ret == -1 {
+        errno_result()
+    } else {
+        Ok(ret)
+    }
+}
+
+pub fn kill_process_group() -> Result<()> {
+    // SAFETY: `kill(0, SIGKILL)` targets the current process group.
+    unsafe {
+        libc::kill(0, SIGKILL);
+    }
+    unreachable!();
+}
+
+pub use crate::sys::macos::pipe;
+
+pub fn set_pipe_size(_fd: RawFd, size: usize) -> Result<usize> {
+    Ok(size)
+}
+
+pub fn new_pipe_full() -> Result<(File, File)> {
+    use std::io::Write;
+
+    let (rx, mut tx) = pipe()?;
+    let page_size = set_pipe_size(tx.as_raw_descriptor(), round_up_to_page_size(1))?;
+    let buf = vec![0u8; page_size];
+    tx.write_all(&buf)?;
+    Ok((rx, tx))
+}
+
+pub struct UnlinkUnixDatagram(pub UnixDatagram);
+impl AsRef<UnixDatagram> for UnlinkUnixDatagram {
+    fn as_ref(&self) -> &UnixDatagram {
+        &self.0
+    }
+}
+impl Drop for UnlinkUnixDatagram {
+    fn drop(&mut self) {
+        if let Ok(addr) = self.0.local_addr() {
+            if let Some(path) = addr.as_pathname() {
+                if let Err(e) = remove_file(path) {
+                    warn!("failed to remove control socket file: {}", e);
+                }
+            }
+        }
+    }
+}
+
+pub struct UnlinkUnixListener(pub UnixListener);
+
+impl AsRef<UnixListener> for UnlinkUnixListener {
+    fn as_ref(&self) -> &UnixListener {
+        &self.0
+    }
+}
+
+impl Deref for UnlinkUnixListener {
+    type Target = UnixListener;
+
+    fn deref(&self) -> &UnixListener {
+        &self.0
+    }
+}
+
+impl Drop for UnlinkUnixListener {
+    fn drop(&mut self) {
+        if let Ok(addr) = self.0.local_addr() {
+            if let Some(path) = addr.as_pathname() {
+                if let Err(e) = remove_file(path) {
+                    warn!("failed to remove control socket file: {}", e);
+                }
+            }
+        }
+    }
+}
+
+pub fn validate_raw_descriptor(raw_descriptor: RawDescriptor) -> Result<RawDescriptor> {
+    validate_raw_fd(&raw_descriptor)
+}
+
+pub fn validate_raw_fd(raw_fd: &RawFd) -> Result<RawFd> {
+    let flags = unsafe { libc::fcntl(*raw_fd, libc::F_GETFD) };
+    if flags < 0 || (flags & libc::FD_CLOEXEC) != 0 {
+        return Err(Error::new(libc::EBADF));
+    }
+    let dup_fd = unsafe { libc::fcntl(*raw_fd, libc::F_DUPFD_CLOEXEC, 0) };
+    if dup_fd < 0 {
+        return Err(Error::last());
+    }
+    Ok(dup_fd as RawFd)
+}
+
+pub fn poll_in<F: AsRawDescriptor>(fd: &F) -> bool {
+    let mut fds = libc::pollfd {
+        fd: fd.as_raw_descriptor(),
+        events: libc::POLLIN,
+        revents: 0,
+    };
+    let ret = unsafe { libc::poll(&mut fds, 1, 0) };
+    if ret == -1 {
+        return false;
+    }
+    fds.revents & libc::POLLIN != 0
+}
+
+pub fn max_timeout() -> Duration {
+    Duration::new(libc::time_t::MAX as u64, 999999999)
+}
+
+/// `/dev/fd/N` denotes an already inherited descriptor on Darwin. Match the
+/// Linux inherited-FD contract: reject CLOEXEC (internally opened) descriptors,
+/// duplicate with CLOEXEC, and never reopen or upgrade the original access mode.
+pub fn safe_descriptor_from_path<P: AsRef<Path>>(path: P) -> Result<Option<SafeDescriptor>> {
+    use std::os::unix::ffi::OsStrExt;
+    let bytes=path.as_ref().as_os_str().as_bytes();
+    let Some(suffix)=bytes.strip_prefix(b"/dev/fd/") else {return Ok(None);};
+    if suffix.is_empty() || !suffix.iter().all(u8::is_ascii_digit) {
+        return Err(Error::new(EINVAL));
+    }
+    let fd=std::str::from_utf8(suffix).ok().and_then(|s|s.parse::<RawFd>().ok())
+        .ok_or_else(||Error::new(EINVAL))?;
+    let owned=validate_raw_fd(&fd)?;
+    // SAFETY: validate_raw_fd returns a new exclusively owned CLOEXEC duplicate.
+    Ok(Some(unsafe {SafeDescriptor::from_raw_descriptor(owned)}))
+}
+
+pub fn safe_descriptor_from_cmdline_fd(fd: &RawFd) -> Result<SafeDescriptor> {
+    let validated_fd = validate_raw_fd(fd)?;
+    Ok(unsafe { SafeDescriptor::from_raw_descriptor(validated_fd) })
+}
+
+pub fn open_file_or_duplicate<P: AsRef<Path>>(path: P, options: &OpenOptions) -> Result<File> {
+    // As on Linux, options apply only to a new path. The inherited handle's
+    // access rights and shared offset remain unchanged when it is duplicated.
+    Ok(if let Some(fd)=safe_descriptor_from_path(path.as_ref())? {
+        fd.into()
+    } else {
+        options.open(path.as_ref())?
+    })
+}
+
+pub fn max_open_files() -> Result<libc::rlimit> {
+    let mut r = libc::rlimit {
+        rlim_cur: 0,
+        rlim_max: 0,
+    };
+    let res = unsafe { libc::getrlimit(libc::RLIMIT_NOFILE, &mut r) };
+    if res == 0 {
+        Ok(r)
+    } else {
+        errno_result()
+    }
+}
+
+pub fn call_with_extended_max_files<T, E>(
+    callback: impl FnOnce() -> std::result::Result<T, E>,
+) -> Result<std::result::Result<T, E>> {
+    let cur_limit = max_open_files()?;
+    let new_limit = libc::rlimit {
+        rlim_cur: cur_limit.rlim_max,
+        ..cur_limit
+    };
+    let needs_extension = cur_limit.rlim_cur < new_limit.rlim_cur;
+    if needs_extension {
+        set_max_open_files(new_limit)?;
+    }
+    let r = callback();
+    if needs_extension {
+        set_max_open_files(cur_limit)?;
+    }
+    Ok(r)
+}
+
+fn set_max_open_files(limit: libc::rlimit) -> Result<()> {
+    let r = libc::rlimit {
+        rlim_cur: limit.rlim_cur.try_into().map_err(|_| Error::new(EINVAL))?,
+        rlim_max: limit.rlim_max.try_into().map_err(|_| Error::new(EINVAL))?,
+    };
+    let res = unsafe { libc::setrlimit(libc::RLIMIT_NOFILE, &r) };
+    if res == 0 {
+        Ok(())
+    } else {
+        errno_result()
+    }
+}
+
+pub fn move_to_cgroup(_cgroup_path: PathBuf, _id_to_write: Pid, _cgroup_file: &str) -> Result<()> {
+    Err(Error::new(libc::ENOTSUP))
+}
+
+pub fn move_task_to_cgroup(cgroup_path: PathBuf, thread_id: Pid) -> Result<()> {
+    move_to_cgroup(cgroup_path, thread_id, "tasks")
+}
+
+pub fn move_proc_to_cgroup(cgroup_path: PathBuf, process_id: Pid) -> Result<()> {
+    move_to_cgroup(cgroup_path, process_id, "cgroup.procs")
+}
+
+pub fn logical_core_frequencies_khz(_cpu_id: usize) -> Result<Vec<u32>> {
+    Ok(vec![])
+}
+
+pub fn logical_core_capacity(cpu_id: usize) -> Result<u32> {
+    let _ = cpu_id;
+    Ok(1024)
+}
+
+pub fn logical_core_cluster_id(cpu_id: usize) -> Result<u32> {
+    Ok(cpu_id as u32)
+}
+
+pub fn logical_core_max_freq_khz(_cpu_id: usize) -> Result<u32> {
+    Ok(0)
+}
+
+pub use crate::sys::macos::set_thread_name;
+
+#[cfg(test)]
+mod inherited_path_contract_tests {
+    use super::*;
+    use std::os::unix::io::AsRawFd;
+    use std::os::unix::fs::MetadataExt;
+    use std::io::{Read,Write,Seek,SeekFrom};
+    fn inherited(f:&File)->File {
+        // Own this duplicate; do not change flags on a shared test descriptor.
+        let n=unsafe{libc::fcntl(f.as_raw_fd(),libc::F_DUPFD,0)};
+        assert!(n>=0);unsafe{File::from_raw_fd(n)}
+    }
+    #[test] fn read_only_inherited_mode_and_identity_are_preserved(){
+        let mut tmp=tempfile::NamedTempFile::new().unwrap();tmp.write_all(b"known bytes").unwrap();
+        let original=File::open(tmp.path()).unwrap();let borrowed=inherited(&original);
+        let path=format!("/dev/fd/{}",borrowed.as_raw_fd());
+        // Darwin's path reopen rejects a write upgrade; our duplicate retains
+        // read-only rights instead, exactly like the upstream Linux contract.
+        assert!(OpenOptions::new().read(true).write(true).open(&path).is_err());
+        let mut copy=open_file_or_duplicate(&path,OpenOptions::new().read(true).write(true)).unwrap();
+        assert_eq!(copy.metadata().unwrap().ino(),original.metadata().unwrap().ino());
+        assert_ne!(copy.as_raw_fd(),borrowed.as_raw_fd());
+        assert_ne!(unsafe{libc::fcntl(copy.as_raw_fd(),libc::F_GETFD)}&libc::FD_CLOEXEC,0);
+        let mut text=String::new();copy.read_to_string(&mut text).unwrap();assert_eq!(text,"known bytes");
+        assert!(copy.write_all(b"no upgrade").is_err());drop(copy);
+        assert!(borrowed.metadata().is_ok());
+    }
+    #[test] fn rejects_internal_closed_and_malformed_descriptors(){
+        let f=tempfile::tempfile().unwrap();
+        assert!(safe_descriptor_from_path(format!("/dev/fd/{}",f.as_raw_fd())).is_err());
+        for p in ["/dev/fd/","/dev/fd/-1","/dev/fd/1/extra","/dev/fd/+1","/dev/fd/999999999999999999999","/dev/fd/2147483647"] {
+            assert!(safe_descriptor_from_path(p).is_err(),"{}",p);
+        }
+        assert!(safe_descriptor_from_path("/tmp/ordinary").unwrap().is_none());
+    }
+    #[test] fn writable_inherited_handle_and_ordinary_path_work(){
+        let mut t=tempfile::NamedTempFile::new().unwrap();t.write_all(b"old").unwrap();
+        let own=inherited(t.as_file());let path=format!("/dev/fd/{}",own.as_raw_fd());
+        let mut f=open_file_or_duplicate(path,OpenOptions::new().read(true).write(true)).unwrap();
+        f.seek(SeekFrom::Start(0)).unwrap();f.write_all(b"new").unwrap();drop(f);
+        let mut normal=open_file_or_duplicate(t.path(),OpenOptions::new().read(true)).unwrap();
+        let mut s=String::new();normal.read_to_string(&mut s).unwrap();assert_eq!(s,"new");
+    }
+}

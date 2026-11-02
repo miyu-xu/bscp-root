@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/Users/huangxiaoling/.cargo/bin/cargo",
+    "+stable",
+    "check",
+    "--offline",
+    "--manifest-path",
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/Cargo.toml"
+  ],
+  "rc": 0,
+  "stdout": "",
+  "stderr": "   Compiling libc v0.2.186\n   Compiling android-binder v0.1.1 (/Volumes/Mark SSD/aosp17-binder-rust-host-v1)\n   Compiling android-binder-ndk-sys v0.1.0 (/Volumes/Mark SSD/aosp17-binder-rust-host-v1/sys)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.88s\n",
+  "seconds": 1.9492698750000002
+}

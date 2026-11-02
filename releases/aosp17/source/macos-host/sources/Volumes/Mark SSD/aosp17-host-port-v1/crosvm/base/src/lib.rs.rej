@@ -1,0 +1,9 @@
+diff a/base/src/lib.rs b/base/src/lib.rs	(rejected hunks)
+@@ -184,7 +215,6 @@ pub use mmap::Protection;
+ pub use platform::get_cpu_affinity;
+ pub use platform::getpid;
+ pub use platform::open_file_or_duplicate;
+-pub use platform::platform_timer_resolution::enable_high_res_timers;
+ pub use platform::set_cpu_affinity;
+ pub use platform::BlockingMode;
+ pub use platform::EventContext;

@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "elapsed": 7.613870834,
+  "stdout": "\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n",
+  "stderr": "     Locking 35 packages to latest compatible versions\n      Adding foreign-types v0.3.2 (available: v0.5.0)\n      Adding zerocopy-derive v0.8.54 (available: v0.8.63)\n   Compiling cfg-if v1.0.4\n   Compiling android-binder v0.1.1 (/Volumes/Mark SSD/aosp17-binder-rust-host-v1)\n   Compiling foreign-types-shared v0.1.1\n   Compiling libloading v0.8.9\n   Compiling foreign-types v0.3.2\n   Compiling clang-sys v1.9.1\n   Compiling bindgen v0.70.1\n   Compiling android-binder-ndk-sys v0.1.0 (/Volumes/Mark SSD/aosp17-binder-rust-host-v1/sys)\n   Compiling binder_rpc_unstable_bindgen v0.1.0 (/Volumes/Mark SSD/aosp17-binder-rust-host-v1/rpcbinder/sys)\n   Compiling rpcbinder v0.1.0 (/Volumes/Mark SSD/aosp17-binder-rust-host-v1/rpcbinder)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.55s\n     Running unittests src/lib.rs (/Volumes/Mark SSD/aosp17-binder-rust-host-v1/target/debug/deps/rpcbinder-c650052e1136abaa)\n"
+}

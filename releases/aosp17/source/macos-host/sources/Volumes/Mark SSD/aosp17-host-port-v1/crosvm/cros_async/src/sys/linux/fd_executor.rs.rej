@@ -1,0 +1,10 @@
+diff a/cros_async/src/sys/linux/fd_executor.rs b/cros_async/src/sys/linux/fd_executor.rs	(rejected hunks)
+@@ -78,6 +88,8 @@ impl From<Error> for io::Error {
+             CantClearWakeEvent(e) => e.into(),
+             CloneEvent(e) => e.into(),
+             CreateEvent(e) => e.into(),
++            #[cfg(target_os = "macos")]
++            CreateWakePipe(e) => e.into(),
+             DuplicatingFd(e) => e,
+             ExecutorError(e) => io::Error::new(io::ErrorKind::Other, e),
+             ExecutorGone => io::Error::new(io::ErrorKind::Other, e),

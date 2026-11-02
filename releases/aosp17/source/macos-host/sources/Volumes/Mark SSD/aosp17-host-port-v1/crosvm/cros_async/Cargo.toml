@@ -1,0 +1,47 @@
+[package]
+name = "cros_async"
+version = "0.1.1"
+authors = ["The ChromiumOS Authors"]
+edition = "2021"
+
+[features]
+tokio = ["dep:tokio"]
+
+[dependencies]
+async-trait = "0.1.36"
+async-task = "4"
+cfg-if = { workspace = true }
+intrusive-collections = "0.9"
+libc = { workspace = true }
+paste = "1.0"
+pin-utils = "0.1.0-alpha.4"
+remain = { workspace = true }
+slab = "0.4"
+sync = { workspace = true }
+base = { workspace = true }
+thiserror = { workspace = true }
+audio_streams = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_keyvalue = { workspace = true, features = ["argh_derive"] }
+static_assertions = { workspace = true }
+tokio = { workspace = true, optional = true }
+
+[target.'cfg(any(target_os = "android", target_os = "linux"))'.dependencies]
+io_uring = { workspace = true }
+
+[target.'cfg(windows)'.dependencies]
+winapi = "0.3"
+win_util = { path = "../win_util" }
+smallvec = "1"
+
+[dependencies.futures]
+version = "0.3"
+default-features = false
+features = ["alloc"]
+
+[dev-dependencies]
+futures = { version = "0.3", features = ["executor"] }
+futures-executor = { version = "0.3", features = ["thread-pool"] }
+futures-util = "0.3"
+tempfile = "3"

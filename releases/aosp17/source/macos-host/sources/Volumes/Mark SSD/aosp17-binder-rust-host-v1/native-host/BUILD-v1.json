@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "/opt/homebrew/bin/cmake",
+      "-S",
+      "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host",
+      "-B",
+      "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_MAKE_PROGRAM=/opt/homebrew/bin/ninja",
+      "-DCMAKE_BUILD_TYPE=Debug"
+    ],
+    "rc": 0,
+    "stdout": "-- The C compiler identification is AppleClang 15.0.0.15000040\n-- The CXX compiler identification is AppleClang 15.0.0.15000040\n-- Detecting C compiler ABI info\n-- Detecting C compiler ABI info - done\n-- Check for working C compiler: /usr/bin/cc - skipped\n-- Detecting C compile features\n-- Detecting C compile features - done\n-- Detecting CXX compiler ABI info\n-- Detecting CXX compiler ABI info - done\n-- Check for working CXX compiler: /usr/bin/c++ - skipped\n-- Detecting CXX compile features\n-- Detecting CXX compile features - done\n-- Configuring done (0.4s)\n-- Generating done (0.0s)\n-- Build files have been written to: /Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build\n",
+    "stderr": "",
+    "seconds": 0.466600458
+  },
+  {
+    "command": [
+      "/opt/homebrew/bin/cmake",
+      "--build",
+      "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build",
+      "--target",
+      "binder_ndk_sdk",
+      "--parallel",
+      "4"
+    ],
+    "rc": 0,
+    "stdout": "[1/41] Building CXX object CMakeFiles/binder_log.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/platform/log_print.cpp.o\n[2/41] Linking CXX shared library libbinder_log.dylib\n[3/41] Building CXX object CMakeFiles/utils_binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/system/core/libutils/binder/SharedBuffer.cpp.o\n[4/41] Building CXX object CMakeFiles/utils_binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/system/core/libutils/binder/Errors.cpp.o\n[5/41] Building CXX object CMakeFiles/utils_binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/system/core/libutils/binder/StrongPointer.cpp.o\n[6/41] Building CXX object CMakeFiles/utils_binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/system/core/libutils/binder/RefBase.cpp.o\n[7/41] Building CXX object CMakeFiles/utils_binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/system/core/libutils/binder/Unicode.cpp.o\n[8/41] Building CXX object CMakeFiles/utils_binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/system/core/libutils/binder/String16.cpp.o\n[9/41] Building CXX object CMakeFiles/utils_binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/system/core/libutils/binder/String8.cpp.o\n[10/41] Building CXX object CMakeFiles/utils_binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/system/core/libutils/binder/VectorImpl.cpp.o\n[11/41] Linking CXX shared library libutils_binder_sdk.dylib\n[12/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/Debug.cpp.o\n[13/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/Binder.cpp.o\n[14/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/BpBinder.cpp.o\n[15/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/FdTrigger.cpp.o\n[16/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/IInterface.cpp.o\n[17/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/IResultReceiver.cpp.o\n[18/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/JavaBBinderBase.cpp.o\n[19/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/ParcelFileDescriptor.cpp.o\n[20/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/RecordedTransaction.cpp.o\n[21/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/RpcSession.cpp.o\n[22/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/RpcServer.cpp.o\n[23/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/Parcel.cpp.o\n[24/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/RpcTransportRaw.cpp.o\n[25/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/RpcState.cpp.o\n[26/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/Stability.cpp.o\n[27/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/Status.cpp.o\n[28/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/TextOutput.cpp.o\n[29/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/Utils.cpp.o\n[30/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/file.cpp.o\n[31/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/OS_unix_base.cpp.o\n[32/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/platform/OS_macos.cpp.o\n[33/41] Building CXX object CMakeFiles/binder_ndk_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/ndk/libbinder.cpp.o\n[34/41] Building CXX object CMakeFiles/binder_ndk_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/ndk/parcel.cpp.o\n[35/41] Building CXX object CMakeFiles/binder_ndk_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/ndk/ibinder.cpp.o\n[36/41] Building CXX object CMakeFiles/binder_ndk_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/ndk/stability.cpp.o\n[37/41] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/PersistableBundle.cpp.o\n[38/41] Building CXX object CMakeFiles/binder_ndk_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/ndk/status.cpp.o\n[39/41] Linking CXX shared library libbinder_sdk.dylib\n[40/41] Building CXX object CMakeFiles/binder_ndk_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/ndk/persistable_bundle.cpp.o\n[41/41] Linking CXX shared library libbinder_ndk_sdk.dylib\n",
+    "stderr": "",
+    "seconds": 5.341730416
+  }
+]

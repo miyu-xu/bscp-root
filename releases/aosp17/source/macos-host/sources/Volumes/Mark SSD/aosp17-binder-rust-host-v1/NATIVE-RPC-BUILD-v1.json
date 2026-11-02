@@ -1,0 +1,14 @@
+{
+  "configure": {
+    "exit": 0,
+    "elapsed": 0.059189708,
+    "stdout": "-- Configuring done (0.0s)\n-- Generating done (0.0s)\n-- Build files have been written to: /Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build\n",
+    "stderr": ""
+  },
+  "build": {
+    "exit": 0,
+    "elapsed": 0.596078959,
+    "stdout": "[1/2] Building CXX object CMakeFiles/binder_rpc_unstable_host.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/libbinder_rpc_unstable.cpp.o\n[2/2] Linking CXX shared library libbinder_rpc_unstable_host.dylib\n",
+    "stderr": ""
+  }
+}

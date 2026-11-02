@@ -1,0 +1,10 @@
+diff a/vm_control/src/sys/linux.rs b/vm_control/src/sys/linux.rs	(rejected hunks)
+@@ -22,6 +22,8 @@ use hypervisor::MemCacheType;
+ use hypervisor::MemSlot;
+ use hypervisor::Vm;
+ use libc::EINVAL;
++#[cfg(target_os = "macos")]
++use libc::ENOTSUP;
+ use libc::ERANGE;
+ use once_cell::sync::Lazy;
+ use resources::Alloc;

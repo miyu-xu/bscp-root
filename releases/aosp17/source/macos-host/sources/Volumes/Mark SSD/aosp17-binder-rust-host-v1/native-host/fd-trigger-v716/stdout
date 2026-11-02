@@ -1,0 +1,4 @@
+[1/4] Building CXX object CMakeFiles/binder_sdk.dir/Volumes/Mark_SSD/aosp17-binder-host-v1/frameworks/native/libs/binder/FdTrigger.cpp.o
+[2/4] Linking CXX shared library libbinder_sdk.dylib
+[3/4] Linking CXX shared library libbinder_ndk_sdk.dylib
+[4/4] Linking CXX shared library libbinder_rpc_unstable_host.dylib

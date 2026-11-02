@@ -1,0 +1,1 @@
+{"pid": 32009, "argv": ["/opt/homebrew/bin/cmake", "--build", "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build", "--target", "binder_rpc_unstable_host", "-j2"], "start": 1793375740.340068, "before": "a7295c7f264a62c7f7769769f681088699c7a4c87bbbeed9ce28f1ee1e8b51b0", "after": "417e9d18ef0c27389322cefd552eb99b2868b7212e714c010a757f03ab0c7578"}

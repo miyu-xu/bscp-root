@@ -1,0 +1,23 @@
+{
+  "pid": 32009,
+  "argv": [
+    "/opt/homebrew/bin/cmake",
+    "--build",
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build",
+    "--target",
+    "binder_rpc_unstable_host",
+    "-j2"
+  ],
+  "start": 1793375740.340068,
+  "before": "a7295c7f264a62c7f7769769f681088699c7a4c87bbbeed9ce28f1ee1e8b51b0",
+  "after": "417e9d18ef0c27389322cefd552eb99b2868b7212e714c010a757f03ab0c7578",
+  "exit": 0,
+  "finish": 1793375741.629768,
+  "libs": {
+    "libbinder_sdk.dylib": "2688669fa9f62c47959acccabf79418c5d95243a2324ab35bad66736a7425a56",
+    "libbinder_ndk_sdk.dylib": "f04fe03d892bafd4f8e299fb19641f13bec3025b801b0468cdf2924b3d14f2ca",
+    "libbinder_log.dylib": "a92dbb39b359e0a14587da5e7a59ab20979af5d35b31cf9036b71dffdc720d98",
+    "libutils_binder_sdk.dylib": "aa2cef0d7a5f21c4133f29a5e59db6858e5960b5f3937bacfd7d9cbac807079c",
+    "libbinder_rpc_unstable_host.dylib": "701ea3fef089df5146dc3209eccabc0c8dd3d21404805b650876e5e47b2e06a2"
+  }
+}
