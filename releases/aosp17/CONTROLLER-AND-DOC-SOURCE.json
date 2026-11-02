@@ -1,9 +1,48 @@
 {
-  "state": "FROZEN_SOURCE_STAGED_NOT_DEFAULT",
   "files": {
+    "doc/aosp17/CORE-PROJECT-BASELINES.json": {
+      "bytes": 19149,
+      "sha256": "b6db0eb10591d1d9f00e05eac545a4cc6a54ee3c94fdf95cbecc23accd40e7f1"
+    },
+    "doc/aosp17/FINAL-PREPARATION-GAPS.md": {
+      "bytes": 6206,
+      "sha256": "82ea33ed1fdae447ee8f0da4be8dc768322bdff6bd7a53dde1482380dbcdb1b0"
+    },
+    "doc/aosp17/INSTALLATION-SCOPE-v1830.md": {
+      "bytes": 2210,
+      "sha256": "bbfee76b59ecb96a9beb1cf54fa6bdb3b2310dee71a0a22c834e34d496e8934d"
+    },
+    "doc/aosp17/PROJECT-UPDATES.md": {
+      "bytes": 6923,
+      "sha256": "6b33c3b275826e9d77bcfd5d0452df5fb23a93c305f61601613bf88717de690a"
+    },
+    "doc/aosp17/SLIRP-ACCEPTANCE-REVIEW.json": {
+      "bytes": 1153,
+      "sha256": "e2d7aba8219839fe8a26f28a337571b16d64d3aa9f4b5fd4cc85b9b14a2b345d"
+    },
+    "doc/aosp17/SLIRP-CANDIDATE-TESTS.json": {
+      "bytes": 2800,
+      "sha256": "1c14e6a86e4e14f76d7593d3dad2c313444b44917deedd218ed2547dd9b3d93a"
+    },
+    "doc/aosp17/SLIRP-RUNTIME-CHECK.json": {
+      "bytes": 8320,
+      "sha256": "2abe761f50f4e1909e951568f8c38d1f2595c6d3efd534a3c1a2879f1a04d751"
+    },
+    "doc/aosp17/SLIRP-RUNTIME-COPY.json": {
+      "bytes": 5858,
+      "sha256": "a203af7aafa9d34333dcf1c01ee643b976fb7ab29311238ec2cbdc15883a6a3f"
+    },
+    "doc/aosp17/WINDOWS-FINAL-RESULT-v1830.json": {
+      "bytes": 64212,
+      "sha256": "d239e4dfa35305f1a1468452d46d0b490812f80e618b3c523fe3e67234a1003f"
+    },
     "doc/aosp17/frozen-delivery/CLI-CAPABILITY-BOUNDARY.md": {
       "bytes": 1870,
       "sha256": "7344baf65e5ed4974c948248f9623a89c790fd3a52ff2daa41ee3613cc5c1c8e"
+    },
+    "doc/aosp17/frozen-delivery/DELIVERY-MANIFEST.json": {
+      "bytes": 7112,
+      "sha256": "fce366f22e6f5cd7765f9494722b41f90d183a05fb51cc2d110ec2ae93ae335a"
     },
     "doc/aosp17/frozen-delivery/DOCUMENT-CHECKS.json": {
       "bytes": 755,
@@ -153,25 +192,257 @@
       "bytes": 11550,
       "sha256": "d1a8975c679627f4c961977668cd096cf0e25771b70a8402761494eab903674b"
     },
-    "doc/aosp17/frozen-delivery/DELIVERY-MANIFEST.json": {
-      "bytes": 7112,
-      "sha256": "fce366f22e6f5cd7765f9494722b41f90d183a05fb51cc2d110ec2ae93ae335a"
+    "doc/aosp17/slirp-source-delivery-v1/INDEX.json": {
+      "bytes": 540156,
+      "sha256": "7438ec16f7dd0f43f6df69c39e4d4b6976c5ad1b6ead3bb1d1aace244ed8ba45"
     },
-    "doc/aosp17/PROJECT-UPDATES.md": {
-      "bytes": 6027,
-      "sha256": "4def00283f1c3b47da3faeacab640ee8cfeecac7f37414126193646f4f5859e8"
+    "doc/aosp17/slirp-source-delivery-v1/NOTICE-SUPPLEMENT.json": {
+      "bytes": 422,
+      "sha256": "9dd39ddd9b4386ebbd377f58d259ed362b698565df9214d9a583156d92b13c5e"
     },
-    "doc/aosp17/CORE-PROJECT-BASELINES.json": {
-      "bytes": 19149,
-      "sha256": "b6db0eb10591d1d9f00e05eac545a4cc6a54ee3c94fdf95cbecc23accd40e7f1"
+    "doc/aosp17/slirp-source-delivery-v1/README.md": {
+      "bytes": 2337,
+      "sha256": "9669258ac71bd2d98458dc8c8f5659689e83ed9559dd4f48291ac50e15d1c3ab"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/SLIRP-BUILD-TOOLS.json": {
+      "bytes": 502,
+      "sha256": "db216ab423be5856342967569a9246ad3ffc9d3356059a2568da50db5ff07daa"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/SLIRP-SUPERBUILD-BUILD.json": {
+      "bytes": 724,
+      "sha256": "e3748c7da83b4906f40f3ab430e303b12e9562a3df75c652e9277c9e90f788db"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/SLIRP-SUPERBUILD-CONFIGURE-v4.json": {
+      "bytes": 649,
+      "sha256": "676f0ce2704a6ebeb93d016c8113762f6128710cb0cc5f577d3169e07f1f2650"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/additional-notices/subprojects/libslirp/COPYRIGHT": {
+      "bytes": 3022,
+      "sha256": "646d383273ad82322768993bf903b1ffb3bc4345b8a214bfd9da7e533c5a5954"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/build_slirp_superbuild.py": {
+      "bytes": 1484,
+      "sha256": "4d7f7a38bdd1c18775fa634c517cc1e19b1fbb98eae48f45dc4ac86e47ca01bc"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/configure_slirp_superbuild.py": {
+      "bytes": 1730,
+      "sha256": "df4aaaddc15e0d5f9dfb6b9acfdc7d78bf82d9c923a50ceead9584c277f0783d"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/AUTHORS": {
+      "bytes": 1347,
+      "sha256": "52ca4a84d8dc412ead87bc3223c2ec2ac819938337cabecb2bd1994e979d1171"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/COPYING": {
+      "bytes": 26530,
+      "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/docs/reference/AUTHORS": {
+      "bytes": 122,
+      "sha256": "b4f60a02b2b1f82764f8295b2eafbfcd4c33f596d70abcf5cb3c3623b1cfbc6d"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/docs/reference/COPYING": {
+      "bytes": 1698,
+      "sha256": "b1ec1d0e5947f81e815d8771f7d4d90671a94bb10a42dc687fb566de461a57aa"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/gmodule/AUTHORS": {
+      "bytes": 25,
+      "sha256": "28073c8c65c072387b778ba00b6c24a2ff1b573ca4415e151aa91fab5a6454be"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/gmodule/COPYING": {
+      "bytes": 26530,
+      "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/subprojects/libffi/LICENSE": {
+      "bytes": 1153,
+      "sha256": "f02e8e7361fa83bbe845f029571bbd1248bed85320f6dad0541db8ec66d90178"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/subprojects/proxy-libintl/COPYING": {
+      "bytes": 25774,
+      "sha256": "aa092600e3f475f0a55821fb9c529583d8e23e41bf0461254f02fcf94d3a32c2"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/AUTHORS": {
+      "bytes": 851,
+      "sha256": "eeeac138d044b2dc7bed1f145bad783e06da7b9344c8e9be4d96f803b22cc008"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/COPYING": {
+      "bytes": 95,
+      "sha256": "17abe1dbb92b21ab173cf9757dd57b0b15cd8d863b2ccdef635fdbef03077fb0"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/LICENSE.build": {
+      "bytes": 1070,
+      "sha256": "cb3101cb814ef48ae95cdbdb74ef44a335484f4e190837fc8df38e3c3c1f9361"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/cmake/COPYING-CMAKE-SCRIPTS": {
+      "bytes": 1327,
+      "sha256": "46cde7dc11e64c78d650b4851b88f6704b4665ff60f22a1caf68ceb15e217e5b"
+    },
+    "doc/aosp17/slirp-source-delivery-v1/test_slirp_candidate.py": {
+      "bytes": 5066,
+      "sha256": "547b497db762f3ad5f38694a74c790e249a6b3ab1bcf7a20779cbe6e40b7c3c9"
+    },
+    "doc/aosp17/windows-package-v1830-result.json": {
+      "bytes": 319,
+      "sha256": "e2adb7d25643b5c5aa926184c0ebf437e91b614ba0139fe8ec68058e6a0b9f0d"
+    },
+    "releases/aosp17/controllers/linux/microdroid.py": {
+      "bytes": 441,
+      "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/audit_owner.py": {
+      "bytes": 3325,
+      "sha256": "ceb87c809f178590c21266afaa2f9b2cdd88696e42c5a7bae6c94b8755a86baf"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/bound_owner.py": {
+      "bytes": 6716,
+      "sha256": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/closure_check.py": {
+      "bytes": 1942,
+      "sha256": "73adaa7603962e5aed5a93bf9be66241283e93169fdc6fe1cb1bb6f53717133f"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/compute_protocol.py": {
+      "bytes": 3341,
+      "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/endpoint_evidence.py": {
+      "bytes": 2912,
+      "sha256": "05d3d2b10c4721f6304653eaab00e9f20813bd5f72ec88949659e9258c348912"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/entry.py": {
+      "bytes": 11646,
+      "sha256": "4ff2a64a49275bf4995f0a3c9336e261f5f5ead04358c5626fb200a6f01a9cd6"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/instance_identity.py": {
+      "bytes": 1590,
+      "sha256": "f7afafed64cb24a64523defd19127b4a3d155cf34b5f155dfd693cc01dd092ae"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/lifecycle.py": {
+      "bytes": 8787,
+      "sha256": "fed80dd731c1f591484ddbde8857c8657395e143a040e087ef5309143f248387"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/linux_pidfd.py": {
+      "bytes": 1206,
+      "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/mac_audit.py": {
+      "bytes": 5176,
+      "sha256": "fbaa8a6fd61e46846f931f7800e3dea7c91cc903c26f75958803ffc54bf05bb8"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/mac_owner.py": {
+      "bytes": 14661,
+      "sha256": "d2f5eeaf546bfa32852c3dc5b159c72d0b445817e1febe48fa804cb41c759117"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/native.py": {
+      "bytes": 36246,
+      "sha256": "9aee99f412ad7d362962f4a3212367ba8c08d8e7f91a47688448a0855a4371c0"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/pipe_log.py": {
+      "bytes": 2298,
+      "sha256": "4815f8f7dbcd24b3a7fb75b2460705bb5ce23ebfbd198107eef000d1a81762a2"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/runtime.py": {
+      "bytes": 14035,
+      "sha256": "8d8eedb1cd92f1d7f0517aed3e46a1f241661bc611d7106cad4c992cfc5f037c"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/strict_json.py": {
+      "bytes": 424,
+      "sha256": "a51b489a1b978464323aa894f73ab8e8cba48ce8e29b98f77cdd72d8205ad841"
+    },
+    "releases/aosp17/controllers/linux/microdroid_lifecycle/version.py": {
+      "bytes": 48,
+      "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
+    },
+    "releases/aosp17/controllers/linux/vm_linux.sh": {
+      "bytes": 12531,
+      "sha256": "f42217d55e98bdde14424e479e90f6db181d1b7127054877f3c5ebc6ab1f86a3"
+    },
+    "releases/aosp17/controllers/macos/microdroid.py": {
+      "bytes": 441,
+      "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/.gitignore": {
+      "bytes": 19,
+      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/audit_owner.py": {
+      "bytes": 3325,
+      "sha256": "ceb87c809f178590c21266afaa2f9b2cdd88696e42c5a7bae6c94b8755a86baf"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/bound_owner.py": {
+      "bytes": 6716,
+      "sha256": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/closure_check.py": {
+      "bytes": 1942,
+      "sha256": "73adaa7603962e5aed5a93bf9be66241283e93169fdc6fe1cb1bb6f53717133f"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/compute_protocol.py": {
+      "bytes": 3341,
+      "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/endpoint_evidence.py": {
+      "bytes": 2912,
+      "sha256": "05d3d2b10c4721f6304653eaab00e9f20813bd5f72ec88949659e9258c348912"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/entry.py": {
+      "bytes": 11646,
+      "sha256": "4ff2a64a49275bf4995f0a3c9336e261f5f5ead04358c5626fb200a6f01a9cd6"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/instance_identity.py": {
+      "bytes": 1590,
+      "sha256": "f7afafed64cb24a64523defd19127b4a3d155cf34b5f155dfd693cc01dd092ae"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/lifecycle.py": {
+      "bytes": 8787,
+      "sha256": "fed80dd731c1f591484ddbde8857c8657395e143a040e087ef5309143f248387"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/linux_pidfd.py": {
+      "bytes": 1206,
+      "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/mac_audit.py": {
+      "bytes": 5176,
+      "sha256": "fbaa8a6fd61e46846f931f7800e3dea7c91cc903c26f75958803ffc54bf05bb8"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/mac_owner.py": {
+      "bytes": 14661,
+      "sha256": "d2f5eeaf546bfa32852c3dc5b159c72d0b445817e1febe48fa804cb41c759117"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/native.py": {
+      "bytes": 36228,
+      "sha256": "c082a369a57b2e2cffea693dbd05915c4f0f802659178ebb20b8f484b6a0ee55"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/pipe_log.py": {
+      "bytes": 2298,
+      "sha256": "4815f8f7dbcd24b3a7fb75b2460705bb5ce23ebfbd198107eef000d1a81762a2"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/runtime.py": {
+      "bytes": 13938,
+      "sha256": "d11429b8e9b94f776b11b1e0db59bb398afc2c6551e50da2f599bc6bef16d765"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/strict_json.py": {
+      "bytes": 424,
+      "sha256": "a51b489a1b978464323aa894f73ab8e8cba48ce8e29b98f77cdd72d8205ad841"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/vendor/owned_job.py": {
+      "bytes": 28832,
+      "sha256": "e8198f21332e907e1d91bfcdf237fcffac291bc63a46e53f3c062eda0cd1ade9"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/vendor/windows_state.py": {
+      "bytes": 2074,
+      "sha256": "e163263045236786ba2c49ebf73be88f8beccda4d43997a72fddb2b74b44368e"
+    },
+    "releases/aosp17/controllers/macos/microdroid_lifecycle/version.py": {
+      "bytes": 48,
+      "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
+    },
+    "releases/aosp17/controllers/macos/vm_macos.sh": {
+      "bytes": 25131,
+      "sha256": "e938ed96bf6ace83f9ef27f18ce4efff21932d765ad90ecea1ac5012457f3a4a"
     },
     "releases/aosp17/controllers/windows/microdroid.py": {
       "bytes": 441,
       "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
-    },
-    "releases/aosp17/controllers/windows/vm_windows.ps1": {
-      "bytes": 27639,
-      "sha256": "f627a985a393910b151454f0195d66cac35998c3da38298a0210405962f70671"
     },
     "releases/aosp17/controllers/windows/microdroid_lifecycle/audit_owner.py": {
       "bytes": 3382,
@@ -237,14 +508,6 @@
       "bytes": 439,
       "sha256": "011d298e526256c7e8df5fbca63bd7e13e491ec5d7500a6ec7b42729fadc1041"
     },
-    "releases/aosp17/controllers/windows/microdroid_lifecycle/version.py": {
-      "bytes": 48,
-      "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
-    },
-    "releases/aosp17/controllers/windows/microdroid_lifecycle/windows_initial.py": {
-      "bytes": 6772,
-      "sha256": "2b9e3d734ac84e9d6af52ece5b4716ab331d26edf44d4dfc057cd04d9ceeff33"
-    },
     "releases/aosp17/controllers/windows/microdroid_lifecycle/vendor/owned_job.py": {
       "bytes": 28832,
       "sha256": "e8198f21332e907e1d91bfcdf237fcffac291bc63a46e53f3c062eda0cd1ade9"
@@ -253,162 +516,115 @@
       "bytes": 4746,
       "sha256": "b934401f6e2220f19251bb239fed4dc72e28df2ae1053a89e2a072612f930699"
     },
-    "releases/aosp17/controllers/linux/vm_linux.sh": {
-      "bytes": 12531,
-      "sha256": "f42217d55e98bdde14424e479e90f6db181d1b7127054877f3c5ebc6ab1f86a3"
-    },
-    "releases/aosp17/controllers/linux/microdroid.py": {
-      "bytes": 441,
-      "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/bound_owner.py": {
-      "bytes": 6716,
-      "sha256": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/compute_protocol.py": {
-      "bytes": 3341,
-      "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/closure_check.py": {
-      "bytes": 1942,
-      "sha256": "73adaa7603962e5aed5a93bf9be66241283e93169fdc6fe1cb1bb6f53717133f"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/lifecycle.py": {
-      "bytes": 8787,
-      "sha256": "fed80dd731c1f591484ddbde8857c8657395e143a040e087ef5309143f248387"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/mac_audit.py": {
-      "bytes": 5176,
-      "sha256": "fbaa8a6fd61e46846f931f7800e3dea7c91cc903c26f75958803ffc54bf05bb8"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/entry.py": {
-      "bytes": 11646,
-      "sha256": "4ff2a64a49275bf4995f0a3c9336e261f5f5ead04358c5626fb200a6f01a9cd6"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/linux_pidfd.py": {
-      "bytes": 1206,
-      "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/pipe_log.py": {
-      "bytes": 2298,
-      "sha256": "4815f8f7dbcd24b3a7fb75b2460705bb5ce23ebfbd198107eef000d1a81762a2"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/native.py": {
-      "bytes": 36246,
-      "sha256": "9aee99f412ad7d362962f4a3212367ba8c08d8e7f91a47688448a0855a4371c0"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/strict_json.py": {
-      "bytes": 424,
-      "sha256": "a51b489a1b978464323aa894f73ab8e8cba48ce8e29b98f77cdd72d8205ad841"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/mac_owner.py": {
-      "bytes": 14661,
-      "sha256": "d2f5eeaf546bfa32852c3dc5b159c72d0b445817e1febe48fa804cb41c759117"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/instance_identity.py": {
-      "bytes": 1590,
-      "sha256": "f7afafed64cb24a64523defd19127b4a3d155cf34b5f155dfd693cc01dd092ae"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/runtime.py": {
-      "bytes": 14035,
-      "sha256": "8d8eedb1cd92f1d7f0517aed3e46a1f241661bc611d7106cad4c992cfc5f037c"
-    },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/version.py": {
+    "releases/aosp17/controllers/windows/microdroid_lifecycle/version.py": {
       "bytes": 48,
       "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
     },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/endpoint_evidence.py": {
-      "bytes": 2912,
-      "sha256": "05d3d2b10c4721f6304653eaab00e9f20813bd5f72ec88949659e9258c348912"
+    "releases/aosp17/controllers/windows/microdroid_lifecycle/windows_initial.py": {
+      "bytes": 6772,
+      "sha256": "2b9e3d734ac84e9d6af52ece5b4716ab331d26edf44d4dfc057cd04d9ceeff33"
     },
-    "releases/aosp17/controllers/linux/microdroid_lifecycle/audit_owner.py": {
-      "bytes": 3325,
-      "sha256": "ceb87c809f178590c21266afaa2f9b2cdd88696e42c5a7bae6c94b8755a86baf"
+    "releases/aosp17/controllers/windows/vm_windows.ps1": {
+      "bytes": 27639,
+      "sha256": "f627a985a393910b151454f0195d66cac35998c3da38298a0210405962f70671"
     },
-    "releases/aosp17/controllers/macos/vm_macos.sh": {
-      "bytes": 25131,
-      "sha256": "e938ed96bf6ace83f9ef27f18ce4efff21932d765ad90ecea1ac5012457f3a4a"
+    "releases/aosp17/windows-v1830/closure/windows-v1828.json": {
+      "bytes": 58671,
+      "sha256": "583a4f2a9033b36b8a548acc48bcf04639921234724d01cce30d0adf959a043d"
     },
-    "releases/aosp17/controllers/macos/microdroid.py": {
+    "releases/aosp17/windows-v1830/profiles/windows.json": {
+      "bytes": 116574,
+      "sha256": "48dbed81738eb38e805ee32732fbb139557493c455f62d56d4edd4df1fdfb3a6"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid.py": {
       "bytes": 441,
       "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
     },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/mac_owner.py": {
-      "bytes": 14661,
-      "sha256": "d2f5eeaf546bfa32852c3dc5b159c72d0b445817e1febe48fa804cb41c759117"
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/audit_owner.py": {
+      "bytes": 3382,
+      "sha256": "35c4c33ca6b062110fd4a9db8d64bfc78addb8ad6c768ea9db3680136d2ff1c3"
     },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/pipe_log.py": {
-      "bytes": 2298,
-      "sha256": "4815f8f7dbcd24b3a7fb75b2460705bb5ce23ebfbd198107eef000d1a81762a2"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/strict_json.py": {
-      "bytes": 424,
-      "sha256": "a51b489a1b978464323aa894f73ab8e8cba48ce8e29b98f77cdd72d8205ad841"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/version.py": {
-      "bytes": 48,
-      "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/mac_audit.py": {
-      "bytes": 5176,
-      "sha256": "fbaa8a6fd61e46846f931f7800e3dea7c91cc903c26f75958803ffc54bf05bb8"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/closure_check.py": {
-      "bytes": 1942,
-      "sha256": "73adaa7603962e5aed5a93bf9be66241283e93169fdc6fe1cb1bb6f53717133f"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/native.py": {
-      "bytes": 36228,
-      "sha256": "c082a369a57b2e2cffea693dbd05915c4f0f802659178ebb20b8f484b6a0ee55"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/runtime.py": {
-      "bytes": 13938,
-      "sha256": "d11429b8e9b94f776b11b1e0db59bb398afc2c6551e50da2f599bc6bef16d765"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/linux_pidfd.py": {
-      "bytes": 1206,
-      "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/audit_owner.py": {
-      "bytes": 3325,
-      "sha256": "ceb87c809f178590c21266afaa2f9b2cdd88696e42c5a7bae6c94b8755a86baf"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/compute_protocol.py": {
-      "bytes": 3341,
-      "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/.gitignore": {
-      "bytes": 19,
-      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/lifecycle.py": {
-      "bytes": 8787,
-      "sha256": "fed80dd731c1f591484ddbde8857c8657395e143a040e087ef5309143f248387"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/entry.py": {
-      "bytes": 11646,
-      "sha256": "4ff2a64a49275bf4995f0a3c9336e261f5f5ead04358c5626fb200a6f01a9cd6"
-    },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/bound_owner.py": {
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/bound_owner.py": {
       "bytes": 6716,
       "sha256": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0"
     },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/instance_identity.py": {
-      "bytes": 1590,
-      "sha256": "f7afafed64cb24a64523defd19127b4a3d155cf34b5f155dfd693cc01dd092ae"
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/closure_check.py": {
+      "bytes": 1975,
+      "sha256": "a301a422935b294434b51a48780c7036f344e8175f5b5c466ee2c85940f9c8fa"
     },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/endpoint_evidence.py": {
-      "bytes": 2912,
-      "sha256": "05d3d2b10c4721f6304653eaab00e9f20813bd5f72ec88949659e9258c348912"
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/compute_protocol.py": {
+      "bytes": 3341,
+      "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
     },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/vendor/owned_job.py": {
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/endpoint_evidence.py": {
+      "bytes": 2955,
+      "sha256": "474227e9769381485dd36b5cbde20fb74f83c4881a43cd29bb7b8e4b1d71a0a3"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/entry.py": {
+      "bytes": 12030,
+      "sha256": "3823f260c62e551920c50666fd495065ccfbfa9725d5b26085a77071a4f6b1ca"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/environment_evidence.py": {
+      "bytes": 1111,
+      "sha256": "f6516742588ab0bda4d70b38a1a9833811747ba8f266f4aabddf044c7145a8df"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/instance_identity.py": {
+      "bytes": 1619,
+      "sha256": "124b743aab3037274349a30e475ac846e57b4d99078e0ba7553fb11a76f7772f"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/lifecycle.py": {
+      "bytes": 8902,
+      "sha256": "d909e5cd3f22170f8d9b03cc78d4df298d0e627d174f85f97ee0c29f06e5dea2"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/linux_pidfd.py": {
+      "bytes": 1206,
+      "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/mac_audit.py": {
+      "bytes": 5283,
+      "sha256": "b296bca51ca3a897756e2e305fd33eab37ba759458c1e0f1fef9ea3ee8aefcec"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/mac_owner.py": {
+      "bytes": 14920,
+      "sha256": "038061ddf69fa34367eb608f169a92752f5f2e0bf477d7daf1b17c55a110d797"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/native.py": {
+      "bytes": 40435,
+      "sha256": "18480fcab42ef781229ecf7cb405049764bb41e0a0e4e8769744be5f23970779"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/pipe_log.py": {
+      "bytes": 2337,
+      "sha256": "5e61adeb9ed249becdc152504cddc714ccc9775a628da04c93079174a154bb1b"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/runtime.py": {
+      "bytes": 16507,
+      "sha256": "41f338c78ff26616b9d34cec92a13ea0da2be0944085a7676a59d31163e22395"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/strict_json.py": {
+      "bytes": 439,
+      "sha256": "011d298e526256c7e8df5fbca63bd7e13e491ec5d7500a6ec7b42729fadc1041"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/vendor/owned_job.py": {
       "bytes": 28832,
       "sha256": "e8198f21332e907e1d91bfcdf237fcffac291bc63a46e53f3c062eda0cd1ade9"
     },
-    "releases/aosp17/controllers/macos/microdroid_lifecycle/vendor/windows_state.py": {
-      "bytes": 2074,
-      "sha256": "e163263045236786ba2c49ebf73be88f8beccda4d43997a72fddb2b74b44368e"
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/vendor/windows_state.py": {
+      "bytes": 4746,
+      "sha256": "b934401f6e2220f19251bb239fed4dc72e28df2ae1053a89e2a072612f930699"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/version.py": {
+      "bytes": 48,
+      "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
+    },
+    "releases/aosp17/windows-v1830/scripts/microdroid_lifecycle/windows_initial.py": {
+      "bytes": 6772,
+      "sha256": "e869c3044ba818dfa3e19fc87ed06ce977d2173d5c9624d651ae9ecffb9c5263"
+    },
+    "releases/aosp17/windows-v1830/scripts/vm_windows.ps1": {
+      "bytes": 27645,
+      "sha256": "3422aa015bd0125e6f2e2148efa590d344f414b3cb5fa3157f390ad2e064607e"
     }
   },
-  "scope": "Original accepted controller bytes and historical evidence indexes. This snapshot alone does not make a portable release or publish custom Host source closures."
+  "scope": "Original accepted controller bytes and historical evidence indexes. This snapshot alone does not make a portable release or publish custom Host source closures.",
+  "state": "FROZEN_SOURCE_STAGED_NOT_DEFAULT"
 }
