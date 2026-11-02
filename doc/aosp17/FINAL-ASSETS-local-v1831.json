@@ -1,0 +1,200 @@
+{
+  "assets": [
+    {
+      "path": "E:\\bscp\\out\\aosp17-publication-v1827\\assets\\bscp-aosp17-windows-x86_64-source-closed-v1830.zip",
+      "bytes": 310438830,
+      "sha256": "f9a4e4563b6ea90d17a1a982447b2d988521bda2583bc00c50a70f441041068c",
+      "files": 227,
+      "verification": "PASS",
+      "published": false,
+      "ready_for_install": false,
+      "role": "accepted Windows v1830 runtime"
+    },
+    {
+      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\linux-host-source-current-v3.tar.gz",
+      "bytes": 1303576,
+      "sha256": "de3ae2fa32c7823a9387678f19508b1ca0c859aec8ccdb79db2f22101367a105",
+      "verified_source_files": 779,
+      "role": "source snapshot; scope exactly as SOURCE-CLOSURE.json",
+      "source_scope": "Current exact local Cargo package closure. Compare with original build seals before claiming build-time identity; native tools/renderer/crosvm separate."
+    },
+    {
+      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\macos-host-source-current-v4.tar.gz",
+      "bytes": 2683106,
+      "sha256": "a8f9974ee5362e6524987e6cdc30299512713e6448d96db39a6eda6a487ae6a3",
+      "verified_source_files": 1126,
+      "role": "source snapshot; scope exactly as SOURCE-CLOSURE.json",
+      "source_scope": "Current exact local Cargo package closure. Compare with original build seals before claiming build-time identity; native tools/renderer/crosvm separate."
+    },
+    {
+      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-host-source-sealed.tar.gz",
+      "bytes": 2399931,
+      "sha256": "d8cbe4075d2bc815b9f874534cbff786998b40decbb09012913aaa9afa05b2a5",
+      "verified_source_files": 1475,
+      "role": "source snapshot; scope exactly as SOURCE-CLOSURE.json",
+      "source_scope": "Exact sealed virtmgr package closure, not the separate final crosvm/renderer closure or complete native toolchain"
+    },
+    {
+      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-crosvm-source-sealed.tar.gz",
+      "bytes": 4373545,
+      "sha256": "dd618f964e601c8321b939cc76beb7e9893fa1d8929e832d0eb68c6de45720b7",
+      "verified_source_files": 1813,
+      "role": "source snapshot; scope exactly as SOURCE-CLOSURE.json",
+      "source_scope": "Exact final Windows crosvm tree, verified against equal original build-before/build-after seals; dependencies separately recorded, not bundled toolchains"
+    },
+    {
+      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-renderer-source.tar.gz",
+      "bytes": 7218518,
+      "sha256": "fbc4e27697b7cc312e80e1cbffc0f64845adaadbd2eeed0267b32ffa41e25611",
+      "role": "exact source archive"
+    },
+    {
+      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\libslirp-superbuild-source.tar.gz",
+      "bytes": 15537047,
+      "sha256": "01da5677eafb2017b68607f2ccb1ce19071b9c72474e72c956b72de70f7059c9",
+      "role": "exact source archive"
+    }
+  ],
+  "base_notice_files_verified": 390,
+  "additional_notice_files": [
+    {
+      "path": "third-party-notices\\moltenvk-exact\\cereal\\include\\cereal\\external\\LICENSE",
+      "bytes": 921,
+      "sha256": "642e7003561473f4f1f3dd09e053ee2a6ecfb0563e961a3392e914295f9d350c"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\cereal\\include\\cereal\\external\\rapidjson\\LICENSE",
+      "bytes": 678,
+      "sha256": "dc2ef044e52a4c0ea784f9b54229775ce5275505cc09f21283dfa301e9c962fa"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\cereal\\include\\cereal\\external\\rapidjson\\msinttypes\\LICENSE",
+      "bytes": 1569,
+      "sha256": "bf3c9bf6a176c890c7387c71f9ae5bcaf9d33324b9d4a5f8524a6f8bf3063097"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\cereal\\include\\cereal\\external\\rapidxml\\license.txt",
+      "bytes": 2804,
+      "sha256": "794bf3b2ecf5cf0c740ac6c524d66ce6284c4b1de1f983d21a242b8abbeb9720"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\cereal\\LICENSE",
+      "bytes": 1542,
+      "sha256": "58604a126af6a671ea390ee3d5b3e42228aa59b2858fb7af1d5b20b31739ccbb"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\MoltenVK\\LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\SPIRV-Cross\\LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\SPIRV-Cross\\LICENSES\\LicenseRef-KhronosFreeUse.txt",
+      "bytes": 1305,
+      "sha256": "fbeaca472f4f70e276dd1106ca5097435967a22ad6c1d8200aef7ad9f70aaf3f"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\SPIRV-Headers\\LICENSE",
+      "bytes": 23503,
+      "sha256": "ea43b1de38a6f90c488800d66dec1ed671e68cda530266bc96951fb5b6307613"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\SPIRV-Tools\\LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\SPIRV-Tools\\utils\\vscode\\src\\lsp\\LICENSE",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\Volk\\LICENSE.md",
+      "bytes": 1066,
+      "sha256": "04a0693a84f19e53d281ca98bbb0c86ca77251ab13769c6168e6684feb9a1436"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\Vulkan-Headers\\LICENSE.md",
+      "bytes": 458,
+      "sha256": "ac24e5ea920e4318e4d02c4086ae51f53cfb03feed06c18df1019e7ada1ec7bc"
+    },
+    {
+      "path": "third-party-notices\\moltenvk-exact\\Vulkan-Tools\\LICENSE.txt",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\glib\\AUTHORS",
+      "bytes": 1347,
+      "sha256": "52ca4a84d8dc412ead87bc3223c2ec2ac819938337cabecb2bd1994e979d1171"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\glib\\COPYING",
+      "bytes": 26530,
+      "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\glib\\docs\\reference\\AUTHORS",
+      "bytes": 122,
+      "sha256": "b4f60a02b2b1f82764f8295b2eafbfcd4c33f596d70abcf5cb3c3623b1cfbc6d"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\glib\\docs\\reference\\COPYING",
+      "bytes": 1698,
+      "sha256": "b1ec1d0e5947f81e815d8771f7d4d90671a94bb10a42dc687fb566de461a57aa"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\glib\\gmodule\\AUTHORS",
+      "bytes": 25,
+      "sha256": "28073c8c65c072387b778ba00b6c24a2ff1b573ca4415e151aa91fab5a6454be"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\glib\\gmodule\\COPYING",
+      "bytes": 26530,
+      "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\glib\\subprojects\\libffi\\LICENSE",
+      "bytes": 1153,
+      "sha256": "f02e8e7361fa83bbe845f029571bbd1248bed85320f6dad0541db8ec66d90178"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\glib\\subprojects\\proxy-libintl\\COPYING",
+      "bytes": 25774,
+      "sha256": "aa092600e3f475f0a55821fb9c529583d8e23e41bf0461254f02fcf94d3a32c2"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\pcre-8.37\\AUTHORS",
+      "bytes": 851,
+      "sha256": "eeeac138d044b2dc7bed1f145bad783e06da7b9344c8e9be4d96f803b22cc008"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\pcre-8.37\\cmake\\COPYING-CMAKE-SCRIPTS",
+      "bytes": 1327,
+      "sha256": "46cde7dc11e64c78d650b4851b88f6704b4665ff60f22a1caf68ceb15e217e5b"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\pcre-8.37\\COPYING",
+      "bytes": 95,
+      "sha256": "17abe1dbb92b21ab173cf9757dd57b0b15cd8d863b2ccdef635fdbef03077fb0"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\notices\\subprojects\\pcre-8.37\\LICENSE.build",
+      "bytes": 1070,
+      "sha256": "cb3101cb814ef48ae95cdbdb74ef44a335484f4e190837fc8df38e3c3c1f9361"
+    },
+    {
+      "path": "slirp-source-delivery-v1\\additional-notices\\subprojects\\libslirp\\COPYRIGHT",
+      "bytes": 3022,
+      "sha256": "646d383273ad82322768993bf903b1ffb3bc4345b8a214bfd9da7e533c5a5954"
+    }
+  ],
+  "state": "PASS",
+  "checked_utc": "2026-11-02T16:52:27.206450+00:00",
+  "scope": "Archive/source-index/notice identity check, not new VM or arbitrary-root install verification",
+  "platform": "local"
+}

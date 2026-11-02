@@ -1,0 +1,53 @@
+{
+  "platform": "macos",
+  "state_root": "/Volumes/Mark SSD/a17r/n32-v1786/s",
+  "checks": [
+    {
+      "gpu": "on",
+      "exit": 0,
+      "stdout_stderr_eof": true,
+      "receipt": {
+        "asset_hashes": "PASS",
+        "gpu_mode": "on",
+        "closure": {
+          "files": 268,
+          "links": 225,
+          "directories": 48,
+          "checked": "private files/OS provider contract",
+          "historical_limits": [
+            "A17 normal GPUoff passed on predecessor Host; new explicit GPU mapping needs actual validation",
+            "Platform MoltenVK1.4.2 with fresh official loader1.4.350; Guest and renderer from A17",
+            "Guest absolute symlinks are namespace data, not host executables"
+          ]
+        },
+        "live_adapter": "READY_FOR_NATIVE_ACCEPTANCE",
+        "vm_started": false
+      }
+    },
+    {
+      "gpu": "off",
+      "exit": 0,
+      "stdout_stderr_eof": true,
+      "receipt": {
+        "asset_hashes": "PASS",
+        "gpu_mode": "off",
+        "closure": {
+          "files": 268,
+          "links": 225,
+          "directories": 48,
+          "checked": "private files/OS provider contract",
+          "historical_limits": [
+            "A17 normal GPUoff passed on predecessor Host; new explicit GPU mapping needs actual validation",
+            "Platform MoltenVK1.4.2 with fresh official loader1.4.350; Guest and renderer from A17",
+            "Guest absolute symlinks are namespace data, not host executables"
+          ]
+        },
+        "live_adapter": "READY_FOR_NATIVE_ACCEPTANCE",
+        "vm_started": false
+      }
+    }
+  ],
+  "vm_started": false,
+  "security_settings_changed": false,
+  "scope": "Existing admitted deployment only; no fresh installation or new runtime acceptance"
+}

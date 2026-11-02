@@ -1,0 +1,51 @@
+{
+  "platform": "linux",
+  "state_root": "/home/mark/bscp/out/a17l/v6/s",
+  "checks": [
+    {
+      "gpu": "on",
+      "exit": 0,
+      "stdout_stderr_eof": true,
+      "receipt": {
+        "asset_hashes": "PASS",
+        "gpu_mode": "on",
+        "closure": {
+          "files": 238,
+          "links": 205,
+          "directories": 40,
+          "checked": "private files/OS provider contract",
+          "historical_limits": [
+            "Host OS NVIDIA ICD and system dynamic libraries remain explicit platform dependencies; not a hermetic environment.",
+            "No Linux A17 VM acceptance yet."
+          ]
+        },
+        "live_adapter": "READY_FOR_NATIVE_ACCEPTANCE",
+        "vm_started": false
+      }
+    },
+    {
+      "gpu": "off",
+      "exit": 0,
+      "stdout_stderr_eof": true,
+      "receipt": {
+        "asset_hashes": "PASS",
+        "gpu_mode": "off",
+        "closure": {
+          "files": 238,
+          "links": 205,
+          "directories": 40,
+          "checked": "private files/OS provider contract",
+          "historical_limits": [
+            "Host OS NVIDIA ICD and system dynamic libraries remain explicit platform dependencies; not a hermetic environment.",
+            "No Linux A17 VM acceptance yet."
+          ]
+        },
+        "live_adapter": "READY_FOR_NATIVE_ACCEPTANCE",
+        "vm_started": false
+      }
+    }
+  ],
+  "vm_started": false,
+  "security_settings_changed": false,
+  "scope": "Existing admitted deployment only; no fresh installation or new runtime acceptance"
+}
