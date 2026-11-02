@@ -1,0 +1,21 @@
+name: AOSP17 release provenance
+on:
+  push:
+    branches: [main, codex/aosp17-default-release-v1827]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  provenance:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -B releases/aosp17/verify_snapshot.py
