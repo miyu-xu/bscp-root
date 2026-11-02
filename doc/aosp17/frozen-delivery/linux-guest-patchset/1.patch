@@ -1,0 +1,46 @@
+diff --git a/android/vintf_fragment.go b/android/vintf_fragment.go
+index 46c40f151..eadfa8c77 100644
+--- a/android/vintf_fragment.go
++++ b/android/vintf_fragment.go
+@@ -74,6 +74,8 @@ func (m *VintfFragmentModule) GenerateAndroidBuildActions(ctx ModuleContext) {
+ 
+ 	m.installDirPath = PathForModuleInstall(ctx, "etc", "vintf", "manifest")
+ 	m.outputFilePath = processedVintfFragment
++	// Register the processed output for generic consumers, including APEX SBOM metadata.
++	ctx.SetOutputFiles(Paths{processedVintfFragment}, "")
+ 
+ 	ctx.InstallFile(m.installDirPath, processedVintfFragment.Base(), processedVintfFragment)
+ 
+diff --git a/android/vintf_fragment_test.go b/android/vintf_fragment_test.go
+index 6a74655b2..ced61a5bb 100644
+--- a/android/vintf_fragment_test.go
++++ b/android/vintf_fragment_test.go
+@@ -34,3 +34,28 @@ func TestVintfManifestBuildAction(t *testing.T) {
+ 		t.Error("Vintf_manifest build command does not process with assemble_vintf : " + vintfFragmentBuild.RuleParams.Command)
+ 	}
+ }
++
++// APEX SBOM lookup uses the registered built output rather than the system
++// installation path. Keep the generic and VINTF-specific output contracts equal.
++func TestVintfFragmentComplianceOutput(t *testing.T) {
++	result := PrepareForTestWithAndroidBuildComponents.RunTestWithBp(t, `
++ vintf_fragment { name: "test_vintf_fragment", src: "test_vintf_file", }
++ `)
++	mod := result.TestContext.ModuleForTests(t, "test_vintf_fragment", "android_common")
++	vintf, ok := OtherModuleProvider(result.TestContext, mod.Module(), VintfFragmentInfoProvider)
++	if !ok || vintf.OutputFile == nil {
++		t.Fatal("missing processed VINTF output")
++	}
++	info, ok := OtherModuleProvider(result.TestContext, mod.Module(), CommonModuleInfoProvider)
++	if !ok {
++		t.Fatal("missing module metadata provider")
++	}
++	expected := vintf.OutputFile.String()
++	actual := info.ComplianceMetadata.properties[ComplianceMetadataProp.BUILT_FILES]
++	if actual != expected {
++		t.Errorf("built_files = %q; want processed output %q", actual, expected)
++	}
++	if actual == "test_vintf_file" {
++		t.Error("registered input instead of processed output")
++	}
++}

@@ -1,0 +1,145 @@
+diff --git a/build/apex/product_packages.mk b/build/apex/product_packages.mk
+index ea447c7ab..a30dba838 100644
+--- a/build/apex/product_packages.mk
++++ b/build/apex/product_packages.mk
+@@ -62,3 +62,21 @@ ifdef RELEASE_AVF_ENABLE_NETWORK
+     $(error RELEASE_AVF_ENABLE_LLPVM_CHANGES must also be enabled)
+   endif
+ endif
++
++# Desktop Microdroid graphics are an explicit build option. Do not alter the
++# default normal Guest or its debug/ADB policy when this option is absent.
++ifneq ($(strip $(BSCP_MICRODROID_GRAPHICS)),)
++  ifneq ($(words $(BSCP_MICRODROID_GRAPHICS)),1)
++    $(error BSCP_MICRODROID_GRAPHICS must be true or false)
++  endif
++  ifeq ($(filter true false,$(BSCP_MICRODROID_GRAPHICS)),)
++    $(error BSCP_MICRODROID_GRAPHICS must be true or false)
++  endif
++  $(call soong_config_set,bscp,microdroid_graphics,$(BSCP_MICRODROID_GRAPHICS))
++endif
++
++# Use the official GKI and normal initrd for loadable virtio GPU modules.
++# Keep the standard Microdroid kernel and policy unchanged without this opt-in.
++ifeq ($(strip $(BSCP_MICRODROID_GRAPHICS)),true)
++  PRODUCT_AVF_MICRODROID_GUEST_GKI_VERSION := android15_66
++endif
+diff --git a/build/microdroid/Android.bp b/build/microdroid/Android.bp
+index 0305f2b99..fdccd4cf9 100644
+--- a/build/microdroid/Android.bp
++++ b/build/microdroid/Android.bp
+@@ -104,7 +104,10 @@ android_system_image {
+ 
+         "microdroid_etc_passwd",
+         "microdroid_etc_group",
+-    ] + select(release_flag("RELEASE_DEPRECATE_RUNTIME_APEX"), {
++    ] + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": ["microdroid_vulkan_ranchu_link", "microdroid_graphics_linkerconfig"],
++        default: [],
++    }) + select(release_flag("RELEASE_DEPRECATE_RUNTIME_APEX"), {
+         true: [
+             "crash_dump",
+             "linkerconfig",
+@@ -131,7 +134,10 @@ android_system_image {
+                 "microdroid_manager",
+                 "pageout_bomb",
+                 "zipfuse",
+-            ] + select(release_flag("RELEASE_AVF_ENABLE_DICE_CHANGES"), {
++            ] + select(soong_config_variable("bscp", "microdroid_graphics"), {
++                "true": ["libvulkan", "vulkan.ranchu"],
++                default: [],
++            }) + select(release_flag("RELEASE_AVF_ENABLE_DICE_CHANGES"), {
+                 true: ["derive_microdroid_vendor_dice_node"],
+                 default: [],
+             }),
+@@ -191,10 +197,20 @@ prebuilt_etc {
+     no_full_install: true, // avoid collision with system partition's cgroups.json
+ }
+ 
++genrule {
++    name: "microdroid_ueventd_rc.gen",
++    srcs: ["ueventd.rc"] + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": ["ueventd.graphics.rc"],
++        default: [],
++    }),
++    out: ["ueventd.generated.rc"],
++    cmd: "cat $(in) > $(out)",
++}
++
+ prebuilt_etc {
+     name: "microdroid_ueventd_rc",
+     filename: "ueventd.rc",
+-    src: "ueventd.rc",
++    src: ":microdroid_ueventd_rc.gen",
+     no_full_install: true, // avoid collision with system partition's ueventd.rc
+ }
+ 
+@@ -254,7 +270,10 @@ java_genrule {
+         ":system-build.prop",
+     ],
+     out: ["build.prop.out"],
+-    cmd: build_prop_cmd_common +
++    cmd: build_prop_cmd_common + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": "echo ro.hardware.vulkan=ranchu && ",
++        default: "",
++    }) +
+         "echo ro.product.cpu.abilist=x86_64 && " +
+         "echo ro.product.cpu.abi=x86_64) > $(out)",
+ }
+@@ -266,7 +285,10 @@ java_genrule {
+         ":system-build.prop",
+     ],
+     out: ["build.prop.out"],
+-    cmd: build_prop_cmd_common +
++    cmd: build_prop_cmd_common + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": "echo ro.hardware.vulkan=ranchu && ",
++        default: "",
++    }) +
+         "echo ro.product.cpu.abilist=arm64-v8a && " +
+         "echo ro.product.cpu.abi=arm64-v8a) > $(out)",
+ }
+@@ -355,7 +377,10 @@ genrule {
+         "bootconfig.common",
+         "bootconfig.arm64",
+         ":microdroid_bootconfig_page_reporting_gen",
+-    ],
++    ] + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": ["bootconfig.graphics"],
++        default: [],
++    }),
+     out: ["bootconfig"],
+     cmd: "cat $(in) > $(out)",
+ }
+@@ -366,7 +391,10 @@ genrule {
+         "bootconfig.common",
+         "bootconfig.x86_64",
+         ":microdroid_bootconfig_page_reporting_gen",
+-    ],
++    ] + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": ["bootconfig.graphics"],
++        default: [],
++    }),
+     out: ["bootconfig"],
+     cmd: "cat $(in) > $(out)",
+ }
+@@ -843,3 +871,20 @@ rust_library_rlib {
+         "libcore.rust_sysroot",
+     ],
+ }
++
++// Expose the HAL loader name without changing namespace search paths.
++// Preserve the official HAL installation and provide its loader name in this
++// image only. The image also explicitly depends on the actual core HAL above.
++install_symlink {
++    name: "microdroid_vulkan_ranchu_link",
++    installed_location: "lib64/vulkan.ranchu.so",
++    symlink_target: "hw/vulkan.ranchu.so",
++}
++
++// Signed, image-local opt-in consumed by the formal linkerconfig generator.
++// The file is absent from nongraphics images; it grants only the named HAL link.
++prebuilt_etc {
++    name: "microdroid_graphics_linkerconfig",
++    filename: "microdroid-graphics-linkerconfig",
++    src: "microdroid-graphics-linkerconfig",
++}

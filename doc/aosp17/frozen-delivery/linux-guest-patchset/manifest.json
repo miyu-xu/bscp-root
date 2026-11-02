@@ -1,0 +1,143 @@
+{
+  "rows": [
+    {
+      "path": "build/make",
+      "base_sha": "5ce6f787337d0223710bf7d4a16dbe6d2a35f777",
+      "status": " M core/android_soong_config_vars.mk\n M target/product/aosp_arm64.mk\n M target/product/aosp_x86_64.mk\n",
+      "diff_sha256": "815bde7fadaa9852668561d09303ce6df7dee677a008ecfb3eee74073ff344d6",
+      "untracked": [],
+      "patch_file": "0.patch"
+    },
+    {
+      "path": "build/soong",
+      "base_sha": "6722dd8833db7482df1a2543ca3fcf67ddf0f7b1",
+      "status": " M android/vintf_fragment.go\n M android/vintf_fragment_test.go\n",
+      "diff_sha256": "a52543173c227b11f378f3a3cfb91f5baf433db15d3166fdce49d22dad59a093",
+      "untracked": [],
+      "patch_file": "1.patch"
+    },
+    {
+      "path": "external/mesa3d",
+      "base_sha": "875160ed32cc5bc32777fa04870a0a57ed38c987",
+      "status": " M Android.bp\n M include/Android.bp\n M include/vulkan/Android.bp\n M src/Android.bp\n M src/android_stub/Android.bp\n M src/c11/impl/Android.bp\n M src/compiler/Android.bp\n M src/compiler/isaspec/Android.bp\n M src/compiler/nir/Android.bp\n M src/compiler/spirv/Android.bp\n M src/gallium/auxiliary/Android.bp\n M src/gallium/auxiliary/cso_cache/Android.bp\n M src/gallium/auxiliary/draw/Android.bp\n M src/gallium/auxiliary/driver_ddebug/Android.bp\n M src/gallium/auxiliary/driver_noop/Android.bp\n M src/gallium/auxiliary/driver_trace/Android.bp\n M src/gallium/auxiliary/gallivm/Android.bp\n M src/gallium/auxiliary/hud/Android.bp\n M src/gallium/auxiliary/indices/Android.bp\n M src/gallium/auxiliary/nir/Android.bp\n M src/gallium/auxiliary/pipe-loader/Android.bp\n M src/gallium/auxiliary/pipebuffer/Android.bp\n M src/gallium/auxiliary/postprocess/Android.bp\n M src/gallium/auxiliary/renderonly/Android.bp\n M src/gallium/auxiliary/rtasm/Android.bp\n M src/gallium/auxiliary/tessellator/Android.bp\n M src/gallium/auxiliary/tgsi/Android.bp\n M src/gallium/auxiliary/translate/Android.bp\n M src/gallium/auxiliary/util/Android.bp\n M src/gallium/auxiliary/vl/Android.bp\n M src/gallium/drivers/Android.bp\n M src/gallium/drivers/llvmpipe/Android.bp\n M src/gallium/drivers/zink/Android.bp\n M src/gallium/frontends/lavapipe/Android.bp\n M src/gallium/include/Android.bp\n M src/gallium/targets/lavapipe/Android.bp\n M src/gallium/winsys/Android.bp\n M src/gallium/winsys/sw/null/Android.bp\n M src/gallium/winsys/sw/wrapper/Android.bp\n M src/gfxstream/aemu/Android.bp\n M src/gfxstream/aemu/include/Android.bp\n M src/gfxstream/guest/Android.bp\n M src/gfxstream/guest/GoldfishAddressSpace/Android.bp\n M src/gfxstream/guest/GoldfishAddressSpace/include/Android.bp\n M src/gfxstream/guest/android/Android.bp\n M src/gfxstream/guest/android/include/Android.bp\n M src/gfxstream/guest/connection-manager/Android.bp\n M src/gfxstream/guest/iostream/include/Android.bp\n M src/gfxstream/guest/platform/Android.bp\n M src/gfxstream/guest/platform/drm/Android.bp\n M src/gfxstream/guest/platform/include/Android.bp\n M src/gfxstream/guest/platform/kumquat/Android.bp\n M src/gfxstream/guest/platform/kumquat/vulkan-mapper/Android.bp\n M src/gfxstream/guest/vulkan/Android.bp\n M src/gfxstream/guest/vulkan/stubs/Android.bp\n M src/gfxstream/guest/vulkan_enc/Android.bp\n M src/gtest/Android.bp\n M src/gtest/include/Android.bp\n M src/loader/Android.bp\n M src/tool/Android.bp\n M src/tool/pps/Android.bp\n M src/util/Android.bp\n M src/util/blake3/Android.bp\n M src/util/format/Android.bp\n M src/util/perf/Android.bp\n M src/util/rust/Android.bp\n M src/util/sha1/Android.bp\n M src/util/u_gralloc/Android.bp\n M src/virtio/protocols/Android.bp\n M src/virtio/virtgpu_kumquat/Android.bp\n M src/virtio/virtgpu_kumquat_ffi/Android.bp\n M src/virtio/virtgpu_kumquat_ffi/include/Android.bp\n M src/vulkan/Android.bp\n M src/vulkan/runtime/Android.bp\n M src/vulkan/runtime/bvh/Android.bp\n M src/vulkan/runtime/radix_sort/Android.bp\n M src/vulkan/runtime/radix_sort/common/Android.bp\n M src/vulkan/runtime/radix_sort/common/vk/Android.bp\n M src/vulkan/runtime/radix_sort/shaders/Android.bp\n M src/vulkan/util/Android.bp\n M src/vulkan/wsi/Android.bp\n",
+      "diff_sha256": "d634232a5d69e1dead3503d69ce7a209f53044f7bb357a5125aee8056bc63770",
+      "untracked": [],
+      "patch_file": "2.patch"
+    },
+    {
+      "path": "hardware/google/gfxstream",
+      "base_sha": "b46f0d4b4545def09bdf30651d4bf848b2ba0c34",
+      "status": " M guest/OpenglCodecCommon/Android.bp\n",
+      "diff_sha256": "c82287078e66a09bed3092421265b76d2f55c38f1446888ce9e18048b8bdb053",
+      "untracked": [],
+      "patch_file": "3.patch"
+    },
+    {
+      "path": "kernel/prebuilts/6.6/arm64",
+      "base_sha": "350899556b7cae26d5981c7055759428aef7598d",
+      "status": " M Android.bp\n",
+      "diff_sha256": "670c6d422e78cde4a386436dc835539af7455fa277fd47f3707c4b77f758baa8",
+      "untracked": [],
+      "patch_file": "4.patch"
+    },
+    {
+      "path": "kernel/prebuilts/6.6/x86_64",
+      "base_sha": "b87e9b115da5dd1ed94b423657279c766057d5b3",
+      "status": " M Android.bp\n",
+      "diff_sha256": "d61f7d5ff588d95fafc84a8efec854f3dd5afb4ab32a3b8aa0eb6ffec71d2422",
+      "untracked": [],
+      "patch_file": "5.patch"
+    },
+    {
+      "path": "kernel/prebuilts/common-modules/virtual-device/6.6/arm64",
+      "base_sha": "3aa5ec86b45a7eda3c85cd7e97ef2845d1b95b7f",
+      "status": "?? Android.bp\n",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "untracked": [
+        {
+          "path": "Android.bp",
+          "bytes": 316,
+          "sha256": "40d2eadbb2efb9da21e06767a68d24296ea8043056e5af829d69c88d4253b74e"
+        }
+      ],
+      "patch_file": "6.patch"
+    },
+    {
+      "path": "kernel/prebuilts/common-modules/virtual-device/6.6/x86-64",
+      "base_sha": "bd4fabf3d97e12cedebb1beafddc5116e3da5fde",
+      "status": "?? Android.bp\n",
+      "diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "untracked": [
+        {
+          "path": "Android.bp",
+          "bytes": 318,
+          "sha256": "510902a42fc0f4cd88fb23c012246d78d07e22b7f0677481d83877960a6279b7"
+        }
+      ],
+      "patch_file": "7.patch"
+    },
+    {
+      "path": "packages/modules/Virtualization",
+      "base_sha": "22f1c9ee92b146e10c8f5e71338618f77ab1631e",
+      "status": " M build/apex/product_packages.mk\n M build/microdroid/Android.bp\n?? build/microdroid/bootconfig.graphics\n?? build/microdroid/microdroid-graphics-linkerconfig\n?? build/microdroid/ueventd.graphics.rc\n",
+      "diff_sha256": "02783ab756dd8e3150e5e202019cf79f6f35cc5fb91ef0c1ea7ea38d4f6ba6f5",
+      "untracked": [
+        {
+          "path": "build/microdroid/bootconfig.graphics",
+          "bytes": 51,
+          "sha256": "53e1ebcf6301a9bf6fb8d71b213590623c2e9163841b176cf890404d9438c05d"
+        },
+        {
+          "path": "build/microdroid/microdroid-graphics-linkerconfig",
+          "bytes": 34,
+          "sha256": "d0e3b97fb5bd37a34ad9e6483b505400e8c515578eb7ffd862d9a0c032b8b015"
+        },
+        {
+          "path": "build/microdroid/ueventd.graphics.rc",
+          "bytes": 195,
+          "sha256": "2b15976ede307d85eac4c82fa3253fc22a723240c2ee8c85ee240bbb6dd40157"
+        }
+      ],
+      "patch_file": "8.patch"
+    },
+    {
+      "path": "system/linkerconfig",
+      "base_sha": "f6b4bd983b909a907cf7e9fae8a6365d827638b6",
+      "status": " M contents/include/linkerconfig/context.h\n M contents/namespace/sphal.cc\n M contents/tests/configuration/sphal_test.cc\n M main.cc\n?? modules/include/linkerconfig/microdroid_graphics.h\n?? modules/tests/microdroid_graphics_test.cc\n",
+      "diff_sha256": "53238af02665b55a6c3ac2fd8bff3ccbec8f8271e3c5c2d23eaaf86e1a949fb6",
+      "untracked": [
+        {
+          "path": "modules/include/linkerconfig/microdroid_graphics.h",
+          "bytes": 2053,
+          "sha256": "f05606a941ffb3ca8e9eb1e9bb9adb72a97a957be8e4639bc8e36abe2d79c4e1"
+        },
+        {
+          "path": "modules/tests/microdroid_graphics_test.cc",
+          "bytes": 2446,
+          "sha256": "1481049732e134d2f37b39408a8ed4f5ba8310eefb7f55276b2b46ab3f397d03"
+        }
+      ],
+      "patch_file": "9.patch"
+    },
+    {
+      "path": "system/sepolicy",
+      "base_sha": "e066568e98d86db31a9346d30977f3632fa7073c",
+      "status": " M microdroid/Android.bp\n M microdroid/system/private/file_contexts\n?? microdroid/system/private/file_contexts.graphics\n?? microdroid/system/private/property_contexts.graphics\n",
+      "diff_sha256": "b70b4832ad6e1214773a862a77e863a9e8a1e651d920d832fea05c6ccb9651ba",
+      "untracked": [
+        {
+          "path": "microdroid/system/private/file_contexts.graphics",
+          "bytes": 125,
+          "sha256": "67aa3b035df1eec83410ed6cea76b347911c900e30b7ab4297c1b8402f19a9e2"
+        },
+        {
+          "path": "microdroid/system/private/property_contexts.graphics",
+          "bytes": 130,
+          "sha256": "8a0b6ae666a8d9d095f21fb3ebce772afb79f8da38d09705e99db0f29afefd13"
+        }
+      ],
+      "patch_file": "10.patch"
+    }
+  ],
+  "working_trees_changed": false
+}

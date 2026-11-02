@@ -1,0 +1,21 @@
+{
+  "checked_utc": "2026-11-02T05:02:30.324953+00:00",
+  "evidence_references_verified": 48,
+  "python_compile": true,
+  "rollback_plans": 3,
+  "patchset": "11 projects / 9 new files hashes and patch syntax passed",
+  "r14_refs": {
+    "worktrees": 906,
+    "retained_git_stores": 470,
+    "total": 1376
+  },
+  "new_vm_started": false,
+  "review": "self-review only",
+  "exact_base_patch_apply_check": 11,
+  "pinned_xml_projects": 1087,
+  "isolated_linux_source_checkouts_verified": 186,
+  "source_completion_checked_utc": "2026-11-02T11:15:21.334603+00:00",
+  "fixed_source_snapshots_available": 1087,
+  "source_index_sha256": "afcc6580778821da7450736d62b6a0e15a0d59ef40ffcca44009f858acbdee66",
+  "historical_checks_not_rerun": true
+}

@@ -1,0 +1,16 @@
+diff --git a/guest/OpenglCodecCommon/Android.bp b/guest/OpenglCodecCommon/Android.bp
+index fab79250..52b7482d 100644
+--- a/guest/OpenglCodecCommon/Android.bp
++++ b/guest/OpenglCodecCommon/Android.bp
+@@ -28,6 +28,11 @@ cc_library_headers {
+ 
+ cc_library_shared {
+     name: "libOpenglCodecCommon",
++    // Microdroid's system image consumes the core Vulkan HAL. Provide a
++    // matching core codec while retaining the existing vendor variant.
++    // Override the vendor-only guest defaults for this shared library only.
++    vendor: false,
++    vendor_available: true,
+     defaults: [
+         "gfxstream_guest_cc_defaults",
+     ],

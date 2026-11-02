@@ -1,0 +1,510 @@
+{
+  "created_utc": "2026-11-02T12:53:17.236829+00:00",
+  "scope": "Observed historical worktree baselines, not a universal r14 tag. Official A17 pins are not necessarily the patched Host runtime source identity.",
+  "rows": [
+    {
+      "path": "packages/modules/Virtualization",
+      "a17_official_lock": {
+        "path": "packages/modules/Virtualization",
+        "name": "platform/packages/modules/Virtualization",
+        "sha": "22f1c9ee92b146e10c8f5e71338618f77ab1631e",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "head": {
+            "rc": 0,
+            "out": "c35fd6521016b95f66a754dcf0eaad5d1ff959cf\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/home/mark/bscp/packages/modules/Virtualization\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/packages-modules-Virtualization (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/packages-modules-Virtualization (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": " M android/virtmgr/src/crosvm/crosvm_unix.rs\n M android/virtmgr/src/host_internal_service.rs\n M android/vm/src/main.rs\n M android/vm/src/run.rs\n",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        },
+        "mac": {
+          "head": {
+            "rc": 0,
+            "out": "f17cd436d4913f328de5788bf31c4db841a847e2\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/Users/huangxiaoling/Workspace/bscp/packages/modules/Virtualization\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/packages-modules-Virtualization (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/packages-modules-Virtualization (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": " M android/virtmgr/src/aidl.rs\n M android/virtmgr/src/bridge.rs\n M android/virtmgr/src/crosvm/crosvm_unix.rs\n M android/virtmgr/src/crosvm/crosvm_windows.rs\n M android/virtmgr/src/host_internal_service.rs\n M android/virtmgr/src/payload.rs\n M android/virtmgr/src/vsock_transport.rs\n M android/virtualizationservice/aidl/android/system/virtualizationservice/VirtualMachineAppConfig.aidl\n M android/virtualizationservice/aidl/android/system/virtualizationservice/android_system_virtualizationservice.rs\n M android/vm/src/main.rs\n M android/vm/src/run.rs\n M libs/libvmclient/src/lib.rs\n M libs/libvmclient/src/spawn_unix.rs\n M libs/microdroid_payload_config/Cargo.toml\n M libs/microdroid_payload_config/src/lib.rs\n",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "external/crosvm",
+      "a17_official_lock": {
+        "path": "external/crosvm",
+        "name": "platform/external/crosvm",
+        "sha": "c7dd8d6950912fa5e6fde7ec2d1616e0ddc090f8",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "head": {
+            "rc": 0,
+            "out": "ae1c3d0cea78aa4a35510579e40377162b3b50ef\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/home/mark/bscp/external/crosvm\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/external-crosvm (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/external-crosvm (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        },
+        "mac": {
+          "head": {
+            "rc": 0,
+            "out": "3384bdc78878e84d42694e463d153cb8e3ec17bb\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/Users/huangxiaoling/Workspace/bscp/external/crosvm\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/external-crosvm (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/external-crosvm (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": " M cros_async/src/sys/linux/timer.rs\n M cros_async/src/timer.rs\n M devices/src/irqchip/whpx.rs\n M devices/src/serial_device.rs\n M devices/src/virtio/block/asynchronous.rs\n M devices/src/virtio/gpu/virtio_gpu.rs\n M devices/src/virtio/input/mod.rs\n M devices/src/virtio/snd/common_backend/async_funcs.rs\n M devices/src/virtio/snd/sys/mod.rs\n M devices/src/virtio/vhost/user/device/gpu/sys/windows.rs\n M devices/src/virtio/vhost/user/device/mod.rs\n M devices/src/virtio/virtio_pci_device.rs\n M devices/src/virtio/vsock/sys/macos/vsock.rs\n M devices/src/virtio/vsock/sys/windows/vsock.rs\n M gpu_display/src/cocoa_window.m\n M gpu_display/src/event_device.rs\n M gpu_display/src/gpu_display_cocoa.rs\n M gpu_display/src/gpu_display_stub.rs\n M gpu_display/src/gpu_display_win/mod.rs\n M gpu_display/src/lib.rs\n M gpu_display/src/vulkan/sys/windows.rs\n M hypervisor/src/whpx/vm.rs\n M src/crosvm/cmdline.rs\n M src/crosvm/sys/linux.rs\n M src/crosvm/sys/linux/device_helpers.rs\n M src/crosvm/sys/windows/broker.rs\n M src/main.rs\n M src/sys/windows.rs\n M src/sys/windows/run_vcpu.rs\n M vm_control/src/sys/windows/gpu.rs\n",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "external/minijail",
+      "a17_official_lock": {
+        "path": "external/minijail",
+        "name": "platform/external/minijail",
+        "sha": "26ff82bac9c77ef25d0a913ee09ed11ccdfdab78",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "head": {
+            "rc": 0,
+            "out": "4b9c6d91573e8b3a96609339b46361b5476dd0f9\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/home/mark/bscp/external/minijail\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/external-minijail (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/external-minijail (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "android-15.0.0_r10\nandroid-15.0.0_r11\nandroid-15.0.0_r12\nandroid-15.0.0_r13\nandroid-15.0.0_r14\nandroid-15.0.0_r15\nandroid-15.0.0_r16\nandroid-15.0.0_r17\nandroid-15.0.0_r20\nandroid-15.0.0_r21\nandroid-15.0.0_r22\nandroid-15.0.0_r23\nandroid-15.0.0_r26\nandroid-15.0.0_r27\nandroid-15.0.0_r28\nandroid-15.0.0_r29\nandroid-15.0.0_r30\nandroid-15.0.0_r32\nandroid-15.0.0_r33\nandroid-15.0.0_r34\nandroid-15.0.0_r35\nandroid-15.0.0_r36\nandroid-15.0.0_r6\nandroid-15.0.0_r7\nandroid-15.0.0_r8\nandroid-15.0.0_r9\nandroid-automotiveos-15.0.0_lts1\nandroid-automotiveos-15.0.0_lts2\n",
+            "err": ""
+          }
+        },
+        "mac": {
+          "head": {
+            "rc": 0,
+            "out": "4b9c6d91573e8b3a96609339b46361b5476dd0f9\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/Users/huangxiaoling/Workspace/bscp/external/minijail\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/external-minijail (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/external-minijail (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "android-15.0.0_r10\nandroid-15.0.0_r11\nandroid-15.0.0_r12\nandroid-15.0.0_r13\nandroid-15.0.0_r14\nandroid-15.0.0_r15\nandroid-15.0.0_r16\nandroid-15.0.0_r17\nandroid-15.0.0_r20\nandroid-15.0.0_r21\nandroid-15.0.0_r22\nandroid-15.0.0_r23\nandroid-15.0.0_r26\nandroid-15.0.0_r27\nandroid-15.0.0_r28\nandroid-15.0.0_r29\nandroid-15.0.0_r30\nandroid-15.0.0_r32\nandroid-15.0.0_r33\nandroid-15.0.0_r34\nandroid-15.0.0_r35\nandroid-15.0.0_r36\nandroid-15.0.0_r6\nandroid-15.0.0_r7\nandroid-15.0.0_r8\nandroid-15.0.0_r9\nandroid-automotiveos-15.0.0_lts1\nandroid-automotiveos-15.0.0_lts2\n",
+            "err": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "external/rust/rutabaga_gfx",
+      "a17_official_lock": {
+        "path": "external/rust/rutabaga_gfx",
+        "name": "platform/external/rust/rutabaga_gfx",
+        "sha": "1f181b0b3e4b821459f21fd9025cd4c408c4f9ec",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "head": {
+            "rc": 0,
+            "out": "9c86617123ce261fbbed7b9ffee2e3ef08a4b6bb\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/home/mark/bscp/external/rust/rutabaga_gfx\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/external-rust-rutabaga_gfx (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/external-rust-rutabaga_gfx (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "android-16.0.0_r4\n",
+            "err": ""
+          }
+        },
+        "mac": {
+          "head": {
+            "rc": 0,
+            "out": "b4961c43bef081f485bb2b12374d3f538976f805\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/Users/huangxiaoling/Workspace/bscp/external/rust/rutabaga_gfx\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/external-rust-rutabaga_gfx (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/external-rust-rutabaga_gfx (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "hardware/google/gfxstream",
+      "a17_official_lock": {
+        "path": "hardware/google/gfxstream",
+        "name": "platform/hardware/google/gfxstream",
+        "sha": "b46f0d4b4545def09bdf30651d4bf848b2ba0c34",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "head": {
+            "rc": 0,
+            "out": "f1c050c99dc31512946fd53d708b5cc93d34c62e\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/home/mark/bscp/hardware/google/gfxstream\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/hardware-google-gfxstream (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/hardware-google-gfxstream (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": " M host/vulkan/VkCommonOperations.cpp\n M host/vulkan/VkDecoder.cpp\n M host/vulkan/VkDecoderGlobalState.cpp\n M host/vulkan/cereal/common/goldfish_vk_dispatch.cpp\n",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        },
+        "mac": {
+          "head": {
+            "rc": 0,
+            "out": "6ccc84031322ce8cd522a05b35604e9b133cf93d\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/Users/huangxiaoling/Workspace/bscp/hardware/google/gfxstream\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/hardware-google-gfxstream (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/hardware-google-gfxstream (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": " M host/CMakeLists.txt\n M host/ColorBuffer.cpp\n M host/ColorBuffer.h\n M host/ExternalObjectManager.cpp\n M host/ExternalObjectManager.h\n M host/FrameBuffer.cpp\n M host/FrameBuffer.h\n M host/NativeSubWindow_win32.cpp\n M host/PostWorkerGl.cpp\n M host/compressedTextureFormats/AstcCpuDecompressor.h\n M host/features/include/gfxstream/host/Features.h\n M host/include/gfxstream/virtio-gpu-gfxstream-renderer-unstable.h\n M host/tests/SwapChainStateVk_unittest.cpp\n M host/virtio-gpu-gfxstream-renderer.cpp\n M host/vulkan/Android.bp\n M host/vulkan/BUILD.bazel\n M host/vulkan/CMakeLists.txt\n M host/vulkan/DisplaySurfaceVk.cpp\n M host/vulkan/DisplaySurfaceVk.h\n M host/vulkan/DisplayVk.cpp\n M host/vulkan/SwapChainStateVk.cpp\n M host/vulkan/SwapChainStateVk.h\n M host/vulkan/VkCommonOperations.cpp\n M host/vulkan/VkCommonOperations.h\n M host/vulkan/VkDecoder.cpp\n M host/vulkan/VkDecoderGlobalState.cpp\n M host/vulkan/VkDecoderInternalStructs.h\n M host/vulkan/VkEmulatedPhysicalDeviceMemory.cpp\n M host/vulkan/VkEmulatedPhysicalDeviceMemory.h\n M host/vulkan/VkEmulatedPhysicalDeviceMemoryTests.cpp\n M host/vulkan/cereal/CMakeLists.txt\n M host/vulkan/meson.build\n M third-party/CMakeLists.txt\n",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "external/angle",
+      "a17_official_lock": {
+        "path": "external/angle",
+        "name": "platform/external/angle",
+        "sha": "1f4500d3906c24de59eec5b9cda17a2ad2a8ba2d",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "exists": false
+        },
+        "mac": {
+          "exists": false
+        }
+      }
+    },
+    {
+      "path": "external/MoltenVK",
+      "a17_official_lock": null,
+      "r14_observed": {
+        "linux": {
+          "exists": false
+        },
+        "mac": {
+          "exists": false
+        }
+      }
+    },
+    {
+      "path": "kernel/prebuilts/6.6/arm64",
+      "a17_official_lock": {
+        "path": "kernel/prebuilts/6.6/arm64",
+        "name": "kernel/prebuilts/6.6/arm64",
+        "sha": "350899556b7cae26d5981c7055759428aef7598d",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "recorded": false
+        },
+        "mac": {
+          "recorded": false
+        }
+      }
+    },
+    {
+      "path": "kernel/prebuilts/6.6/x86_64",
+      "a17_official_lock": {
+        "path": "kernel/prebuilts/6.6/x86_64",
+        "name": "kernel/prebuilts/6.6/x86-64",
+        "sha": "b87e9b115da5dd1ed94b423657279c766057d5b3",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "recorded": false
+        },
+        "mac": {
+          "recorded": false
+        }
+      }
+    },
+    {
+      "path": "build/make",
+      "a17_official_lock": {
+        "path": "build/make",
+        "name": "platform/build",
+        "sha": "5ce6f787337d0223710bf7d4a16dbe6d2a35f777",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "recorded": false
+        },
+        "mac": {
+          "recorded": false
+        }
+      }
+    },
+    {
+      "path": "build/soong",
+      "a17_official_lock": {
+        "path": "build/soong",
+        "name": "platform/build/soong",
+        "sha": "6722dd8833db7482df1a2543ca3fcf67ddf0f7b1",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "recorded": false
+        },
+        "mac": {
+          "recorded": false
+        }
+      }
+    },
+    {
+      "path": "frameworks/native",
+      "a17_official_lock": {
+        "path": "frameworks/native",
+        "name": "platform/frameworks/native",
+        "sha": "ae266dcb706d083868578cfedce381ef44488a07",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "recorded": false
+        },
+        "mac": {
+          "recorded": false
+        }
+      }
+    },
+    {
+      "path": "system/core",
+      "a17_official_lock": {
+        "path": "system/core",
+        "name": "platform/system/core",
+        "sha": "545d2487e38192a2ce25040897ced877cf6b4f53",
+        "declared_revision": "android17-release"
+      },
+      "r14_observed": {
+        "linux": {
+          "head": {
+            "rc": 0,
+            "out": "561a3479c0be7a18212bc636c94944922097cd7d\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/home/mark/bscp/system/core\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/system-core (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/system-core (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": " M libcutils/ashmem-host.cpp\n M libcutils/include/cutils/trace.h\n",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        },
+        "mac": {
+          "head": {
+            "rc": 0,
+            "out": "561a3479c0be7a18212bc636c94944922097cd7d\n",
+            "err": ""
+          },
+          "toplevel": {
+            "rc": 0,
+            "out": "/Users/huangxiaoling/Workspace/bscp/system/core\n",
+            "err": ""
+          },
+          "remotes": {
+            "rc": 0,
+            "out": "miyu-xu\tssh://git@github.com/miyu-xu/system-core (fetch)\nmiyu-xu\tssh://git@github.com/miyu-xu/system-core (push)\n",
+            "err": ""
+          },
+          "status": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          },
+          "tags": {
+            "rc": 0,
+            "out": "",
+            "err": ""
+          }
+        }
+      }
+    }
+  ]
+}

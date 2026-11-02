@@ -1,0 +1,10 @@
+{
+  "projects": 1087,
+  "all_revisions_equal_lock": true,
+  "manifest_sha256": "5e0a772d1e3669607638529f95f420bbdc9b228d52b8777094dd3ad4bd7f8938",
+  "lock_sha256": "34b22070025d08c2d7c9f1371789a6981ef3ef415f7c4c1588745c7ba0b20bce",
+  "copyfile_count": 1,
+  "linkfile_count": 10,
+  "activated": false,
+  "worktrees_synced": false
+}

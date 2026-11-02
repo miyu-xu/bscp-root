@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "operation": "read-only configuration/asset validation; no VM/default switching",
+  "platforms": {
+    "linux": {
+      "ssh": "mark@192.168.1.21",
+      "entry": "/home/mark/bscp/out/mdi-repo/scripts/microdroid.py",
+      "state": "/home/mark/bscp/out/mdi/n",
+      "entry_sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464",
+      "profile_sha256": "f80e7bbb48f4095599bac124c31d5fc356d61edd31312953b280eaac201c2573"
+    },
+    "macos": {
+      "ssh": "huangxiaoling@192.168.1.14",
+      "entry": "/Users/huangxiaoling/Workspace/bscp/out/mdi-repo/scripts/microdroid.py",
+      "state": "/Volumes/Mark SSD/mdi/n",
+      "entry_sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464",
+      "profile_sha256": "930f6e48314c0f23acaf45cf266d3da1e755edd9b2461fdb1a9fb11a7b1d499e"
+    },
+    "windows": {
+      "ssh": null,
+      "entry": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\microdroid-repository-integration-v1\\repo\\scripts\\microdroid.py",
+      "state": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\microdroid-repository-integration-v1\\state\\windows\\n",
+      "entry_sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464",
+      "profile_sha256": "c8dbfab61204097ce82d27550dc5cfcd5fa2119f7defffec29dedf37ad836a50"
+    }
+  }
+}

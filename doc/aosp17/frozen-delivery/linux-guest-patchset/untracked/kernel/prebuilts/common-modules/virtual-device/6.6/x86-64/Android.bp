@@ -1,0 +1,7 @@
+// Official virtual-device modules paired with the android15-6.6 GKI.
+// The normal Microdroid image remains unchanged unless graphics are enabled.
+filegroup {
+    name: "bscp_microdroid_virtio_gpu_modules_x86_64",
+    srcs: ["virtio_dma_buf.ko", "virtio-gpu.ko"],
+    visibility: ["//kernel/prebuilts/6.6/x86_64"],
+}

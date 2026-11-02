@@ -1,0 +1,287 @@
+{
+  "state": "delivery documentation, not publication",
+  "records": [
+    {
+      "path": "../WINDOWS-FINAL-RESULT-v1777.json",
+      "bytes": 63708,
+      "sha256": "08cf322d1d2dd983238a3a73cfbefe211a17d8da5dfbc0517c7dbfb5c6c26d32"
+    },
+    {
+      "path": "../windows-gpu-setup-v1770/FINAL-BUILD-v1773.json",
+      "bytes": 1724,
+      "sha256": "3eb5b6aa2430e2b2f3b3d2e93bc0de0e8c6ba1b634c0664621c2f50b6a5fbace"
+    },
+    {
+      "path": "../windows-gpu-setup-v1770/FINAL-SOURCE-v1773.diff",
+      "bytes": 22953,
+      "sha256": "3a65f8237bbc5f4727427525c22a1b9e4eb321176a0b8d8450268a46e416aafd"
+    },
+    {
+      "path": "../windows-host-desktop-gpu-v1765/HOST-DEPENDENCIES-SEALED.json",
+      "bytes": 347119,
+      "sha256": "c5bdb61d9a2f869077f50683afdce0d816714ce25d2bcb4700cb04d653230a88"
+    },
+    {
+      "path": "../BUILD-GPU-v1393.stdout",
+      "bytes": 3034,
+      "sha256": "820c04b387959850f162e14f05ad541603204a434d34a7f4d48815b751f4e685"
+    },
+    {
+      "path": "../BINDING-BUILD-v1347.stdout",
+      "bytes": 852,
+      "sha256": "a2419086c73eb97816ba375927b05abb6a9bff4663a76b070838de878bcd3637"
+    },
+    {
+      "path": "../LINUX-FINAL-SOURCE-v1413.stdout",
+      "bytes": 91650,
+      "sha256": "02e65c58816a6adadece8e4013c2f784202d3b8a647fbd1c6e383a44156b23af"
+    },
+    {
+      "path": "../LINUX-V6-EVIDENCE-INDEX-v1420.json",
+      "bytes": 3898,
+      "sha256": "bd8381c1a851b86646476cd81d90b9cec3cdadd84dc005253d7e8a0738f54a33"
+    },
+    {
+      "path": "../ENDPOINT-BUILD-v1253.stdout",
+      "bytes": 1107,
+      "sha256": "46502ba1eead93c9965523a8e01d33cf83f0c4228a5a9c20d178e7b1a945c4cb"
+    },
+    {
+      "path": "../ENDPOINT-SOURCE-EVIDENCE-v1263.json",
+      "bytes": 1477,
+      "sha256": "6e08326870c8fd9cc2b2396076e59befef24bbc29b00d68172d142646926aae6"
+    },
+    {
+      "path": "../MAC-FINAL-DELTA-v1785.json",
+      "bytes": 9012,
+      "sha256": "aa66c0c3a5f10ebaf1e35e08e95a03d723c9bb764eea93ce49313098600d1923"
+    },
+    {
+      "path": "../MAC-FINAL-NORMAL-RESULT-v1786.json",
+      "bytes": 4625,
+      "sha256": "7e520975be13875f648d5b79221198719e219b6192e54805580fa87c17a71624"
+    },
+    {
+      "path": "../RESULT-MAC-FAULT-v1278.md",
+      "bytes": 3890,
+      "sha256": "7d2482c5494a2ed6ed56c5ce34ab7d54759319d3edc51818013e6998dd5cf9ff"
+    },
+    {
+      "path": "../UPSTREAM-LOCK.json",
+      "bytes": 231142,
+      "sha256": "34b22070025d08c2d7c9f1371789a6981ef3ef415f7c4c1588745c7ba0b20bce"
+    },
+    {
+      "path": "../linux-r14-before-upgrade-20261029.xml",
+      "bytes": 327092,
+      "sha256": "c81d15500eea594022b2cf9e75d450610e0955185026934b66ab1a24e3b5da21"
+    },
+    {
+      "path": "../R14-READONLY-DRILL-LINUX-v1790.stdout",
+      "bytes": 54698,
+      "sha256": "40e38a9cfdfb45238e5d1e0fc617ae15e1cab64d4968f9af2b3967dc243402f2"
+    },
+    {
+      "path": "../R14-READONLY-DRILL-MAC-v1791.stdout",
+      "bytes": 913,
+      "sha256": "2c47787fc3cccbec1f02e9ef244d6382c7c2cb4c5a061c0cae1b5a978851c5b5"
+    },
+    {
+      "path": "../R14-READONLY-DRILL-WINDOWS-v1791.json",
+      "bytes": 1350,
+      "sha256": "a6b005bf0131c32f4edcebb11465dbcf6aec370e9950407c8c34018a1c63f685"
+    },
+    {
+      "path": "linux-guest-patchset/0.patch",
+      "bytes": 2256,
+      "sha256": "815bde7fadaa9852668561d09303ce6df7dee677a008ecfb3eee74073ff344d6"
+    },
+    {
+      "path": "linux-guest-patchset/1.patch",
+      "bytes": 2131,
+      "sha256": "a52543173c227b11f378f3a3cfb91f5baf433db15d3166fdce49d22dad59a093"
+    },
+    {
+      "path": "linux-guest-patchset/10.patch",
+      "bytes": 2822,
+      "sha256": "b70b4832ad6e1214773a862a77e863a9e8a1e651d920d832fea05c6ccb9651ba"
+    },
+    {
+      "path": "linux-guest-patchset/2.patch",
+      "bytes": 92956,
+      "sha256": "d634232a5d69e1dead3503d69ce7a209f53044f7bb357a5125aee8056bc63770"
+    },
+    {
+      "path": "linux-guest-patchset/3.patch",
+      "bytes": 636,
+      "sha256": "c82287078e66a09bed3092421265b76d2f55c38f1446888ce9e18048b8bdb053"
+    },
+    {
+      "path": "linux-guest-patchset/4.patch",
+      "bytes": 785,
+      "sha256": "670c6d422e78cde4a386436dc835539af7455fa277fd47f3707c4b77f758baa8"
+    },
+    {
+      "path": "linux-guest-patchset/5.patch",
+      "bytes": 825,
+      "sha256": "d61f7d5ff588d95fafc84a8efec854f3dd5afb4ab32a3b8aa0eb6ffec71d2422"
+    },
+    {
+      "path": "linux-guest-patchset/6.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "linux-guest-patchset/7.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "linux-guest-patchset/8.patch",
+      "bytes": 5419,
+      "sha256": "02783ab756dd8e3150e5e202019cf79f6f35cc5fb91ef0c1ea7ea38d4f6ba6f5"
+    },
+    {
+      "path": "linux-guest-patchset/9.patch",
+      "bytes": 4640,
+      "sha256": "53238af02665b55a6c3ac2fd8bff3ccbec8f8271e3c5c2d23eaaf86e1a949fb6"
+    },
+    {
+      "path": "linux-guest-patchset/manifest.json",
+      "bytes": 9189,
+      "sha256": "270090975aa17c5a15855d26ff3688e06f9e018ba21ef91451782f1072741d9f"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/kernel/prebuilts/common-modules/virtual-device/6.6/arm64/Android.bp",
+      "bytes": 316,
+      "sha256": "40d2eadbb2efb9da21e06767a68d24296ea8043056e5af829d69c88d4253b74e"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/kernel/prebuilts/common-modules/virtual-device/6.6/x86-64/Android.bp",
+      "bytes": 318,
+      "sha256": "510902a42fc0f4cd88fb23c012246d78d07e22b7f0677481d83877960a6279b7"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/bootconfig.graphics",
+      "bytes": 51,
+      "sha256": "53e1ebcf6301a9bf6fb8d71b213590623c2e9163841b176cf890404d9438c05d"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/microdroid-graphics-linkerconfig",
+      "bytes": 34,
+      "sha256": "d0e3b97fb5bd37a34ad9e6483b505400e8c515578eb7ffd862d9a0c032b8b015"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/ueventd.graphics.rc",
+      "bytes": 195,
+      "sha256": "2b15976ede307d85eac4c82fa3253fc22a723240c2ee8c85ee240bbb6dd40157"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/system/linkerconfig/modules/include/linkerconfig/microdroid_graphics.h",
+      "bytes": 2053,
+      "sha256": "f05606a941ffb3ca8e9eb1e9bb9adb72a97a957be8e4639bc8e36abe2d79c4e1"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/system/linkerconfig/modules/tests/microdroid_graphics_test.cc",
+      "bytes": 2446,
+      "sha256": "1481049732e134d2f37b39408a8ed4f5ba8310eefb7f55276b2b46ab3f397d03"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/system/sepolicy/microdroid/system/private/file_contexts.graphics",
+      "bytes": 125,
+      "sha256": "67aa3b035df1eec83410ed6cea76b347911c900e30b7ab4297c1b8402f19a9e2"
+    },
+    {
+      "path": "linux-guest-patchset/untracked/system/sepolicy/microdroid/system/private/property_contexts.graphics",
+      "bytes": 130,
+      "sha256": "8a0b6ae666a8d9d095f21fb3ebce772afb79f8da38d09705e99db0f29afefd13"
+    },
+    {
+      "path": "../SOURCE-SYMLINK-REPRESENTATION-v1795.stdout",
+      "bytes": 9994,
+      "sha256": "6eb249ab08d36d484053f4b0e78c58d573be6c728d2c61dba8ec0deb8276f67b"
+    },
+    {
+      "path": "../R14-REFS-RECHECK-v1796.stdout",
+      "bytes": 351284,
+      "sha256": "40c6a383c0504d27f6cbb61aff6e5b684eb6f2a4722718dbc1eefa4ef2a777ca"
+    },
+    {
+      "path": "../R14-REFS-RECHECK-v1797.stdout",
+      "bytes": 239733,
+      "sha256": "dfd4d7bdffe87d01debc15f83e9a4a21340d211534aea0ed03e91170dbe2c2a7"
+    },
+    {
+      "path": "../build_namespace_guest_v1168.py",
+      "bytes": 3218,
+      "sha256": "23b219fd76328885c1b95b692b6f150cce6edbacdb4b04d4b29b30d5651729ea"
+    },
+    {
+      "path": "../build_namespace_x86_v1198.py",
+      "bytes": 3972,
+      "sha256": "cd0ec8bc24e5a1823d7fe1c096c3921c6866aaac94be351497dcd4f79187d878"
+    },
+    {
+      "path": "../PATCH-APPLY-CHECK-v1798.stdout",
+      "bytes": 2778,
+      "sha256": "cd47eb6412c66ac9a9863ab0a4fc33a03543febfe4aa35a9e5a819ab324029b6"
+    },
+    {
+      "path": "../VIRTUALIZATION-USER-COMMIT-RECHECK-v1799.stdout",
+      "bytes": 510,
+      "sha256": "5f245709211b83cb22deea9e01a5493ef7ecca413d5c73797dc5b2fcaaf142e0"
+    },
+    {
+      "path": "../SOURCE-BATCH-v1800.json",
+      "bytes": 2514,
+      "sha256": "5776ff368aba24698e349015c58e26babce5f7cd25a76313c9aa0923b8b715d0"
+    },
+    {
+      "path": "../SOURCE-BATCH-VERIFY-v1800.stdout",
+      "bytes": 4538,
+      "sha256": "a450f032af49af2fcd5dcdcb46dd46c70043ecae9c9b9d9ce3522c5ba9af5978"
+    }
+  ],
+  "platforms": {
+    "windows": {
+      "host": "1ab2fe0af279a6d7257fc50b0dd187d4c9a65a3b0f2321c800e546a1b8104a7a",
+      "vm": "2b8201136e51f289973c3a8c2e1f15d05cff5026c86f87df48bbc812e8090dba",
+      "crosvm": "d84910b25d70fd64f9093bd8d9ea235bbe6bb8ce44ac64327ff6d1cb5446442d",
+      "guest_apex": "6af2dd6fc128f51de39f59b8d05c445b0a05645d8de73d1547986326e27a5fbb",
+      "normal": "v1774 4 cases",
+      "fault": "v1776 2 cases",
+      "renderer": "b775e5da32c89605debf28d5f2ae8ad80d43ac6f6756b9deadc1255181af0d35",
+      "crosvm_lock": "859cb62ddcd8207a0af12a2a48b216ff8f2e532130410bb0ef9da5cf471f7d36"
+    },
+    "linux": {
+      "host": "826a00ac101386c0084abc6fdc6b18df1e870501509e1700542c1ed4d57bb8ca",
+      "vm": "81877290946fcdf0f27b58672580aba1bb1c771936047260216429f4b62a639e",
+      "crosvm": "25f4e92109fd185e867f751af41e6080d2af871b0324f8d280c6b9c57c778f01",
+      "guest_apex": "6af2dd6fc128f51de39f59b8d05c445b0a05645d8de73d1547986326e27a5fbb",
+      "normal": "v6 4 cases",
+      "fault": "f6 2 cases",
+      "renderer": "5fc398dfc5e936bb91dbd9b4f345a912d2ff739c1d3ff3e8dcd849645c522f79",
+      "virtmgr_lock": "be59884c963959931e2260918100b092f37e2d7171310ba4ec4e862d28e45e08"
+    },
+    "macos": {
+      "host_v30": "3e456fc836d174f3bf419ee9bb84ed4abbd98c3dfd7bd571335a7ec2c7b03558",
+      "host_v32": "3340cdc8882d74482ef0c6c97211d10604b3154f6228432127bb6c439adf3663",
+      "guest_apex": "01fb1a1834019274660accbb422304f0566032ad9e206742be635f6fba4e6747",
+      "normal": "v30 4 cases; v32 affected GPUon initial/resume v1786",
+      "fault": "v32 2 cases",
+      "crosvm": "536c20153f18f73b7919dece22fd5c05c21c6979a41086e6f4baa80532189d62",
+      "vm": "ccf22d546967665449655546901643d2040f6f06df6a6d0b13717e208268d07b",
+      "renderer": "2cb3a478a0802a55bb1ea4478546c5d20242328b700ad670db5dbb531af07e43"
+    }
+  },
+  "provenance_boundary": "Original source/lock/tool/config build receipts and actual admissions referenced, not replaced by posthoc snapshots. Distinct platform adaptations retained.",
+  "patchset_boundary": "Current maintained Guest source snapshot; byte/syntax and exact-base isolated-index apply checks passed. Original build-time evidence remains authoritative, no new rebuild.",
+  "source_delivery": {
+    "index": "SOURCE-INDEX.json",
+    "sha256": "afcc6580778821da7450736d62b6a0e15a0d59ef40ffcca44009f858acbdee66",
+    "fixed_projects": 1087,
+    "original_matching": 901,
+    "isolated_clean": 186,
+    "build_time_attestation_replaced": false
+  }
+}

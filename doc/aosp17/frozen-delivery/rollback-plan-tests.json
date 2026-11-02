@@ -1,0 +1,11 @@
+{
+  "plan_cases": 3,
+  "status": "PASS",
+  "actual_checks": [
+    "../R14-READONLY-DRILL-LINUX-v1790.stdout",
+    "../R14-READONLY-DRILL-MAC-v1791.stdout",
+    "../R14-READONLY-DRILL-WINDOWS-v1791.json"
+  ],
+  "no_new_VM": true,
+  "generated_script_compile_cases": 3
+}

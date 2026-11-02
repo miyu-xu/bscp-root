@@ -1,0 +1,115 @@
+diff --git a/contents/include/linkerconfig/context.h b/contents/include/linkerconfig/context.h
+index f361810..784f928 100644
+--- a/contents/include/linkerconfig/context.h
++++ b/contents/include/linkerconfig/context.h
+@@ -45,6 +45,10 @@ class Context : public modules::BaseContext {
+         current_linkerconfig_type_(LinkerConfigType::Default),
+         current_apex_(nullptr) {
+   }
++  // Enabled only by the signed BSCP graphics image configuration marker.
++  bool IsMicrodroidGraphics() const { return microdroid_graphics_; }
++  void SetMicrodroidGraphics(bool value) { microdroid_graphics_ = value; }
++
+   bool IsSystemSection() const;
+   bool IsVendorSection() const;
+   bool IsProductSection() const;
+@@ -69,6 +73,7 @@ class Context : public modules::BaseContext {
+   bool IsSectionVndkEnabled() const;
+ 
+  private:
++  bool microdroid_graphics_ = false;
+   SectionType current_section_;
+   LinkerConfigType current_linkerconfig_type_;
+   const modules::ApexInfo* current_apex_;
+diff --git a/contents/namespace/sphal.cc b/contents/namespace/sphal.cc
+index 76319c0..f672aba 100644
+--- a/contents/namespace/sphal.cc
++++ b/contents/namespace/sphal.cc
+@@ -59,6 +59,14 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
+ 
+   AddLlndkLibraries(ctx, &ns, VndkUserPartition::Vendor);
+ 
++  // This core HAL is installed in the BSCP graphics Microdroid system image.
++  // Keep all namespace paths and other library links unchanged. Never enable
++  // this for ordinary images, recovery, APEX, or non-system sections.
++  if (ctx.IsMicrodroidGraphics() && ctx.IsSystemSection() && ctx.IsDefaultConfig()) {
++    ns.GetLink("default").AddSharedLib("vulkan.ranchu.so");
++  }
++
++
+   if (ctx.IsApexBinaryConfig()) {
+     if (android::linkerconfig::modules::IsVendorVndkVersionDefined()) {
+       ns.AddRequires(std::vector{":vndksp"});
+diff --git a/contents/tests/configuration/sphal_test.cc b/contents/tests/configuration/sphal_test.cc
+index 51ac2a6..ce6a790 100644
+--- a/contents/tests/configuration/sphal_test.cc
++++ b/contents/tests/configuration/sphal_test.cc
+@@ -37,3 +37,35 @@ TEST(sphal, rs_should_come_before_vndk) {
+   });
+   EXPECT_LT(rs, vndk) << "rs should come before vndk";
+ }
++
++TEST(sphal, microdroid_graphics_link_is_exact_and_system_only) {
++  for (auto section : {SectionType::System, SectionType::Vendor, SectionType::Product,
++                       SectionType::Unrestricted, SectionType::Other}) {
++    for (auto type : {LinkerConfigType::Default, LinkerConfigType::Legacy,
++                      LinkerConfigType::Recovery, LinkerConfigType::ApexBinary}) {
++      Context baseline;
++      baseline.SetCurrentSection(section);
++      baseline.SetCurrentLinkerConfigType(type);
++      auto before = BuildSphalNamespace(baseline);
++      baseline.SetMicrodroidGraphics(true);
++      auto after = BuildSphalNamespace(baseline);
++      const bool enabled = section == SectionType::System && type == LinkerConfigType::Default;
++      size_t found = 0;
++      for (const auto& link : after.Links()) {
++        for (const auto& lib : link.GetSharedLibs()) {
++          if (lib == "vulkan.ranchu.so") {
++            ++found;
++            EXPECT_EQ("default", link.To());
++            EXPECT_FALSE(link.IsAllSharedLibsAllowed());
++          }
++        }
++      }
++      EXPECT_EQ(enabled ? 1u : 0u, found);
++      if (enabled) before.GetLink("default").AddSharedLib("vulkan.ranchu.so");
++      ConfigWriter old_writer, new_writer;
++      before.WriteConfig(old_writer);
++      after.WriteConfig(new_writer);
++      EXPECT_EQ(old_writer.ToString(), new_writer.ToString());
++    }
++  }
++}
+diff --git a/main.cc b/main.cc
+index 8f7661d..6f4ac33 100644
+--- a/main.cc
++++ b/main.cc
+@@ -27,6 +27,8 @@
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ 
++#include <android-base/file.h>
++#include <android-base/unique_fd.h>
+ #include <android-base/result.h>
+ #include <android-base/strings.h>
+ 
+@@ -35,6 +37,7 @@
+ #include "linkerconfig/baseconfig.h"
+ #include "linkerconfig/configparser.h"
+ #include "linkerconfig/context.h"
++#include "linkerconfig/microdroid_graphics.h"
+ #include "linkerconfig/environment.h"
+ #include "linkerconfig/log.h"
+ #include "linkerconfig/namespacebuilder.h"
+@@ -204,6 +207,11 @@ Result<void> UpdatePermission([[maybe_unused]] const std::string& file_path) {
+ 
+ Context GetContext(const ProgramArgs& args) {
+   Context ctx;
++  if (!args.is_recovery) {
++    auto graphics = android::linkerconfig::modules::ReadMicrodroidGraphicsConfig(args.root);
++    CHECK(graphics.ok()) << graphics.error();
++    ctx.SetMicrodroidGraphics(*graphics);
++  }
+   if (args.strict) {
+     ctx.SetStrictMode(true);
+   }

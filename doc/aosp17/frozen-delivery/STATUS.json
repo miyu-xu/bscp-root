@@ -1,0 +1,66 @@
+{
+  "updated_utc": "2026-11-02T11:18:33.103677+00:00",
+  "overall": "FINITE_RUNTIME_ACCEPTANCE_AND_DISTRIBUTED_FIXED_SOURCE_DELIVERY_COMPLETE; NOT_PUBLISHED",
+  "windows": "four normal + two abnormal cases, final frozen artifact, limited PASS",
+  "linux": "v6 four normal + two abnormal cases, limited PASS; 27 evidence files rehashed",
+  "mac": "v30 normal baseline; v32 faults plus latest v32 normal GPU-on initial/resume impact validation; version scopes kept distinct",
+  "source": {
+    "intended_projects": 1087,
+    "verified_fixed_snapshots_available": 1087,
+    "existing_linux_matching_snapshots": 901,
+    "isolated_linux_clean_checkouts": 186,
+    "original_worktree_head_matches": 901,
+    "original_worktree_different_heads": 54,
+    "original_worktree_missing_paths": 132,
+    "original_worktrees_switched": false,
+    "single_repo_managed_clean_tree": false,
+    "recorded_guest_graph_inputs_matched": 169,
+    "source_index": "SOURCE-INDEX.json",
+    "source_index_sha256": "afcc6580778821da7450736d62b6a0e15a0d59ef40ffcca44009f858acbdee66",
+    "historical_network_fetch_failures": 8,
+    "historical_receipt_write_failure": 1,
+    "historical_dns_helper_thread_failure": 1,
+    "recovery_state": "RECOVERY_COMPLETE",
+    "active": null,
+    "recovery_receipt": "E:/bscp/out/aosp17-source-recovery-v1825/result.json",
+    "linux_isolated_roots": [
+      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1800/trees",
+      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1808/trees",
+      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1812/trees",
+      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1814/trees",
+      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1819/trees"
+    ],
+    "boundary": "All pinned snapshots are available on Linux across preserved original and isolated roots; this is not a new build, VM acceptance, or destructive repo sync.",
+    "linux_final_free_bytes": 156597710848
+  },
+  "rollback": {
+    "runtime_checks": [
+      "windows",
+      "linux",
+      "macos"
+    ],
+    "linux_files": 107,
+    "linux_path_contracts": 49,
+    "linux_directories": 13,
+    "r14_refs_verified": 1376,
+    "default_changed": false,
+    "local_user_commit_preserved": "d508901005e3fd57b0368c96daf91920cdb9a70e"
+  },
+  "limitations": [
+    "Windows independent CLI reattachment not implemented; published r14 foreground contract does not establish this capability",
+    "No new stress/power-loss/corrupt-disk/UI/input testing",
+    "No production publication or default switch",
+    "Historical UNKNOWN/failed disks and claims retained",
+    "Historical Mac ext4-specific failure/platform skips not superseded; no new ext4 test",
+    "Sources are distributed across original and isolated roots; no single new repo-managed clean tree or historical full clone is claimed."
+  ],
+  "review": "single executor self-review; no new agents",
+  "resources": {
+    "observed_utc": "2026-11-02T11:18:33.103677+00:00",
+    "windows_source_download_transfer_verify_processes": 0,
+    "linux_other_stdin_python_or_final_task_git": 0,
+    "source_sessions_terminal": true,
+    "new_vm_started": false,
+    "boundary": "Read-only task resource check; no signals or settings changes. Ancillary empty read session30212 was canceled and no stdin reader remained."
+  }
+}

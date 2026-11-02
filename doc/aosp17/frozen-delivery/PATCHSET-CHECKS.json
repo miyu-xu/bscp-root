@@ -1,0 +1,84 @@
+{
+  "state": "BYTES_AND_PATCH_SYNTAX_VERIFIED",
+  "rows": [
+    {
+      "project": "build/make",
+      "base_sha": "5ce6f787337d0223710bf7d4a16dbe6d2a35f777",
+      "patch_sha256": "815bde7fadaa9852668561d09303ce6df7dee677a008ecfb3eee74073ff344d6",
+      "numstat": "8\t0\tcore/android_soong_config_vars.mk\n5\t0\ttarget/product/aosp_arm64.mk\n5\t0\ttarget/product/aosp_x86_64.mk\n",
+      "new_files_verified": 0
+    },
+    {
+      "project": "build/soong",
+      "base_sha": "6722dd8833db7482df1a2543ca3fcf67ddf0f7b1",
+      "patch_sha256": "a52543173c227b11f378f3a3cfb91f5baf433db15d3166fdce49d22dad59a093",
+      "numstat": "2\t0\tandroid/vintf_fragment.go\n25\t0\tandroid/vintf_fragment_test.go\n",
+      "new_files_verified": 0
+    },
+    {
+      "project": "external/mesa3d",
+      "base_sha": "875160ed32cc5bc32777fa04870a0a57ed38c987",
+      "patch_sha256": "d634232a5d69e1dead3503d69ce7a209f53044f7bb357a5125aee8056bc63770",
+      "numstat": "23\t36\tAndroid.bp\n1\t1\tinclude/Android.bp\n1\t1\tinclude/vulkan/Android.bp\n3\t3\tsrc/Android.bp\n5\t5\tsrc/android_stub/Android.bp\n1\t1\tsrc/c11/impl/Android.bp\n2\t2\tsrc/compiler/Android.bp\n1\t3\tsrc/compiler/isaspec/Android.bp\n2\t4\tsrc/compiler/nir/Android.bp\n1\t3\tsrc/compiler/spirv/Android.bp\n5\t13\tsrc/gallium/auxiliary/Android.bp\n3\t3\tsrc/gallium/auxiliary/cso_cache/Android.bp\n24\t24\tsrc/gallium/auxiliary/draw/Android.bp\n3\t3\tsrc/gallium/auxiliary/driver_ddebug/Android.bp\n1\t1\tsrc/gallium/auxiliary/driver_noop/Android.bp\n8\t8\tsrc/gallium/auxiliary/driver_trace/Android.bp\n31\t31\tsrc/gallium/auxiliary/gallivm/Android.bp\n3\t3\tsrc/gallium/auxiliary/hud/Android.bp\n3\t3\tsrc/gallium/auxiliary/indices/Android.bp\n4\t4\tsrc/gallium/auxiliary/nir/Android.bp\n1\t3\tsrc/gallium/auxiliary/pipe-loader/Android.bp\n5\t5\tsrc/gallium/auxiliary/pipebuffer/Android.bp\n8\t8\tsrc/gallium/auxiliary/postprocess/Android.bp\n1\t1\tsrc/gallium/auxiliary/renderonly/Android.bp\n2\t2\tsrc/gallium/auxiliary/rtasm/Android.bp\n2\t2\tsrc/gallium/auxiliary/tessellator/Android.bp\n20\t20\tsrc/gallium/auxiliary/tgsi/Android.bp\n2\t2\tsrc/gallium/auxiliary/translate/Android.bp\n53\t53\tsrc/gallium/auxiliary/util/Android.bp\n13\t13\tsrc/gallium/auxiliary/vl/Android.bp\n1\t1\tsrc/gallium/drivers/Android.bp\n2\t4\tsrc/gallium/drivers/llvmpipe/Android.bp\n1\t1\tsrc/gallium/drivers/zink/Android.bp\n1\t3\tsrc/gallium/frontends/lavapipe/Android.bp\n1\t1\tsrc/gallium/include/Android.bp\n1\t3\tsrc/gallium/targets/lavapipe/Android.bp\n1\t1\tsrc/gallium/winsys/Android.bp\n1\t3\tsrc/gallium/winsys/sw/null/Android.bp\n1\t3\tsrc/gallium/winsys/sw/wrapper/Android.bp\n1\t1\tsrc/gfxstream/aemu/Android.bp\n1\t1\tsrc/gfxstream/aemu/include/Android.bp\n0\t1\tsrc/gfxstream/guest/Android.bp\n1\t1\tsrc/gfxstream/guest/GoldfishAddressSpace/Android.bp\n1\t1\tsrc/gfxstream/guest/GoldfishAddressSpace/include/Android.bp\n1\t1\tsrc/gfxstream/guest/android/Android.bp\n1\t1\tsrc/gfxstream/guest/android/include/Android.bp\n2\t4\tsrc/gfxstream/guest/connection-manager/Android.bp\n1\t1\tsrc/gfxstream/guest/iostream/include/Android.bp\n1\t1\tsrc/gfxstream/guest/platform/Android.bp\n1\t3\tsrc/gfxstream/guest/platform/drm/Android.bp\n1\t1\tsrc/gfxstream/guest/platform/include/Android.bp\n1\t3\tsrc/gfxstream/guest/platform/kumquat/Android.bp\n2\t4\tsrc/gfxstream/guest/platform/kumquat/vulkan-mapper/Android.bp\n1\t3\tsrc/gfxstream/guest/vulkan/Android.bp\n2\t2\tsrc/gfxstream/guest/vulkan/stubs/Android.bp\n1\t1\tsrc/gfxstream/guest/vulkan_enc/Android.bp\n1\t1\tsrc/gtest/Android.bp\n1\t1\tsrc/gtest/include/Android.bp\n2\t5\tsrc/loader/Android.bp\n1\t1\tsrc/tool/Android.bp\n2\t4\tsrc/tool/pps/Android.bp\n6\t9\tsrc/util/Android.bp\n1\t3\tsrc/util/blake3/Android.bp\n1\t1\tsrc/util/format/Android.bp\n3\t3\tsrc/util/perf/Android.bp\n1\t1\tsrc/util/rust/Android.bp\n1\t1\tsrc/util/sha1/Android.bp\n1\t1\tsrc/util/u_gralloc/Android.bp\n1\t1\tsrc/virtio/protocols/Android.bp\n1\t1\tsrc/virtio/virtgpu_kumquat/Android.bp\n1\t1\tsrc/virtio/virtgpu_kumquat_ffi/Android.bp\n1\t1\tsrc/virtio/virtgpu_kumquat_ffi/include/Android.bp\n0\t1\tsrc/vulkan/Android.bp\n5\t13\tsrc/vulkan/runtime/Android.bp\n1\t1\tsrc/vulkan/runtime/bvh/Android.bp\n1\t1\tsrc/vulkan/runtime/radix_sort/Android.bp\n2\t2\tsrc/vulkan/runtime/radix_sort/common/Android.bp\n1\t1\tsrc/vulkan/runtime/radix_sort/common/vk/Android.bp\n1\t1\tsrc/vulkan/runtime/radix_sort/shaders/Android.bp\n3\t5\tsrc/vulkan/util/Android.bp\n2\t4\tsrc/vulkan/wsi/Android.bp\n",
+      "new_files_verified": 0
+    },
+    {
+      "project": "hardware/google/gfxstream",
+      "base_sha": "b46f0d4b4545def09bdf30651d4bf848b2ba0c34",
+      "patch_sha256": "c82287078e66a09bed3092421265b76d2f55c38f1446888ce9e18048b8bdb053",
+      "numstat": "5\t0\tguest/OpenglCodecCommon/Android.bp\n",
+      "new_files_verified": 0
+    },
+    {
+      "project": "kernel/prebuilts/6.6/arm64",
+      "base_sha": "350899556b7cae26d5981c7055759428aef7598d",
+      "patch_sha256": "670c6d422e78cde4a386436dc835539af7455fa277fd47f3707c4b77f758baa8",
+      "numstat": "7\t1\tAndroid.bp\n",
+      "new_files_verified": 0
+    },
+    {
+      "project": "kernel/prebuilts/6.6/x86_64",
+      "base_sha": "b87e9b115da5dd1ed94b423657279c766057d5b3",
+      "patch_sha256": "d61f7d5ff588d95fafc84a8efec854f3dd5afb4ab32a3b8aa0eb6ffec71d2422",
+      "numstat": "7\t2\tAndroid.bp\n",
+      "new_files_verified": 0
+    },
+    {
+      "project": "kernel/prebuilts/common-modules/virtual-device/6.6/arm64",
+      "base_sha": "3aa5ec86b45a7eda3c85cd7e97ef2845d1b95b7f",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "numstat": "empty tracked diff; new files verified separately",
+      "new_files_verified": 1
+    },
+    {
+      "project": "kernel/prebuilts/common-modules/virtual-device/6.6/x86-64",
+      "base_sha": "bd4fabf3d97e12cedebb1beafddc5116e3da5fde",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "numstat": "empty tracked diff; new files verified separately",
+      "new_files_verified": 1
+    },
+    {
+      "project": "packages/modules/Virtualization",
+      "base_sha": "22f1c9ee92b146e10c8f5e71338618f77ab1631e",
+      "patch_sha256": "02783ab756dd8e3150e5e202019cf79f6f35cc5fb91ef0c1ea7ea38d4f6ba6f5",
+      "numstat": "18\t0\tbuild/apex/product_packages.mk\n52\t7\tbuild/microdroid/Android.bp\n",
+      "new_files_verified": 3
+    },
+    {
+      "project": "system/linkerconfig",
+      "base_sha": "f6b4bd983b909a907cf7e9fae8a6365d827638b6",
+      "patch_sha256": "53238af02665b55a6c3ac2fd8bff3ccbec8f8271e3c5c2d23eaaf86e1a949fb6",
+      "numstat": "5\t0\tcontents/include/linkerconfig/context.h\n8\t0\tcontents/namespace/sphal.cc\n32\t0\tcontents/tests/configuration/sphal_test.cc\n8\t0\tmain.cc\n",
+      "new_files_verified": 2
+    },
+    {
+      "project": "system/sepolicy",
+      "base_sha": "e066568e98d86db31a9346d30977f3632fa7073c",
+      "patch_sha256": "b70b4832ad6e1214773a862a77e863a9e8a1e651d920d832fea05c6ccb9651ba",
+      "numstat": "15\t2\tmicrodroid/Android.bp\n1\t4\tmicrodroid/system/private/file_contexts\n",
+      "new_files_verified": 2
+    }
+  ],
+  "applied": false,
+  "build_repeated": false
+}

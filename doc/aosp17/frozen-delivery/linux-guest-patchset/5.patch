@@ -1,0 +1,24 @@
+diff --git a/Android.bp b/Android.bp
+index c77d560..fd74bc4 100644
+--- a/Android.bp
++++ b/Android.bp
+@@ -5,12 +5,17 @@ prebuilt_kernel_modules {
+         "virtio_blk.ko",
+         "virtio_console.ko",
+         "virtio_pci.ko",
+-        //"virtio_pci_legacy_dev.ko",
++        "virtio_pci_legacy_dev.ko",
+         "virtio_pci_modern_dev.ko",
+         "vmw_vsock_virtio_transport.ko",
+         "zram.ko",
+         "zsmalloc.ko",
+-    ],
++    ] + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": [":bscp_microdroid_virtio_gpu_modules_x86_64"],
++        default: [],
++    }),
++    // Keep official GKI module signatures intact; stripping drops the signature trailer.
++    strip_debug_symbols: false,
+     kernel_version: "6.6",
+     no_full_install: true,
+     visibility: ["//visibility:private"],

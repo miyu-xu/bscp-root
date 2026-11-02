@@ -1,0 +1,68 @@
+diff --git a/microdroid/Android.bp b/microdroid/Android.bp
+index 97103a730..7d61addab 100644
+--- a/microdroid/Android.bp
++++ b/microdroid/Android.bp
+@@ -257,7 +257,10 @@ se_policy_binary {
+ 
+ genrule {
+     name: "microdroid_file_contexts.gen",
+-    srcs: ["system/private/file_contexts"],
++    srcs: ["system/private/file_contexts"] + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": ["system/private/file_contexts.graphics"],
++        default: [],
++    }),
+     tools: ["fc_sort"],
+     out: ["file_contexts"],
+     cmd: "sed -e 's/#.*$$//' -e '/^$$/d' $(in) > $(out).tmp && " +
+@@ -281,10 +284,20 @@ genrule {
+         "$(location fc_sort) -i $(out).tmp -o $(out)",
+ }
+ 
++genrule {
++    name: "microdroid_property_contexts.gen",
++    srcs: ["system/private/property_contexts"] + select(soong_config_variable("bscp", "microdroid_graphics"), {
++        "true": ["system/private/property_contexts.graphics"],
++        default: [],
++    }),
++    out: ["property_contexts"],
++    cmd: "cat $(in) > $(out)",
++}
++
+ prebuilt_etc {
+     name: "microdroid_property_contexts",
+     filename: "plat_property_contexts",
+-    src: "system/private/property_contexts",
++    src: ":microdroid_property_contexts.gen",
+     relative_install_path: "selinux",
+     no_full_install: true,
+ }
+diff --git a/microdroid/system/private/file_contexts b/microdroid/system/private/file_contexts
+index 2491fdfa8..10a60e133 100644
+--- a/microdroid/system/private/file_contexts
++++ b/microdroid/system/private/file_contexts
+@@ -48,7 +48,6 @@
+ /dev/hvc2               u:object_r:log_device:s0
+ /dev/hw_random		u:object_r:hw_random_device:s0
+ /dev/loop-control	u:object_r:loop_control_device:s0
+-/dev/ppp		u:object_r:ppp_device:s0
+ /dev/ptmx		u:object_r:ptmx_device:s0
+ /dev/kmsg		u:object_r:kmsg_device:s0
+ /dev/kmsg_debug	u:object_r:kmsg_debug_device:s0
+@@ -73,7 +72,7 @@
+ /dev/socket/tombstoned_crash u:object_r:tombstoned_crash_socket:s0
+ /dev/socket/tombstoned_intercept u:object_r:tombstoned_intercept_socket:s0
+ /dev/socket/microdroid_managed u:object_r:microdroid_managed_socket_dir:s0
+-/dev/socket/microdroid_managed/.* u:object_r:microdroid_managed_socket_file:s0
++/dev/socket/microdroid_managed/.* u:object_r:microdroid_managed_socket_dir:s0
+ /dev/tty		u:object_r:owntty_device:s0
+ /dev/tty[0-9]*		u:object_r:tty_device:s0
+ /dev/ttyS[0-9]*		u:object_r:serial_device:s0
+@@ -101,8 +100,6 @@
+ /system/bin/bootstrap/linkerconfig u:object_r:linkerconfig_exec:s0
+ /system/bin/init		u:object_r:init_exec:s0
+ /system/bin/init_debug_policy	u:object_r:init_debug_policy_exec:s0
+-/system/bin/logcat	--	u:object_r:logcat_exec:s0
+-/system/bin/logd        u:object_r:logd_exec:s0
+ /system/bin/sh		--	u:object_r:shell_exec:s0
+ /system/bin/toolbox	--	u:object_r:toolbox_exec:s0
+ /system/bin/toybox	--	u:object_r:toolbox_exec:s0

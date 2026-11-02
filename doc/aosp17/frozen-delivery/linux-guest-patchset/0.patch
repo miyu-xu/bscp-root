@@ -1,0 +1,51 @@
+diff --git a/core/android_soong_config_vars.mk b/core/android_soong_config_vars.mk
+index 3a7641c378..85276dcf5c 100644
+--- a/core/android_soong_config_vars.mk
++++ b/core/android_soong_config_vars.mk
+@@ -142,6 +142,14 @@ ifneq (true,$(PRODUCT_AVF_REMOTE_ATTESTATION_DISABLED))
+   $(call add_soong_config_var_value,ANDROID,avf_remote_attestation_enabled,true)
+ endif
+ 
++# Validate the resolved product after inheritance, not the intermediate
++# inherit-product markers. Desktop graphics require the matched official GKI.
++ifeq ($(strip $(BSCP_MICRODROID_GRAPHICS)),true)
++  ifneq ($(strip $(PRODUCT_AVF_MICRODROID_GUEST_GKI_VERSION)),android15_66)
++    $(error BSCP Microdroid graphics require the matched android15_66 GKI)
++  endif
++endif
++
+ ifdef PRODUCT_AVF_MICRODROID_GUEST_GKI_VERSION
+ $(call add_soong_config_var_value,ANDROID,avf_microdroid_guest_gki_version,$(PRODUCT_AVF_MICRODROID_GUEST_GKI_VERSION))
+ endif
+diff --git a/target/product/aosp_arm64.mk b/target/product/aosp_arm64.mk
+index 5052404258..f7dc336648 100644
+--- a/target/product/aosp_arm64.mk
++++ b/target/product/aosp_arm64.mk
+@@ -67,6 +67,11 @@ MODULE_BUILD_FROM_SOURCE ?= true
+ 
+ $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_release.mk)
+ 
++# Keep the GSI UFFD policy local to this product. Single-value inheritance
++# otherwise selects the earlier generic-system ART default before gsi_release.
++# This matches gsi_release.mk; the ART runtime still checks kernel support.
++PRODUCT_ENABLE_UFFD_GC := true
++
+ PRODUCT_SOONG_DEFINED_SYSTEM_IMAGE := aosp_system_image
+ USE_SOONG_DEFINED_SYSTEM_IMAGE := true
+ 
+diff --git a/target/product/aosp_x86_64.mk b/target/product/aosp_x86_64.mk
+index 3d525e6c73..1cb9829ff8 100644
+--- a/target/product/aosp_x86_64.mk
++++ b/target/product/aosp_x86_64.mk
+@@ -69,6 +69,11 @@ MODULE_BUILD_FROM_SOURCE ?= true
+ 
+ $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_release.mk)
+ 
++# Keep the GSI UFFD policy local to this product. Single-value inheritance
++# otherwise selects the earlier generic-system ART default before gsi_release.
++# This matches gsi_release.mk; the ART runtime still checks kernel support.
++PRODUCT_ENABLE_UFFD_GC := true
++
+ PRODUCT_SOONG_DEFINED_SYSTEM_IMAGE := aosp_system_image
+ USE_SOONG_DEFINED_SYSTEM_IMAGE := true
+ 
