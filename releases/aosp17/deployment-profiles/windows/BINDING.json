@@ -1,0 +1,10 @@
+{
+  "profile_path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1774\\profiles\\windows.json",
+  "closure_path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1774\\closure\\windows-v1774.json",
+  "profile_sha256": "4d87c1dd8039edc556faef4fb27ae1e8462a4fc221018570571ac7138bfc418e",
+  "closure_sha256": "2e7c795475cd1d10d3bbf364d8f89be24ba507243b6decf275f77f1f98d9e654",
+  "platform": "windows",
+  "admitted_state_root": "E:/bscp/out/aosp17-windows-formal-v1461/runtime-private-v1550/run-gpu-v1774",
+  "expected_host_sha256": "1ab2fe0af279a6d7257fc50b0dd187d4c9a65a3b0f2321c800e546a1b8104a7a",
+  "scope": "Exact accepted deployment profile; no instances, claims, credentials or ACL changes. This binding does not admit another root automatically."
+}

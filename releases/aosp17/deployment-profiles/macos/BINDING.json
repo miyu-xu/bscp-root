@@ -1,0 +1,10 @@
+{
+  "profile_path": "/Volumes/Mark SSD/a17r/n32-v1786/s/profiles/macos.json",
+  "closure_path": "/Volumes/Mark SSD/a17r/n32-v1786/s/closure/macos-fixed.json",
+  "profile_sha256": "b1d8e03c501eb3518cc752b801995b41a7d07c04683b056ee9fbacec6265a894",
+  "closure_sha256": "f3fb10f0e9e76265e22aaefc332c9d5a47e1536acab076e63a581d039bca87cb",
+  "platform": "macos",
+  "admitted_state_root": "/Volumes/Mark SSD/a17r/n32-v1786/s",
+  "expected_host_sha256": "3340cdc8882d74482ef0c6c97211d10604b3154f6228432127bb6c439adf3663",
+  "scope": "Exact accepted deployment profile; no instances, claims, credentials or ACL changes. This binding does not admit another root automatically."
+}

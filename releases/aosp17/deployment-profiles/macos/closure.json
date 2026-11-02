@@ -1,0 +1,1928 @@
+{
+  "platform": "macos",
+  "system_contract": {
+    "sw_vers": "ProductName:\t\tmacOS\nProductVersion:\t\t26.5.2\nBuildVersion:\t\t25F84\n"
+  },
+  "limitations": [
+    "A17 normal GPUoff passed on predecessor Host; new explicit GPU mapping needs actual validation",
+    "Platform MoltenVK1.4.2 with fresh official loader1.4.350; Guest and renderer from A17",
+    "Guest absolute symlinks are namespace data, not host executables"
+  ],
+  "files": {
+    "/Volumes/Mark SSD/aosp17-vm-client-v604/target/debug/vm": {
+      "bytes": 15361776,
+      "sha256": "ccf22d546967665449655546901643d2040f6f06df6a6d0b13717e208268d07b"
+    },
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_sdk.dylib": {
+      "bytes": 3477536,
+      "sha256": "a20ccde971c4cfc19b07c3350b51336e8f308e612295c9987894c287347a6641"
+    },
+    "/Volumes/Mark SSD/aosp17-renderer-v558/build/libgfxstream_backend.dylib": {
+      "bytes": 8387240,
+      "sha256": "2cb3a478a0802a55bb1ea4478546c5d20242328b700ad670db5dbb531af07e43"
+    },
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_ndk_sdk.dylib": {
+      "bytes": 1376952,
+      "sha256": "4dc54803c9f32909330be8909fbdb7daf584d7aaa72a86200e6fa653422d0f83"
+    },
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_log.dylib": {
+      "bytes": 33808,
+      "sha256": "a92dbb39b359e0a14587da5e7a59ab20979af5d35b31cf9036b71dffdc720d98"
+    },
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libutils_binder_sdk.dylib": {
+      "bytes": 149704,
+      "sha256": "aa2cef0d7a5f21c4133f29a5e59db6858e5960b5f3937bacfd7d9cbac807079c"
+    },
+    "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_rpc_unstable_host.dylib": {
+      "bytes": 245440,
+      "sha256": "af0147198838aebc4492306329723e74563ab19cc02faf4ba5697d221344acde"
+    },
+    "/opt/homebrew/Cellar/openssl@3/3.1.4/lib/libssl.3.dylib": {
+      "bytes": 566912,
+      "sha256": "51c1a2fa7e901af60ec9cda7ac39ee1eb57b5838bd4df638ccea6f845859ee53"
+    },
+    "/opt/homebrew/Cellar/openssl@3/3.1.4/lib/libcrypto.3.dylib": {
+      "bytes": 3459632,
+      "sha256": "941462cec1d4f3d73ca4166c63334f3629664f223cc60927163a31f3bfd43db4"
+    },
+    "/Volumes/Mark SSD/aosp17-host-port-v1/runtime-signed-v1001/crosvm": {
+      "bytes": 41285888,
+      "sha256": "536c20153f18f73b7919dece22fd5c05c21c6979a41086e6f4baa80532189d62"
+    },
+    "/Volumes/Mark SSD/aosp17-vulkan-loader-v1062/runtime-v1063/lib/libvulkan.1.4.350.dylib": {
+      "bytes": 679336,
+      "sha256": "c0265a043cebd5e31732dc99205e2e90da67720142967fd1b9b3cf920e422c07"
+    },
+    "/Volumes/Mark SSD/graphics-native-20261023/runtime/MoltenVK_icd.json": {
+      "bytes": 179,
+      "sha256": "578ff08cd0d8734619357541771a5abc9c3470ca300030219a971a9e9dbbe466"
+    },
+    "/Volumes/Mark SSD/graphics-native-20261023/runtime/libMoltenVK.dylib": {
+      "bytes": 11211392,
+      "sha256": "768325c65cdb6b6c9ce814dcce5d962d6e675135e6d48700f8488b54ac2fbdf8"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/RUNTIME-CONTENTS.json": {
+      "bytes": 45564,
+      "sha256": "70399205a0ff760bb64e979f8fa19c4c8d19f0ed7adbafbb5bdd595a0885d417"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/apex_manifest.pb": {
+      "bytes": 402,
+      "sha256": "949763e3eacd06a8282e1c9dc38b71f368521c25a03179e17cac5e99fa82df3c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/app/EmptyPayloadApp@CP2A.260605.016/EmptyPayloadApp.apk": {
+      "bytes": 73899,
+      "sha256": "b99cc340731d9c4bcade36381cdbeeced0fa3d5801b085d3878bfc509adc9571"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/app/android.system.virtualmachine.res@CP2A.260605.016/android.system.virtualmachine.res.apk": {
+      "bytes": 8351,
+      "sha256": "1c440da46c1b72378bb8ca7bbe85b94178c35e14daffb60a540ee862ab235855"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/crosvm": {
+      "bytes": 15414600,
+      "sha256": "204553eeb7d0025e1d7d6e996b4bf4ce9cf38abef69f642557ebbcf3149abcc6"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/crosvm_vu_fs": {
+      "bytes": 36504,
+      "sha256": "7262b02bde2c56cc90830306e7d8c28756d437e3956a0372cbca5965a78ed482"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/crosvm_vu_snd": {
+      "bytes": 36504,
+      "sha256": "58e377c378d076491f60e254bcd58c2d8beea0715004d3950d62d943f5dffd74"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/early_virtmgr": {
+      "bytes": 4474216,
+      "sha256": "da7ace9e66167f87a642fdaf679761e4581c3d48b6315c31503c330801fee05e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/fd_server": {
+      "bytes": 843632,
+      "sha256": "ed6da68ffbeb23d5a4173de73f4b62aa4c582fd92b3ad5140091509e1d522b79"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/vfio_handler": {
+      "bytes": 487384,
+      "sha256": "7ee3e67925ee8e3d36179a06f7ba7b1163a8e192b2bbdf181006c9a23d112dfa"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/virtmgr": {
+      "bytes": 4636088,
+      "sha256": "ea66242001b9b27b19d66b65caf2f50e269e93a20a211314bd3868a04a6f8ce2"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/virtualizationservice": {
+      "bytes": 3303352,
+      "sha256": "efd6e9834e1ba8f1ad24aea515fa78f3e34ce3f617c81be02c9b60fa0340ee4e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/vm": {
+      "bytes": 1733672,
+      "sha256": "4ed7d58e8bea55bf6ec420121e0bdfe4949cdfe6d9d38eb2872209b457e6d973"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin/vmnic": {
+      "bytes": 468408,
+      "sha256": "ce23be1988bc64b9814598eae2456d9c7fdbbecd5c69e662a4a2e6afbef70543"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/aconfig_flags.pb": {
+      "bytes": 2784,
+      "sha256": "722ca3770c657b2f7ecbea3f1a0d4c4c83b97805e2693129b7b1c93d4d0527c4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/classpaths/bootclasspath.pb": {
+      "bytes": 74,
+      "sha256": "7eae883a27f688ed0ee62b69b6979ff1f281c7317f77df8b17411eba99e84d4f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/classpaths/systemserverclasspath.pb": {
+      "bytes": 63,
+      "sha256": "a4dd4caa56d6ed12bd8dbc6b14363fb9263d3f309720124371c7b80d9ad7a211"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/flag.info": {
+      "bytes": 45,
+      "sha256": "db0e2ff918a278694d4f9b35d6d3cbaaa70f23a763cfd5e4b6d97204e80eb5ae"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/flag.map": {
+      "bytes": 479,
+      "sha256": "896eec7b358ff44dd06e8ac169c778c7062c6bdef08b547af9b38b4eb9bbcf53"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/flag.val": {
+      "bytes": 45,
+      "sha256": "3b2f674c5c5bfb57f0ae78b607abb46488701515324423b6c9c136bae4e45453"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/fs/microdroid.img": {
+      "bytes": 41086976,
+      "sha256": "3714d0949b69bd50db87e1b417d0c93836482433480458eea173a4c8c5a8511f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/fs/microdroid_gki-android15-6.6_kernel": {
+      "bytes": 36864000,
+      "sha256": "da0ab3a11311b971c1b2baa3c53c573180f695f91599e2705c968ba457dcf8cb"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/fs/microdroid_kernel": {
+      "bytes": 13066240,
+      "sha256": "ce779010b626499e7563bd61ea239cbdeb81fdb485f91380a051152ca9236746"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/fs/microdroid_vbmeta.img": {
+      "bytes": 65536,
+      "sha256": "d07a9efcb5e0a1798be162c6413c677a5f0d7b831cd4ab403224dab789c5270b"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/microdroid.json": {
+      "bytes": 476,
+      "sha256": "0603ef55237e9f1ca379ecc394e21b759221f74ab628290b7fd6266eae4d3556"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/microdroid_gki-android15-6.6.json": {
+      "bytes": 460,
+      "sha256": "4be1730cb23c866696bf113781f7b0ee87c47e4c3b6766346eac318a7491db17"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/microdroid_gki-android15-6.6_initrd_debuggable.img": {
+      "bytes": 1489280,
+      "sha256": "0bbacd57dd93f7107bebc275fcb34beafd556ed4ea7a88929611bd65532fa0ec"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/microdroid_gki-android15-6.6_initrd_normal.img": {
+      "bytes": 1489116,
+      "sha256": "a6a9eb7030744de4bc703d6a86f4181d2b3a52d250f14d516ea73da7cb6744a4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/microdroid_initrd_debuggable.img": {
+      "bytes": 1272204,
+      "sha256": "1045ecc3290a8f6b3843a7c5e371293fb3c8f1bcba7d645b896ea60e2dc716f4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/microdroid_initrd_normal.img": {
+      "bytes": 1272040,
+      "sha256": "95b52baf8a90335e1d2607ecd6251e6bbde8727f9549c4acc509a17db93d66b4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/package.map": {
+      "bytes": 132,
+      "sha256": "ee93ac81a901a51582e5a5cc3e748084e4538f4607969ff4cb6385217d183147"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/service_vm.bin": {
+      "bytes": 1175552,
+      "sha256": "af9b6c26a4974b58359c854f21455ea0f6c604e49b2dafc32e940c0536654ebb"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/sysconfig/preinstalled-packages-apex-com.android.virt.xml": {
+      "bytes": 2993,
+      "sha256": "aede518bd9d8d379e521726002b256461e549fbb684ff2451076ff69d7ef1464"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/u-boot.bin": {
+      "bytes": 712032,
+      "sha256": "f464a92c6086fa876c0bc775397d20b7491b6b34e2260feb0e19b5ca97f2dd30"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/vfio_handler.rc": {
+      "bytes": 796,
+      "sha256": "02238cb1f764e80dbfd5124b3f2d8d30147dd72a951a6977b4dfddf5ee542999"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/vintf/virtualizationservice.xml": {
+      "bytes": 367,
+      "sha256": "24fe8c0384583e2ba1cde204ac9083699650ebcd7199884c81cd1b30ce525d76"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/virtualizationservice.rc": {
+      "bytes": 956,
+      "sha256": "52c58c60bc643117de020539df4d72b8431ea91c099618308faa29a8ffc40688"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/vmnic.rc": {
+      "bytes": 773,
+      "sha256": "5f163cf715b9760ca241f3fc50a5857b942e1bb4087c40daec697e6af116321f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/javalib/framework-virtualization.jar": {
+      "bytes": 216853,
+      "sha256": "d0b4e1cbf27f3592b533a935a78c8b1e4cc3a0eda52526e0c34705c069f4b44f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/javalib/service-virtualization.jar": {
+      "bytes": 22010,
+      "sha256": "57ea2dda50801c359d5f813174406db0807d11deca81a5bbed4fdffb1c21bf61"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/MicrodroidExitNativeLib.so": {
+      "bytes": 35216,
+      "sha256": "79810f5f3f21794f5f9fd28e8b38a29ff9f89e4c7de5f214321832a54148c5bd"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/android.system.virtualizationcommon-ndk.so": {
+      "bytes": 102288,
+      "sha256": "ad73b47b7215f73ccd3d16186915d690acc1ebd77565d7fed45aefe97cc9d735"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/android.system.virtualizationservice-ndk.so": {
+      "bytes": 202624,
+      "sha256": "34ccb7f4525bf8c6e6fdba1a8b6d3fb7e0bac1df570ceb13d5e70b5c220f6bae"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libanyhow.dylib.so": {
+      "bytes": 56656,
+      "sha256": "fcbef4f282c4bae8584500e63d9e6e58f6929fe02f0b7e2a7708c8dcf85b3aa7"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libavf.so": {
+      "bytes": 641672,
+      "sha256": "7ab95a62bd897cb0a61cf88a78316180169929dd24468114daed64b8ee7c993e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libbase.so": {
+      "bytes": 236400,
+      "sha256": "c7c9e1adb77c82231133ff5e8024426f9ce2ca9ef0460fc83de8e6c863e3313a"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libc++.so": {
+      "bytes": 1152760,
+      "sha256": "cb118e98c74d3454858921123b9b51ba13df9cad7dfa141dd892c453661a4d78"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libcap.so": {
+      "bytes": 68200,
+      "sha256": "5e0bc16815e4a158c8673652834a5d0b11e9760f5c8e5a68418ba15f6a431835"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libcrypto.so": {
+      "bytes": 1700648,
+      "sha256": "21f9674b44c181b25604b84c2d5488a502c1e6b3bfc573580edae3773eb038c6"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libcutils.so": {
+      "bytes": 118584,
+      "sha256": "a784aa831cf14f7f6aa0fe6d45c3040aff22ec7474a711a85a4520a95880c882"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libminijail.so": {
+      "bytes": 182976,
+      "sha256": "ee3085fa518e63f40d3346255bcdf8a35684d9cd70b5853bcaf2f2d6b5fc481f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libprocessgroup.so": {
+      "bytes": 400680,
+      "sha256": "93271d818a7c48639d614d3044b788704d9ec31688b67bfab7a6bbab6252777c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libsqlite.so": {
+      "bytes": 1391480,
+      "sha256": "ebbb05a397ae2a40058703524446779a21acb1425b7d3a3ce261c46262223c1f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libssl.so": {
+      "bytes": 605808,
+      "sha256": "b5af9228d1825ac96262a4438ae2a6212ce2edb778c12e077944516b35f855a5"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libstd.dylib.so": {
+      "bytes": 1464184,
+      "sha256": "425abbce62f172cf1224e9e9fa44049af51fe3ad5d5297cf8778f3e426a4f101"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libtombstoned_client.so": {
+      "bytes": 53416,
+      "sha256": "4cb503d51babd5f522c93c551e128e3c44511b559d4d1790dd58f7b449bacaf4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libvirtualizationservice_jni.so": {
+      "bytes": 475432,
+      "sha256": "345300f12730763e09d62802dc75d70c44819a670916594a63b99629231b312f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64/libvirtualmachine_jni.so": {
+      "bytes": 35992,
+      "sha256": "cf749d5f1a7a82d5719f07e26b0613d09cab6e2a7381acd91987f946d3ed2106"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/priv-app/VmTerminalApp@CP2A.260605.016/VmTerminalApp.apk": {
+      "bytes": 22905505,
+      "sha256": "c40784ef8b582614aa3f197e2233914865535ff8df1585d7661de073b4b408f8"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/apex/com.android.runtime.apex": {
+      "bytes": 10670080,
+      "sha256": "6dabd4c72dda3df9f7ee1b2a448383a20bc215f4d0326bfa952fc562d2319122"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/apexd": {
+      "bytes": 2057056,
+      "sha256": "208ef548e172f5ca9b4c89abde744b900e07c8396f7a0e887435871e8d32628d"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/apkdmverity": {
+      "bytes": 808280,
+      "sha256": "b2dd472b5dbb28935bd1cc4501fc34ce45878814383a711542af9ba8e31dd057"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/atrace": {
+      "bytes": 86112,
+      "sha256": "3212b633da27302163a230029164cbf1f1dc74ae68a435eb1f96b7491decfa20"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/authfs": {
+      "bytes": 1067352,
+      "sha256": "1b85c27306221ef6589235cfe6d1e63a1eb40866f410bffef9ef2c456c1d9682"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/authfs_service": {
+      "bytes": 572016,
+      "sha256": "86ae0d3cca335e478f26c8801a8816259a958d3ba3c6df59f232edb159238e32"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/bootstrap/linker64": {
+      "bytes": 2489840,
+      "sha256": "2a7eacd99a1f310b7137d39a90040536e4a8edb362b6ea48f3225f94b58b49b4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/debuggerd": {
+      "bytes": 51408,
+      "sha256": "03c8794fc76e5dcc86d53883ab4d2197f6ccb11a938cdd363920eb2f9b98e998"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/derive_microdroid_vendor_dice_node": {
+      "bytes": 977576,
+      "sha256": "0df1c5d5f99015086a8f38bfb067d161f8cd60da21a1ca2cb959affa36598de4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/e2fsck": {
+      "bytes": 284400,
+      "sha256": "302cabd577527764e03e81e108d7ed1dde2e0428a30fed18796fef28c4b9cf2a"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/encryptedstore": {
+      "bytes": 999464,
+      "sha256": "f93a57b891f3a863c02a433ad95bbee01c16098c9f300a7b79a8553df8656a93"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/heapprofd": {
+      "bytes": 467888,
+      "sha256": "acb339097a6f57a445e62e2417ee44872da536ac6a3b667c86ea761b500887b1"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/init": {
+      "bytes": 1524160,
+      "sha256": "4e011f3562c3f82c10c3a90633fb6fa2c398c6f20a91c256401061d339f6c670"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/init_debug_policy": {
+      "bytes": 329120,
+      "sha256": "ab2b3cc8841d6a74df6b6bb19111f94915eecf6ba678b32bf5baf99d0d6b6fe9"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/kexec_load": {
+      "bytes": 327576,
+      "sha256": "10eb8dd14d5214cadc0adff088adaa4523abbf028bcb495be5dfb3bbb33fae45"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/microdroid_launcher": {
+      "bytes": 327624,
+      "sha256": "4469e3e64abc19a489d13481f20dacdb81899816e475f7dcb0cd84bd6c29aeda"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/microdroid_manager": {
+      "bytes": 2633592,
+      "sha256": "070fd728acbaab21135c3aa8e1ae280e4eb8a49e79b308faf8f33e2faeef529e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mke2fs": {
+      "bytes": 101016,
+      "sha256": "aa0d900e33b60c2edb54e0543c4349935835b6d3fc1486d4a82a93cf712081b7"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/pageout_bomb": {
+      "bytes": 415872,
+      "sha256": "3fdab0aae6a885e612199dfe29377f163e874d67efac895278364f4dbe94cccb"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/perfetto": {
+      "bytes": 717424,
+      "sha256": "68b952e38bd5e5c3ba7a7074f059987b7c89ec51f5ccb7eab326e1b567b10ac6"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/reboot": {
+      "bytes": 51352,
+      "sha256": "3bba09fd7813a8c3e784ebe5e732fb9f6c8ff05caebe6b460d644e54c801b66c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/resize2fs": {
+      "bytes": 84984,
+      "sha256": "7960dc9951e0d9767f0ddc2d4ea006cfc88a366941d5ada8be34153753c65463"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sh": {
+      "bytes": 318464,
+      "sha256": "9257a903e29bf47bd65180493c72dc00aeb5bb4ca9f41f9e9f08797023723d57"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/strace": {
+      "bytes": 847192,
+      "sha256": "68c27eefefd9392f44a3c713b23db727c4feba39fcf528cf49bc272c41b42441"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/tombstoned.microdroid": {
+      "bytes": 154192,
+      "sha256": "ec7747fe954f1726fa04f0167349a40f873161b5e5f2cbd1d792c6d924f84be7"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/toolbox": {
+      "bytes": 154032,
+      "sha256": "3c342990b6306ed8f9f58df39f37ddefbeaf72545f7095eb0750371d75fd2625"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/toybox": {
+      "bytes": 612256,
+      "sha256": "9f6fa2f42d249e1ab01e8fa67e0746d95cdaff5e22e2e528a2697dc7b34efd1d"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/traced": {
+      "bytes": 51224,
+      "sha256": "e60d4d296f59fff755a4c62860695e0b63df7f94801ddea0980dbeee224e7912"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/traced_perf": {
+      "bytes": 517160,
+      "sha256": "ab2b3ec2911ec251a06d13487c3ec86cabf0c4c8a4c79a2b072f51747e663312"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/traced_probes": {
+      "bytes": 51224,
+      "sha256": "a8e986cf2d0a0d429e2ae433ba55545c3fc5084a0dcb01023c5743e3ef6115b6"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/traced_relay": {
+      "bytes": 208904,
+      "sha256": "78a6e13617e76994e9538c913942c8ceb7d72c7d469923bed51809fd3fdf3b6b"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/zipfuse": {
+      "bytes": 943312,
+      "sha256": "561664d8fdec13d0585fb432e78982e8ba316d5f1576f8c666fec94e9293c35b"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/build.prop": {
+      "bytes": 1335,
+      "sha256": "fd85ba078e119a15e6821a01c47ae0c865b1ce35fd1e6ae4fb1d762ad0bb76f8"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/cgroups.json": {
+      "bytes": 240,
+      "sha256": "f1838d8006080b5d79d05b5d9c1b0fe6a819a0db60205a2ded5c343afe1aa1ca"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/event-log-tags": {
+      "bytes": 2522,
+      "sha256": "7626e7d6f8c9824075187bcb762faf3525219b651ee98170148b94d66b66a4a8"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/fstab.microdroid": {
+      "bytes": 491,
+      "sha256": "f90d8ea68d66af18640cc638991f7624418eda4771592618244a5a4e24c3f96a"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/ftrace_synthetic_events.conf": {
+      "bytes": 114,
+      "sha256": "2dad34d8e84419e2abcb7ff5edc89a087ef7d5864489eb7ec3e3978461bc887c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/group": {
+      "bytes": 22,
+      "sha256": "7cf771c2910956067ba21d36aacab9c150eac7eb0b60a3af0814ec615a82cdc7"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/atrace.rc": {
+      "bytes": 33435,
+      "sha256": "fe668a397715f63fe7e256a61132e1e406801b3549217be39c072a65ab24ad0e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/atrace_userdebug.rc": {
+      "bytes": 1500,
+      "sha256": "eea193467ec478fb461586e3e1114c6e9676e812bb4d9c8cca5c273c25d538a5"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/authfs_service.rc": {
+      "bytes": 213,
+      "sha256": "dbeab7881ecf4ee8b04bdc15766041acfd8cf692afadc7619970d9909fcc620f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/heapprofd.rc": {
+      "bytes": 2121,
+      "sha256": "325c7e57909523e3c617a4d28311f5f15c575b69c0ccbf96c99d6d657b0a6475"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/hw/init.rc": {
+      "bytes": 8149,
+      "sha256": "cd1fd4fda787534cd4fca910bae1d8adba9fb45ee83caa33532883f0385f5561"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/init-perfetto.rc": {
+      "bytes": 1450,
+      "sha256": "a3de46ffbe93424655648d06f80d1a2664677bb2967906425a9fec02f0d496a5"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/microdroid_manager.rc": {
+      "bytes": 1113,
+      "sha256": "fd0507bc82cd2d773c68d5a4e60f90b612b8ed6e26a38b6dafe42b49e9729e86"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/pageout_bomb.rc": {
+      "bytes": 483,
+      "sha256": "571bd5b614a2c0e0b1cef0baecf8b3b2231c417cdd87166be3cdec73db64b59c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/perfetto.rc": {
+      "bytes": 8386,
+      "sha256": "13968b961cf0503df1e6666d33af8b6ffa9fe049851ada523812709435ce1a6c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/prng_seeder.rc": {
+      "bytes": 307,
+      "sha256": "6c4763c65ab372e459e5b1558e733fa08a85615198d2555a4112276b47cb71d4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/tombstoned.microdroid.rc": {
+      "bytes": 209,
+      "sha256": "127b34dd7159f199a4a93871f525def2b4d198022fcf440646482d0533fbed4c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/traced_perf.rc": {
+      "bytes": 2137,
+      "sha256": "757876dc3c2c849394c600b5b823d7a1cd45cb8ba63923c90020be45525341eb"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/linker.config.pb": {
+      "bytes": 505,
+      "sha256": "7b13fe7bda9a82f0446d84189de74c5cb59b8eb803f394074af67abc20e88cea"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/microdroid-graphics-linkerconfig": {
+      "bytes": 34,
+      "sha256": "d0e3b97fb5bd37a34ad9e6483b505400e8c515578eb7ffd862d9a0c032b8b015"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/microdroid_crashdump_initrd.img": {
+      "bytes": 2324736,
+      "sha256": "2550fc450c40032840141151fc751c6a718c27c9810312358da0f8696fa50836"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/microdroid_crashdump_kernel": {
+      "bytes": 4509704,
+      "sha256": "045ecd68cd1e3272464621d3d95d72ffb76323a0ebf2a51fdf39909ea43dc5ec"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/mke2fs.conf": {
+      "bytes": 1157,
+      "sha256": "ad58a58dcdd24d85055814ca9cac67db89d4e67c434e96774bdce0d0a007d067"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/mkshrc": {
+      "bytes": 389,
+      "sha256": "57da624ec83cb61d9f81722ec72a6efa93f7ccbfbabc6e3aa3cf5348f80d8617"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/passwd": {
+      "bytes": 31,
+      "sha256": "230acf5930297dd96823db251f64bbdd47d17ce6c335eb24e4e655eee40d3407"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/perfetto/persistent_cfg.pbtxt": {
+      "bytes": 2303,
+      "sha256": "5eeadba5880d2b2de8f510e0c2e2b8db7ab1c58f588e0c7ab17b18d246b46045"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/public.libraries.txt": {
+      "bytes": 549,
+      "sha256": "63522af72a927a5edb7df539f0f3643f44a91fa11b64cac977796b8ee50bd96f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/selinux/microdroid_precompiled_sepolicy": {
+      "bytes": 103832,
+      "sha256": "9d9100d68e2668d6343090ed69682858242516eb14afb8a7d67743555983489e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/selinux/plat_file_contexts": {
+      "bytes": 8240,
+      "sha256": "51836b4bd8e32a170d218299640c40be3f695d865fc8c2c035d4df673f6b7ae0"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/selinux/plat_property_contexts": {
+      "bytes": 12936,
+      "sha256": "ff63e25a41ec2c8904ccf51ce9bf1db1f0d5ff3c2ace03de1fa83b828a38d1ab"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/ueventd.rc": {
+      "bytes": 1472,
+      "sha256": "14193f94f7a6f47cbe0d92da532df147c1b5cb564b75c18f33f82d701a3a5b53"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/vintf/manifest.xml": {
+      "bytes": 112,
+      "sha256": "129aff51ffc54930fa2f0af8144b7b3fd15e27d8dbafa38ace8e93ceccaf9b7c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.atrace@1.0.so": {
+      "bytes": 119344,
+      "sha256": "52f26e3eca580ca0fd81cd4b2cc8f1fa30361e7145a2b5de46e0ac4f59c64b20"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.common-V2-ndk.so": {
+      "bytes": 51760,
+      "sha256": "1e63caa70009abae68baa311027bd69eb3cca51c2483458091b831a6e5999b53"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.allocator-V2-ndk.so": {
+      "bytes": 69160,
+      "sha256": "0991c646f5069109cb7068c0d52e9d08e76c41d00103496c76a9961e6fa4d9ed"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.allocator@2.0.so": {
+      "bytes": 119560,
+      "sha256": "de739b4c9f2871c79f7b58fd6e01a3799cf358063915ba71f5d271ad8cf44d5a"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.allocator@3.0.so": {
+      "bytes": 119568,
+      "sha256": "8782d72682c8bdfdb904f5162070f61727ef399ce95e3b3e52d317383266e67c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.allocator@4.0.so": {
+      "bytes": 103040,
+      "sha256": "ba4db35bd5453646f564bda969319bceb1a9cc5d92c6b8e155797183bdbae247"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.common-V7-ndk.so": {
+      "bytes": 52056,
+      "sha256": "06178e4ad101de4a10348988c7f378c2df62779a0cacabfdf483a454ee34d0d6"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.common@1.0.so": {
+      "bytes": 35296,
+      "sha256": "1e364164b661aa372aa8ed4ce742810d7490f91c2a0436217dabfeab0a21c242"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.common@1.1.so": {
+      "bytes": 35312,
+      "sha256": "08ce8cd04f32f65e59a3177d41eb86aef444131bd20f1affc35efdda592b3e0a"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.common@1.2.so": {
+      "bytes": 35344,
+      "sha256": "168d72309d551f6b87eec34f0346f234494ad42661c32b183274a5c673897291"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.mapper@2.0.so": {
+      "bytes": 119816,
+      "sha256": "9c203c9955ce04d66ef4355c8172809b870246a2c7db337b474059382ef58018"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.mapper@2.1.so": {
+      "bytes": 119960,
+      "sha256": "bef43c1454b533dede5f7f96e5d39365944f722be7d5a2ff519d26050de49bad"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.mapper@3.0.so": {
+      "bytes": 136528,
+      "sha256": "54b5b4475979113a6808609c27dbc70c7f45019813a5a7f6fcbd72a84c9993c9"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/android.hardware.graphics.mapper@4.0.so": {
+      "bytes": 170304,
+      "sha256": "b4f64e5f967c8d139f549f1a0b924b3e6636146dae9b8de0d176bbcb92ae3de4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/bootstrap/libc.so": {
+      "bytes": 1251272,
+      "sha256": "466648ff8cb76032f2761324ae190125204902ae88d27eb274f07f3b39954b8f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/bootstrap/libdl.so": {
+      "bytes": 50832,
+      "sha256": "a9d3405f5147e195921896ab6a8d6e58fb7970311d55b60bad4c14de27bc2582"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/bootstrap/libdl_android.so": {
+      "bytes": 34744,
+      "sha256": "cb0602b883fc4219583745d60f114db54b316874e4a794e90a32c91d61ed9f52"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/bootstrap/libm.so": {
+      "bytes": 248976,
+      "sha256": "5db3ae8035ac407628707aeda7c2a949719193e3963476c0ccf0b8401db3ef16"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/heapprofd_client.so": {
+      "bytes": 51696,
+      "sha256": "1e6aa199f158528783ab2d50ead8ad929b0b1281ede1463d7100e0da3724a546"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/heapprofd_client_api.so": {
+      "bytes": 86464,
+      "sha256": "6be414f9802b42209e072d5d57a308c6ce660dba4b5a95d78214c2673378dd4d"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/hw/vulkan.ranchu.so": {
+      "bytes": 4608584,
+      "sha256": "62776ac26e63643c9a7be9e78ba8dc7f84dc4c0bf29b9029122bd6f0cc539c03"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/ld-android.so": {
+      "bytes": 34160,
+      "sha256": "c63e65ceaf476529074c3014c484f92750ba5bf9a0a9bc35cd3425a55a0e637d"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libOpenglCodecCommon.so": {
+      "bytes": 218152,
+      "sha256": "8fea31d9612f7ae53386757774ab642f1806f47b05fed557d1e231bf3198d555"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libSurfaceFlingerProp.so": {
+      "bytes": 52744,
+      "sha256": "3b7aa49834ddc85a1802dfaea62cb6a2e3b6877f14e211d62118ed2cc24391c3"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libaconfig_storage_read_api_cc.so": {
+      "bytes": 414440,
+      "sha256": "ca79ab383f0d076f3de4ddd1c5286582bd42a1a6c4e52a3ddcd4eafee14644af"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libadbd_auth.so": {
+      "bytes": 324192,
+      "sha256": "60fbf4802851a0d3f2bfdb4eb9234cc7b3208c0e64d792c00a8f1acc18c97bfa"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libadbd_fs.so": {
+      "bytes": 52808,
+      "sha256": "859bcf28025b8cf8cafd2dc721ac8925990aea0e685ca087d9b9c1f0910b8a30"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libandroidfw.so": {
+      "bytes": 1194104,
+      "sha256": "9de716bba2f65f8cf9c9c6c3c044c06e7bb93fa6515b9d0f9e00f154399e8bf6"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libapexsupport.so": {
+      "bytes": 474544,
+      "sha256": "3103f8c0d414b4357ba855fc1ff76410f2adc4085c7eec268548eeb50c8cd572"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libapkmanifest_native.so": {
+      "bytes": 36816,
+      "sha256": "94827c0ae9fa00185d0673de8d715bb0767d0ceb91e71451f415a1a7a8efff29"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libartpalette-system.so": {
+      "bytes": 51872,
+      "sha256": "aad0fbe8aa607eeee77ecf0fe7a56ec3f1d3001420325ad546c27b2ee453012b"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libbase.so": {
+      "bytes": 236400,
+      "sha256": "d7edbe5d169ddad3d76cda3afa689d4e8856e4549d803a5beea0f046d9faf9c1"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libbinder.so": {
+      "bytes": 877008,
+      "sha256": "cb760743e5b02c173127cd35419a4ec808eb45b61ce4d8c831e2977c4cd02e41"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libbinder_ndk.so": {
+      "bytes": 186504,
+      "sha256": "c2903985fccd13e460aaa607f98bf47c8175492a88663f6b63df779e7b1e7735"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libbinder_rpc_unstable.so": {
+      "bytes": 52240,
+      "sha256": "192ab44d643c7cddf5bf71214ed136b75bd056b0c25ca3d4fe7e69f6a87bcd19"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libc++.so": {
+      "bytes": 1152760,
+      "sha256": "cb118e98c74d3454858921123b9b51ba13df9cad7dfa141dd892c453661a4d78"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libcap.so": {
+      "bytes": 68200,
+      "sha256": "3b771cf7521dfad42709613662c1263d75454c14686f6e1ee3350231d2d5e645"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libcrypto.so": {
+      "bytes": 1651496,
+      "sha256": "3d0f1da456e3474d4041b5f27e853c383fbc8559d401fe4e8da552066d92bd36"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libcutils.so": {
+      "bytes": 118576,
+      "sha256": "7c3cb33d6a0afa58e5f4f36ad43b07808c0f324517f819a7972cef57fbac8587"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libdebuggerd_client.so": {
+      "bytes": 408832,
+      "sha256": "839e1177502d316f4e7716ce2f7e72612465f5d1f93e30474d3b3cba8cfe227f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libdebugstore_cxx.so": {
+      "bytes": 540632,
+      "sha256": "46103b222f2a598ad77eab66352d1987a78e08e0d0775b1110bdebda339bd0ef"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libdrm.so": {
+      "bytes": 133768,
+      "sha256": "5926bff6c9b888f3a7265922e585fff1d1ccfa0069b4ec977ee23f6f224de4f5"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libext2_blkid.so": {
+      "bytes": 72456,
+      "sha256": "a17ddf8456a28fc9b1e24b9185ef928016d02e9dab815bbb265425ada6044448"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libext2_com_err.so": {
+      "bytes": 51488,
+      "sha256": "918245b90346ad637dec5db0dd033750af53f4d5f43aff3fe7d9acc58a86ba66"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libext2_e2p.so": {
+      "bytes": 51448,
+      "sha256": "120f439083c75d49df1d0b7a1979fd85a2caec653f75746346b4572d56ad5322"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libext2_misc.so": {
+      "bytes": 35976,
+      "sha256": "06c84ce22a577e0177af069ffa2c35e35ec78f48d22590d154dd9a61ba85a883"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libext2_quota.so": {
+      "bytes": 84912,
+      "sha256": "a925d22e4dd1d4553481065b72976474343e47379a721ce2229da92516863d39"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libext2_uuid.so": {
+      "bytes": 51448,
+      "sha256": "21b0e3992ddf470cba045116e1f9bbc6f5bd0f599d99e2219bcdd3cbe051740b"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libext2fs.so": {
+      "bytes": 399376,
+      "sha256": "5ca3e2f17f9ed005f2fd7e150bc0ae0aad1d8e90e99d34989b2ea4e9868fbf16"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libext4_utils.so": {
+      "bytes": 51376,
+      "sha256": "1dff02fd62f9665dfafcdb0c5de8610d09272e76c40e8c909b9c7b5c43dcf75d"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libgralloctypes.so": {
+      "bytes": 101648,
+      "sha256": "72a607419cf6e852a954503ca23464d10a7249138531e2ef9ff52d675d42d4d4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libgraphicsenv.so": {
+      "bytes": 85968,
+      "sha256": "03cdf63f4eae81c911170ad1ae4df8751799c8f2edac4223b2254921fe6f6ae8"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libhardware.so": {
+      "bytes": 35576,
+      "sha256": "826d7a363f9cc3e1e8982d3edf2d313099267a404defc201adac539e4ba8cf26"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libhidlbase.so": {
+      "bytes": 721032,
+      "sha256": "57ff318a20d4ac908c1e80685a68f50817752d37f0795dbca40a3bf1d14e67eb"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libincfs.so": {
+      "bytes": 218976,
+      "sha256": "fae5c58e7b27e694fd87e900bc4fd44df6192a6112f6fc1d08a895ccacdc0251"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libjsoncpp.so": {
+      "bytes": 217208,
+      "sha256": "766ccd13e2b76d32914bc5c8e4b76dd9ce0eb8808f69b9b5d919ab4337d16215"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libkeystore2_crypto.so": {
+      "bytes": 37944,
+      "sha256": "a1ec05f28a4646f8974c64823cfcf7140b6c86a7b67b23612499c91a0f653359"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/liblog.so": {
+      "bytes": 102080,
+      "sha256": "27d31d14f7d0544290aa182bd1ed2f08e7ea5d9c8e2351b828f781cc02ef876e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/liblogwrap.so": {
+      "bytes": 51512,
+      "sha256": "301185d6a6a7cd410d3a5158066fa72b4d28f46b58513029e026ebc14703b855"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/liblzma.so": {
+      "bytes": 183752,
+      "sha256": "5c65846f6e7c76143cb87f38770ae5e6f913084573a733c60b80f9530ef74433"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libnativebridge_lazy.so": {
+      "bytes": 51496,
+      "sha256": "eacf20cda24c09fbb750e97e5a06ae8d81d0e01a8cbad2172f56a12e3355cfff"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libnativeloader_lazy.so": {
+      "bytes": 51584,
+      "sha256": "fda775a34b14418f3f28541ed0b47082c7aba691ec9da3a816204fb04ef9a552"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libnativewindow.so": {
+      "bytes": 68240,
+      "sha256": "eeabb6afb9b3ddae9f6966a74e8c7633d785233fdde21fb88040481514f7d319"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libpackagelistparser.so": {
+      "bytes": 51648,
+      "sha256": "190829270679cf01b25d84e856d76f2cafcedb88456b4e87b250b9c3aea68727"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libpcre2.so": {
+      "bytes": 396352,
+      "sha256": "c43cf104696e386ad2b7f3615b3a131adfb950a70751aaf4f98166df57cadd9e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libperfetto.so": {
+      "bytes": 1622968,
+      "sha256": "03942ac6c85b892dc701215ac7b322a9ae6178bd5b02e28abffb6e79c4b06a55"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libprocessgroup.so": {
+      "bytes": 384296,
+      "sha256": "26e4d4661261227e838cb5f40e84f56986ba3cf974cf2b699ec23919c67a7adf"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libprocessgroup_setup.so": {
+      "bytes": 53504,
+      "sha256": "525933f918e3b1383842a866d31a9c468c5a1de22e247d6d690cb827c0e7eb4e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libprocinfo.so": {
+      "bytes": 35944,
+      "sha256": "bb9a53eaa1f5717fa66ef3958c61dc92ac9a96ba71e5f833b351f0afe28e2e39"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libselinux.so": {
+      "bytes": 135608,
+      "sha256": "c499a31d2ee9499decdc5a0b514d7a006854c37fafba12dc231fb7d663475a94"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libsparse.so": {
+      "bytes": 52408,
+      "sha256": "3726e724034840ceb3641cc36afb6936f997b8ebd1507c30083947f2a7ded093"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libssl.so": {
+      "bytes": 589448,
+      "sha256": "7a13b4f0e87e5556e798374a86c829021399ab0f225b79a31c25a69ce8c38064"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libstdc++.so": {
+      "bytes": 51680,
+      "sha256": "615c6814380d54d810138e5ebc1d625847a5efc4372d08613a249ad13500f94b"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libsync.so": {
+      "bytes": 51304,
+      "sha256": "89abff041396c1e5da283662f95f2948514c53d6a7008bc01ee1627d34e3c662"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libtombstoned_client.so": {
+      "bytes": 53416,
+      "sha256": "b525725faba58a7b44f798d51dc9250aa4ca2b5b261718f9994df9713d2c5f6e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libui.so": {
+      "bytes": 437744,
+      "sha256": "cd5f6747b51850da07d568e581e09c53bb1e04058097d5de981a93a3d461825d"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libunwindstack.so": {
+      "bytes": 1014320,
+      "sha256": "60c137c6ea17857950146c83a28000c048d20ddc912dfa601804b75678fc89ce"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libutils.so": {
+      "bytes": 151288,
+      "sha256": "6bb4df65d4618746f8b9f699c37ff196686becc96281c178e2d02940a94e6a35"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libvendorsupport.so": {
+      "bytes": 35376,
+      "sha256": "c2c7e0143793b9291d7761182fef2d3f39716fbba1ef402e6cf5d208af46a088"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libvm_payload.so": {
+      "bytes": 503744,
+      "sha256": "1c591b81a88ff38dc433da38336a5f884a154d334c6a5514408664b0a82ef693"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libvndksupport.so": {
+      "bytes": 51424,
+      "sha256": "5f5835c5140f0d0dfb9a6a502e08f536bd21e17dd277a42e7fe8eaa128439beb"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libvulkan.so": {
+      "bytes": 258784,
+      "sha256": "08ad282aade790de4d8078843a4a2604fccc89c304403d3c206ab3baa72e25c0"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libz.so": {
+      "bytes": 117536,
+      "sha256": "cfb8187aa7d154f55caa44e5fa7958f8497968bdbe37a08c9c89a97452bbe212"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libziparchive.so": {
+      "bytes": 119408,
+      "sha256": "88dc6db12b7f4d451facc4c81f398621559f43342e845dae5428cf68cfff44a9"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libzstd.so": {
+      "bytes": 692808,
+      "sha256": "8add28534f1159a3a392f4b495edbba419d7eea427c26a86288d920dd32cb5ca"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/usr/share/zoneinfo/tz_version": {
+      "bytes": 17,
+      "sha256": "3d2534002e75bf64d145cd0d229a97c622d9702af3ab914502345de20f5b235a"
+    },
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/usr/share/zoneinfo/tzdata": {
+      "bytes": 409045,
+      "sha256": "bf87968a2297ebe2b43b03a08b7e1ff3d80562f49c0dd1414832ab9c9518ab5c"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid.py": {
+      "bytes": 441,
+      "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/.gitignore": {
+      "bytes": 19,
+      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/audit_owner.py": {
+      "bytes": 385,
+      "sha256": "23a7ea2feb67e9e481e9f9a4dd7ff31a44ee1850d54273dfa472ba0cc7d90e32"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/bound_owner.py": {
+      "bytes": 6716,
+      "sha256": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/closure_check.py": {
+      "bytes": 1942,
+      "sha256": "73adaa7603962e5aed5a93bf9be66241283e93169fdc6fe1cb1bb6f53717133f"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/compute_protocol.py": {
+      "bytes": 3341,
+      "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/entry.py": {
+      "bytes": 11646,
+      "sha256": "4ff2a64a49275bf4995f0a3c9336e261f5f5ead04358c5626fb200a6f01a9cd6"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/instance_identity.py": {
+      "bytes": 1590,
+      "sha256": "f7afafed64cb24a64523defd19127b4a3d155cf34b5f155dfd693cc01dd092ae"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/lifecycle.py": {
+      "bytes": 8787,
+      "sha256": "fed80dd731c1f591484ddbde8857c8657395e143a040e087ef5309143f248387"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/linux_pidfd.py": {
+      "bytes": 1206,
+      "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/mac_audit.py": {
+      "bytes": 5176,
+      "sha256": "fbaa8a6fd61e46846f931f7800e3dea7c91cc903c26f75958803ffc54bf05bb8"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/mac_owner.py": {
+      "bytes": 14144,
+      "sha256": "ada6da05910a85047f11d616a07fee2d4e39d176d100f885818dea79f32a0171"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/native.py": {
+      "bytes": 36228,
+      "sha256": "c082a369a57b2e2cffea693dbd05915c4f0f802659178ebb20b8f484b6a0ee55"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/pipe_log.py": {
+      "bytes": 2298,
+      "sha256": "4815f8f7dbcd24b3a7fb75b2460705bb5ce23ebfbd198107eef000d1a81762a2"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/runtime.py": {
+      "bytes": 13938,
+      "sha256": "d11429b8e9b94f776b11b1e0db59bb398afc2c6551e50da2f599bc6bef16d765"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/strict_json.py": {
+      "bytes": 424,
+      "sha256": "a51b489a1b978464323aa894f73ab8e8cba48ce8e29b98f77cdd72d8205ad841"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/vendor/owned_job.py": {
+      "bytes": 28832,
+      "sha256": "e8198f21332e907e1d91bfcdf237fcffac291bc63a46e53f3c062eda0cd1ade9"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/vendor/windows_state.py": {
+      "bytes": 2074,
+      "sha256": "e163263045236786ba2c49ebf73be88f8beccda4d43997a72fddb2b74b44368e"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/version.py": {
+      "bytes": 48,
+      "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
+    },
+    "/Volumes/Mark SSD/a17r/v30/scripts/vm_macos.sh": {
+      "bytes": 25131,
+      "sha256": "e938ed96bf6ace83f9ef27f18ce4efff21932d765ad90ecea1ac5012457f3a4a"
+    },
+    "/Volumes/Mark SSD/a17r/v30/assets/compute-payload.apk": {
+      "bytes": 13041189,
+      "sha256": "540cd3c5edc64e9f7bbd176ec334a27325770c56429a555661fd3deec1276221"
+    },
+    "/Volumes/Mark SSD/a17r/v30/virtmgr": {
+      "bytes": 22221464,
+      "sha256": "3e456fc836d174f3bf419ee9bb84ed4abbd98c3dfd7bd571335a7ec2c7b03558"
+    },
+    "/Volumes/Mark SSD/a17r/v30/microdroid-gki.json": {
+      "bytes": 496,
+      "sha256": "99cc3eff296c9c1bcf83366afa914572dea7a7cb1b665cfc503f3810797139cd"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid.py": {
+      "bytes": 441,
+      "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/.gitignore": {
+      "bytes": 19,
+      "sha256": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/audit_owner.py": {
+      "bytes": 3325,
+      "sha256": "ceb87c809f178590c21266afaa2f9b2cdd88696e42c5a7bae6c94b8755a86baf"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/bound_owner.py": {
+      "bytes": 6716,
+      "sha256": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/closure_check.py": {
+      "bytes": 1942,
+      "sha256": "73adaa7603962e5aed5a93bf9be66241283e93169fdc6fe1cb1bb6f53717133f"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/compute_protocol.py": {
+      "bytes": 3341,
+      "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/endpoint_evidence.py": {
+      "bytes": 2912,
+      "sha256": "05d3d2b10c4721f6304653eaab00e9f20813bd5f72ec88949659e9258c348912"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/entry.py": {
+      "bytes": 11646,
+      "sha256": "4ff2a64a49275bf4995f0a3c9336e261f5f5ead04358c5626fb200a6f01a9cd6"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/instance_identity.py": {
+      "bytes": 1590,
+      "sha256": "f7afafed64cb24a64523defd19127b4a3d155cf34b5f155dfd693cc01dd092ae"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/lifecycle.py": {
+      "bytes": 8787,
+      "sha256": "fed80dd731c1f591484ddbde8857c8657395e143a040e087ef5309143f248387"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/linux_pidfd.py": {
+      "bytes": 1206,
+      "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/mac_audit.py": {
+      "bytes": 5176,
+      "sha256": "fbaa8a6fd61e46846f931f7800e3dea7c91cc903c26f75958803ffc54bf05bb8"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/mac_owner.py": {
+      "bytes": 14661,
+      "sha256": "d2f5eeaf546bfa32852c3dc5b159c72d0b445817e1febe48fa804cb41c759117"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/native.py": {
+      "bytes": 36228,
+      "sha256": "c082a369a57b2e2cffea693dbd05915c4f0f802659178ebb20b8f484b6a0ee55"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/pipe_log.py": {
+      "bytes": 2298,
+      "sha256": "4815f8f7dbcd24b3a7fb75b2460705bb5ce23ebfbd198107eef000d1a81762a2"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/runtime.py": {
+      "bytes": 13938,
+      "sha256": "d11429b8e9b94f776b11b1e0db59bb398afc2c6551e50da2f599bc6bef16d765"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/strict_json.py": {
+      "bytes": 424,
+      "sha256": "a51b489a1b978464323aa894f73ab8e8cba48ce8e29b98f77cdd72d8205ad841"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/vendor/owned_job.py": {
+      "bytes": 28832,
+      "sha256": "e8198f21332e907e1d91bfcdf237fcffac291bc63a46e53f3c062eda0cd1ade9"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/vendor/windows_state.py": {
+      "bytes": 2074,
+      "sha256": "e163263045236786ba2c49ebf73be88f8beccda4d43997a72fddb2b74b44368e"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/version.py": {
+      "bytes": 48,
+      "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
+    },
+    "/Volumes/Mark SSD/a17r/v32/scripts/vm_macos.sh": {
+      "bytes": 25131,
+      "sha256": "e938ed96bf6ace83f9ef27f18ce4efff21932d765ad90ecea1ac5012457f3a4a"
+    },
+    "/Volumes/Mark SSD/a17r/v32/virtmgr": {
+      "bytes": 22395000,
+      "sha256": "3340cdc8882d74482ef0c6c97211d10604b3154f6228432127bb6c439adf3663"
+    }
+  },
+  "links": {
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/[": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/acpi": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/base64": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/basename": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/blkdiscard": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/blockdev": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/bootstrap/linker_asan64": "linker64",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/bootstrap/linker_hwasan64": "linker64",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/brctl": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/cal": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/cat": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/chattr": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/chcon": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/chgrp": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/chmod": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/chown": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/chroot": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/chrt": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/cksum": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/clear": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/cmp": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/comm": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/cp": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/cpio": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/cut": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/date": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/dd": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/devmem": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/df": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/diff": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/dirname": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/dmesg": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/dos2unix": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/du": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/echo": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/egrep": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/env": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/expand": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/expr": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/fallocate": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/false": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/fgrep": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/file": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/find": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/flock": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/fmt": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/free": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/fsync": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/getconf": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/getenforce": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/getevent": "toolbox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/getfattr": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/getopt": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/getprop": "toolbox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/gpiodetect": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/gpiofind": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/gpioget": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/gpioinfo": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/gpioset": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/grep": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/groups": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/gunzip": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/gzip": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/head": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/hostname": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/hwclock": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/i2cdetect": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/i2cdump": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/i2cget": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/i2cset": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/i2ctransfer": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/iconv": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/id": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/ifconfig": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/inotifyd": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/insmod": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/install": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/ionice": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/iorenice": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/kill": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/killall": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/linker64": "/apex/com.android.runtime/bin/linker64",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/linker_asan64": "/apex/com.android.runtime/bin/linker64",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/linker_hwasan64": "/apex/com.android.runtime/bin/linker64",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/ln": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/load_policy": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/log": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/logger": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/logname": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/losetup": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/ls": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/lsattr": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/lsmod": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/lsof": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/lspci": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/lsusb": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/md5sum": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/memeater": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/microcom": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mkdir": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mkfifo": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mkfs.ext4.microdroid": "mke2fs",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mknod": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mkswap": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mktemp": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/modinfo": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/modprobe": "toolbox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/more": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mount": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mountpoint": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/mv": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/nc": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/netcat": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/netstat": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/nice": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/nl": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/nohup": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/nproc": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/nsenter": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/od": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/paste": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/patch": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/pgrep": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/pidof": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/pkill": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/pmap": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/printenv": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/printf": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/ps": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/pwd": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/readelf": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/readlink": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/realpath": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/renice": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/restorecon": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/rm": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/rmdir": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/rmmod": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/rtcwake": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/runcon": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sed": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sendevent": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/seq": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/setenforce": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/setfattr": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/setprop": "toolbox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/setsid": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sha1sum": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sha224sum": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sha256sum": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sha384sum": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sha512sum": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sleep": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sort": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/split": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/start": "toolbox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/stat": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/stop": "toolbox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/strings": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/stty": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/swapoff": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/swapon": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sync": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/sysctl": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/tac": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/tail": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/tar": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/taskset": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/tee": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/test": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/time": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/timeout": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/top": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/touch": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/tr": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/true": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/truncate": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/tty": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/uclampset": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/ueventd": "init",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/ulimit": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/umount": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/uname": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/uniq": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/unix2dos": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/unlink": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/unshare": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/uptime": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/usleep": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/uudecode": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/uuencode": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/uuidgen": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/vi": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/vmstat": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/watch": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/wc": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/which": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/whoami": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/xargs": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/xxd": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/yes": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/zcat": "toybox",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libc.so": "/apex/com.android.runtime/lib64/bionic/libc.so",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libdl.so": "/apex/com.android.runtime/lib64/bionic/libdl.so",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libdl_android.so": "/apex/com.android.runtime/lib64/bionic/libdl_android.so",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/libm.so": "/apex/com.android.runtime/lib64/bionic/libm.so",
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/vulkan.ranchu.so": "hw/vulkan.ranchu.so",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/bin/crosvm": "/Volumes/Mark SSD/aosp17-host-port-v1/runtime-signed-v1001/crosvm",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/bin/virtmgr": "/Volumes/Mark SSD/a17r/v30/virtmgr",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/bin/vm": "/Volumes/Mark SSD/aosp17-vm-client-v604/target/debug/vm",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/lib/libbinder_log.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_log.dylib",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/lib/libbinder_ndk_sdk.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_ndk_sdk.dylib",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/lib/libbinder_rpc_unstable_host.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_rpc_unstable_host.dylib",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/lib/libbinder_sdk.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_sdk.dylib",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/lib/libgfxstream_backend.dylib": "/Volumes/Mark SSD/aosp17-renderer-v558/build/libgfxstream_backend.dylib",
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/lib/libutils_binder_sdk.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libutils_binder_sdk.dylib",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/bin/crosvm": "/Volumes/Mark SSD/aosp17-host-port-v1/runtime-signed-v1001/crosvm",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/bin/virtmgr": "/Volumes/Mark SSD/a17r/v32/virtmgr",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/bin/vm": "/Volumes/Mark SSD/aosp17-vm-client-v604/target/debug/vm",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/lib/libbinder_log.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_log.dylib",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/lib/libbinder_ndk_sdk.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_ndk_sdk.dylib",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/lib/libbinder_rpc_unstable_host.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_rpc_unstable_host.dylib",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/lib/libbinder_sdk.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libbinder_sdk.dylib",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/lib/libgfxstream_backend.dylib": "/Volumes/Mark SSD/aosp17-renderer-v558/build/libgfxstream_backend.dylib",
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/lib/libutils_binder_sdk.dylib": "/Volumes/Mark SSD/aosp17-binder-rust-host-v1/native-host/build/libutils_binder_sdk.dylib"
+  },
+  "directories": {
+    "/Volumes/Mark SSD/a17r/v30/apex-tree": [
+      "RUNTIME-CONTENTS.json",
+      "apex",
+      "system",
+      "system_ext"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex": [
+      "com.android.virt"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt": [
+      "apex_manifest.pb",
+      "app",
+      "bin",
+      "etc",
+      "javalib",
+      "lib64",
+      "priv-app"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/app": [
+      "EmptyPayloadApp@CP2A.260605.016",
+      "android.system.virtualmachine.res@CP2A.260605.016"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/app/EmptyPayloadApp@CP2A.260605.016": [
+      "EmptyPayloadApp.apk"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/app/android.system.virtualmachine.res@CP2A.260605.016": [
+      "android.system.virtualmachine.res.apk"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/bin": [
+      "crosvm",
+      "crosvm_vu_fs",
+      "crosvm_vu_snd",
+      "early_virtmgr",
+      "fd_server",
+      "vfio_handler",
+      "virtmgr",
+      "virtualizationservice",
+      "vm",
+      "vmnic"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc": [
+      "aconfig_flags.pb",
+      "classpaths",
+      "flag.info",
+      "flag.map",
+      "flag.val",
+      "fs",
+      "microdroid.json",
+      "microdroid_gki-android15-6.6.json",
+      "microdroid_gki-android15-6.6_initrd_debuggable.img",
+      "microdroid_gki-android15-6.6_initrd_normal.img",
+      "microdroid_initrd_debuggable.img",
+      "microdroid_initrd_normal.img",
+      "package.map",
+      "service_vm.bin",
+      "sysconfig",
+      "u-boot.bin",
+      "vfio_handler.rc",
+      "vintf",
+      "virtualizationservice.rc",
+      "vmnic.rc"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/classpaths": [
+      "bootclasspath.pb",
+      "systemserverclasspath.pb"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/fs": [
+      "microdroid.img",
+      "microdroid_gki-android15-6.6_kernel",
+      "microdroid_kernel",
+      "microdroid_vbmeta.img"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/sysconfig": [
+      "preinstalled-packages-apex-com.android.virt.xml"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/etc/vintf": [
+      "virtualizationservice.xml"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/javalib": [
+      "framework-virtualization.jar",
+      "service-virtualization.jar"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/lib64": [
+      "MicrodroidExitNativeLib.so",
+      "android.system.virtualizationcommon-ndk.so",
+      "android.system.virtualizationservice-ndk.so",
+      "libanyhow.dylib.so",
+      "libavf.so",
+      "libbase.so",
+      "libc++.so",
+      "libcap.so",
+      "libcrypto.so",
+      "libcutils.so",
+      "libminijail.so",
+      "libprocessgroup.so",
+      "libsqlite.so",
+      "libssl.so",
+      "libstd.dylib.so",
+      "libtombstoned_client.so",
+      "libvirtualizationservice_jni.so",
+      "libvirtualmachine_jni.so"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/priv-app": [
+      "VmTerminalApp@CP2A.260605.016"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/apex/com.android.virt/priv-app/VmTerminalApp@CP2A.260605.016": [
+      "VmTerminalApp.apk"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system": [
+      "apex",
+      "bin",
+      "build.prop",
+      "etc",
+      "lib64",
+      "usr"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/apex": [
+      "com.android.runtime.apex"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin": [
+      "[",
+      "acpi",
+      "apexd",
+      "apkdmverity",
+      "atrace",
+      "authfs",
+      "authfs_service",
+      "base64",
+      "basename",
+      "blkdiscard",
+      "blockdev",
+      "bootstrap",
+      "brctl",
+      "cal",
+      "cat",
+      "chattr",
+      "chcon",
+      "chgrp",
+      "chmod",
+      "chown",
+      "chroot",
+      "chrt",
+      "cksum",
+      "clear",
+      "cmp",
+      "comm",
+      "cp",
+      "cpio",
+      "cut",
+      "date",
+      "dd",
+      "debuggerd",
+      "derive_microdroid_vendor_dice_node",
+      "devmem",
+      "df",
+      "diff",
+      "dirname",
+      "dmesg",
+      "dos2unix",
+      "du",
+      "e2fsck",
+      "echo",
+      "egrep",
+      "encryptedstore",
+      "env",
+      "expand",
+      "expr",
+      "fallocate",
+      "false",
+      "fgrep",
+      "file",
+      "find",
+      "flock",
+      "fmt",
+      "free",
+      "fsync",
+      "getconf",
+      "getenforce",
+      "getevent",
+      "getfattr",
+      "getopt",
+      "getprop",
+      "gpiodetect",
+      "gpiofind",
+      "gpioget",
+      "gpioinfo",
+      "gpioset",
+      "grep",
+      "groups",
+      "gunzip",
+      "gzip",
+      "head",
+      "heapprofd",
+      "hostname",
+      "hwclock",
+      "i2cdetect",
+      "i2cdump",
+      "i2cget",
+      "i2cset",
+      "i2ctransfer",
+      "iconv",
+      "id",
+      "ifconfig",
+      "init",
+      "init_debug_policy",
+      "inotifyd",
+      "insmod",
+      "install",
+      "ionice",
+      "iorenice",
+      "kexec_load",
+      "kill",
+      "killall",
+      "linker64",
+      "linker_asan64",
+      "linker_hwasan64",
+      "ln",
+      "load_policy",
+      "log",
+      "logger",
+      "logname",
+      "losetup",
+      "ls",
+      "lsattr",
+      "lsmod",
+      "lsof",
+      "lspci",
+      "lsusb",
+      "md5sum",
+      "memeater",
+      "microcom",
+      "microdroid_launcher",
+      "microdroid_manager",
+      "mkdir",
+      "mke2fs",
+      "mkfifo",
+      "mkfs.ext4.microdroid",
+      "mknod",
+      "mkswap",
+      "mktemp",
+      "modinfo",
+      "modprobe",
+      "more",
+      "mount",
+      "mountpoint",
+      "mv",
+      "nc",
+      "netcat",
+      "netstat",
+      "nice",
+      "nl",
+      "nohup",
+      "nproc",
+      "nsenter",
+      "od",
+      "pageout_bomb",
+      "paste",
+      "patch",
+      "perfetto",
+      "pgrep",
+      "pidof",
+      "pkill",
+      "pmap",
+      "printenv",
+      "printf",
+      "ps",
+      "pwd",
+      "readelf",
+      "readlink",
+      "realpath",
+      "reboot",
+      "renice",
+      "resize2fs",
+      "restorecon",
+      "rm",
+      "rmdir",
+      "rmmod",
+      "rtcwake",
+      "runcon",
+      "sed",
+      "sendevent",
+      "seq",
+      "setenforce",
+      "setfattr",
+      "setprop",
+      "setsid",
+      "sh",
+      "sha1sum",
+      "sha224sum",
+      "sha256sum",
+      "sha384sum",
+      "sha512sum",
+      "sleep",
+      "sort",
+      "split",
+      "start",
+      "stat",
+      "stop",
+      "strace",
+      "strings",
+      "stty",
+      "swapoff",
+      "swapon",
+      "sync",
+      "sysctl",
+      "tac",
+      "tail",
+      "tar",
+      "taskset",
+      "tee",
+      "test",
+      "time",
+      "timeout",
+      "tombstoned.microdroid",
+      "toolbox",
+      "top",
+      "touch",
+      "toybox",
+      "tr",
+      "traced",
+      "traced_perf",
+      "traced_probes",
+      "traced_relay",
+      "true",
+      "truncate",
+      "tty",
+      "uclampset",
+      "ueventd",
+      "ulimit",
+      "umount",
+      "uname",
+      "uniq",
+      "unix2dos",
+      "unlink",
+      "unshare",
+      "uptime",
+      "usleep",
+      "uudecode",
+      "uuencode",
+      "uuidgen",
+      "vi",
+      "vmstat",
+      "watch",
+      "wc",
+      "which",
+      "whoami",
+      "xargs",
+      "xxd",
+      "yes",
+      "zcat",
+      "zipfuse"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/bin/bootstrap": [
+      "linker64",
+      "linker_asan64",
+      "linker_hwasan64"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc": [
+      "cgroups.json",
+      "event-log-tags",
+      "fstab.microdroid",
+      "ftrace_synthetic_events.conf",
+      "group",
+      "init",
+      "linker.config.pb",
+      "microdroid-graphics-linkerconfig",
+      "microdroid_crashdump_initrd.img",
+      "microdroid_crashdump_kernel",
+      "mke2fs.conf",
+      "mkshrc",
+      "passwd",
+      "perfetto",
+      "public.libraries.txt",
+      "selinux",
+      "ueventd.rc",
+      "vintf"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init": [
+      "atrace.rc",
+      "atrace_userdebug.rc",
+      "authfs_service.rc",
+      "heapprofd.rc",
+      "hw",
+      "init-perfetto.rc",
+      "microdroid_manager.rc",
+      "pageout_bomb.rc",
+      "perfetto.rc",
+      "prng_seeder.rc",
+      "tombstoned.microdroid.rc",
+      "traced_perf.rc"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/init/hw": [
+      "init.rc"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/perfetto": [
+      "persistent_cfg.pbtxt"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/selinux": [
+      "microdroid_precompiled_sepolicy",
+      "plat_file_contexts",
+      "plat_property_contexts"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/etc/vintf": [
+      "manifest.xml"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64": [
+      "android.hardware.atrace@1.0.so",
+      "android.hardware.common-V2-ndk.so",
+      "android.hardware.graphics.allocator-V2-ndk.so",
+      "android.hardware.graphics.allocator@2.0.so",
+      "android.hardware.graphics.allocator@3.0.so",
+      "android.hardware.graphics.allocator@4.0.so",
+      "android.hardware.graphics.common-V7-ndk.so",
+      "android.hardware.graphics.common@1.0.so",
+      "android.hardware.graphics.common@1.1.so",
+      "android.hardware.graphics.common@1.2.so",
+      "android.hardware.graphics.mapper@2.0.so",
+      "android.hardware.graphics.mapper@2.1.so",
+      "android.hardware.graphics.mapper@3.0.so",
+      "android.hardware.graphics.mapper@4.0.so",
+      "bootstrap",
+      "heapprofd_client.so",
+      "heapprofd_client_api.so",
+      "hw",
+      "ld-android.so",
+      "libOpenglCodecCommon.so",
+      "libSurfaceFlingerProp.so",
+      "libaconfig_storage_read_api_cc.so",
+      "libadbd_auth.so",
+      "libadbd_fs.so",
+      "libandroidfw.so",
+      "libapexsupport.so",
+      "libapkmanifest_native.so",
+      "libartpalette-system.so",
+      "libbase.so",
+      "libbinder.so",
+      "libbinder_ndk.so",
+      "libbinder_rpc_unstable.so",
+      "libc++.so",
+      "libc.so",
+      "libcap.so",
+      "libcrypto.so",
+      "libcutils.so",
+      "libdebuggerd_client.so",
+      "libdebugstore_cxx.so",
+      "libdl.so",
+      "libdl_android.so",
+      "libdrm.so",
+      "libext2_blkid.so",
+      "libext2_com_err.so",
+      "libext2_e2p.so",
+      "libext2_misc.so",
+      "libext2_quota.so",
+      "libext2_uuid.so",
+      "libext2fs.so",
+      "libext4_utils.so",
+      "libgralloctypes.so",
+      "libgraphicsenv.so",
+      "libhardware.so",
+      "libhidlbase.so",
+      "libincfs.so",
+      "libjsoncpp.so",
+      "libkeystore2_crypto.so",
+      "liblog.so",
+      "liblogwrap.so",
+      "liblzma.so",
+      "libm.so",
+      "libnativebridge_lazy.so",
+      "libnativeloader_lazy.so",
+      "libnativewindow.so",
+      "libpackagelistparser.so",
+      "libpcre2.so",
+      "libperfetto.so",
+      "libprocessgroup.so",
+      "libprocessgroup_setup.so",
+      "libprocinfo.so",
+      "libselinux.so",
+      "libsparse.so",
+      "libssl.so",
+      "libstdc++.so",
+      "libsync.so",
+      "libtombstoned_client.so",
+      "libui.so",
+      "libunwindstack.so",
+      "libutils.so",
+      "libvendorsupport.so",
+      "libvm_payload.so",
+      "libvndksupport.so",
+      "libvulkan.so",
+      "libz.so",
+      "libziparchive.so",
+      "libzstd.so",
+      "vulkan.ranchu.so"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/bootstrap": [
+      "libc.so",
+      "libdl.so",
+      "libdl_android.so",
+      "libm.so"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/lib64/hw": [
+      "vulkan.ranchu.so"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/usr": [
+      "share"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/usr/share": [
+      "zoneinfo"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system/usr/share/zoneinfo": [
+      "tz_version",
+      "tzdata"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/apex-tree/system_ext": [],
+    "/Volumes/Mark SSD/a17r/v30/dist": [
+      "macos"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/dist/macos": [
+      "bin",
+      "lib"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/bin": [
+      "crosvm",
+      "virtmgr",
+      "vm"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/dist/macos/lib": [
+      "libbinder_log.dylib",
+      "libbinder_ndk_sdk.dylib",
+      "libbinder_rpc_unstable_host.dylib",
+      "libbinder_sdk.dylib",
+      "libgfxstream_backend.dylib",
+      "libutils_binder_sdk.dylib"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/scripts": [
+      "microdroid.py",
+      "microdroid_lifecycle",
+      "vm_macos.sh"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle": [
+      ".gitignore",
+      "audit_owner.py",
+      "bound_owner.py",
+      "closure_check.py",
+      "compute_protocol.py",
+      "entry.py",
+      "instance_identity.py",
+      "lifecycle.py",
+      "linux_pidfd.py",
+      "mac_audit.py",
+      "mac_owner.py",
+      "native.py",
+      "pipe_log.py",
+      "runtime.py",
+      "strict_json.py",
+      "vendor",
+      "version.py"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/scripts/microdroid_lifecycle/vendor": [
+      "owned_job.py",
+      "windows_state.py"
+    ],
+    "/Volumes/Mark SSD/a17r/v30/assets": [
+      "compute-payload.apk"
+    ],
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle": [
+      ".gitignore",
+      "audit_owner.py",
+      "bound_owner.py",
+      "closure_check.py",
+      "compute_protocol.py",
+      "endpoint_evidence.py",
+      "entry.py",
+      "instance_identity.py",
+      "lifecycle.py",
+      "linux_pidfd.py",
+      "mac_audit.py",
+      "mac_owner.py",
+      "native.py",
+      "pipe_log.py",
+      "runtime.py",
+      "strict_json.py",
+      "vendor",
+      "version.py"
+    ],
+    "/Volumes/Mark SSD/a17r/v32/scripts/microdroid_lifecycle/vendor": [
+      "owned_job.py",
+      "windows_state.py"
+    ],
+    "/Volumes/Mark SSD/a17r/v32/scripts": [
+      "microdroid.py",
+      "microdroid_lifecycle",
+      "vm_macos.sh"
+    ],
+    "/Volumes/Mark SSD/a17r/v32/dist/macos": [
+      "bin",
+      "lib"
+    ],
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/bin": [
+      "crosvm",
+      "virtmgr",
+      "vm"
+    ],
+    "/Volumes/Mark SSD/a17r/v32/dist/macos/lib": [
+      "libbinder_log.dylib",
+      "libbinder_ndk_sdk.dylib",
+      "libbinder_rpc_unstable_host.dylib",
+      "libbinder_sdk.dylib",
+      "libgfxstream_backend.dylib",
+      "libutils_binder_sdk.dylib"
+    ],
+    "/Volumes/Mark SSD/a17r/v32/dist": [
+      "macos"
+    ]
+  }
+}
