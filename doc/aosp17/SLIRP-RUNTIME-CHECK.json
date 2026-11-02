@@ -1,0 +1,201 @@
+{
+  "state": "HELP_LOAD_PASS_NOT_VM",
+  "imports": {
+    "crosvm.exe": [
+      "advapi32.dll",
+      "api-ms-win-shcore-scaling-l1-1-1.dll",
+      "avrt.dll",
+      "bcrypt.dll",
+      "crypt32.dll",
+      "dwmapi.dll",
+      "kernel32.dll",
+      "ntdll.dll",
+      "user32.dll",
+      "userenv.dll",
+      "winhvemulation.dll",
+      "winhvplatform.dll",
+      "winmm.dll",
+      "ws2_32.dll",
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "ntdll.dll",
+      "bcryptprimitives.dll",
+      "libslirp-0.dll",
+      "gdi32.dll",
+      "kernel32.dll",
+      "user32.dll",
+      "kernel32.dll",
+      "kernel32.dll",
+      "libgfxstream_backend.dll"
+    ],
+    "virtmgr.exe": [
+      "avrt.dll",
+      "bcrypt.dll",
+      "kernel32.dll",
+      "ntdll.dll",
+      "psapi.dll",
+      "winmm.dll",
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "ADVAPI32.dll",
+      "CRYPT32.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "ntdll.dll",
+      "USER32.dll",
+      "USERENV.dll",
+      "WS2_32.dll",
+      "bcryptprimitives.dll",
+      "WindowsLocalRpcBridge.dll",
+      "kernel32.dll",
+      "user32.dll",
+      "kernel32.dll",
+      "ole32.dll",
+      "api-ms-win-core-winrt-error-l1-1-0.dll",
+      "oleaut32.dll",
+      "kernel32.dll",
+      "oleaut32.dll",
+      "kernel32.dll",
+      "ws2_32.dll",
+      "WindowsLocalRpcBridge.dll",
+      "libbinder_ndk_sdk.dll",
+      "libbinder_rpc_unstable_host.dll",
+      "libbinder_sdk.dll"
+    ],
+    "WindowsLocalRpcBridge.dll": [
+      "RPCRT4.dll",
+      "ADVAPI32.dll",
+      "bcrypt.dll",
+      "KERNEL32.dll",
+      "VCRUNTIME140.dll",
+      "api-ms-win-crt-string-l1-1-0.dll",
+      "api-ms-win-crt-stdio-l1-1-0.dll",
+      "api-ms-win-crt-heap-l1-1-0.dll",
+      "api-ms-win-crt-runtime-l1-1-0.dll"
+    ],
+    "libbinder_log.dll": [
+      "KERNEL32.dll",
+      "msvcrt.dll"
+    ],
+    "libbinder_ndk_sdk.dll": [
+      "libstdc++-6.dll",
+      "libgcc_s_seh-1.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "libwinpthread-1.dll",
+      "libbinder_sdk.dll",
+      "libutils_binder_sdk.dll",
+      "libbinder_log.dll"
+    ],
+    "libbinder_rpc_unstable_host.dll": [
+      "libstdc++-6.dll",
+      "libgcc_s_seh-1.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "libbinder_ndk_sdk.dll",
+      "libbinder_sdk.dll",
+      "libutils_binder_sdk.dll",
+      "libbinder_log.dll"
+    ],
+    "libbinder_sdk.dll": [
+      "libstdc++-6.dll",
+      "ADVAPI32.dll",
+      "bcrypt.dll",
+      "libgcc_s_seh-1.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "libwinpthread-1.dll",
+      "WS2_32.dll",
+      "libutils_binder_sdk.dll",
+      "WindowsLocalRpcBridge.dll"
+    ],
+    "libutils_binder_sdk.dll": [
+      "libstdc++-6.dll",
+      "libgcc_s_seh-1.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll"
+    ],
+    "vm.exe": [
+      "ntdll.dll",
+      "userenv.dll",
+      "ws2_32.dll",
+      "api-ms-win-core-synch-l1-2-0.dll",
+      "ADVAPI32.dll",
+      "bcrypt.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "ntdll.dll",
+      "bcryptprimitives.dll",
+      "WindowsLocalRpcBridge.dll",
+      "kernel32.dll",
+      "libbinder_ndk_sdk.dll",
+      "libbinder_rpc_unstable_host.dll",
+      "libbinder_sdk.dll"
+    ],
+    "libgcc_s_seh-1.dll": [
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "libwinpthread-1.dll"
+    ],
+    "libgfxstream_backend.dll": [
+      "libstdc++-6.dll",
+      "ADVAPI32.dll",
+      "libgcc_s_seh-1.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "USER32.dll",
+      "libwinpthread-1.dll"
+    ],
+    "libslirp-0.dll": [
+      "ADVAPI32.dll",
+      "IPHLPAPI.DLL",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "ole32.dll",
+      "SHELL32.dll",
+      "USER32.dll",
+      "WS2_32.dll",
+      "libintl-8.dll"
+    ],
+    "libstdc++-6.dll": [
+      "libgcc_s_seh-1.dll",
+      "KERNEL32.dll",
+      "msvcrt.dll",
+      "libwinpthread-1.dll"
+    ],
+    "libwinpthread-1.dll": [
+      "KERNEL32.dll",
+      "msvcrt.dll"
+    ],
+    "libintl-8.dll": [
+      "KERNEL32.dll",
+      "msvcrt.dll"
+    ]
+  },
+  "missing": [],
+  "runs": [
+    {
+      "name": "crosvm.exe",
+      "exit": 0,
+      "real_stdout_stderr_eof": true,
+      "stdout": "Usage: E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\crosvm.exe [--extended-status] [--log-level <log-level>] [--syslog-tag <TAG>] [--no-syslog] <command> [<args>]\n\ncrosvm\n\nOptions:\n  --extended-status use extended exit status\n  --log-level       specify log level, eg \"off\", \"error\", \"debug,disk=off\", etc\n  --syslog-tag      when logging to syslog, use the provided tag\n  --no-syslog       disable output to syslog\n  --help            display usage information\n\nCommands:\n  balloon           Set balloon size of the crosvm instance to `SIZE` bytes\n  balloon_stats     Prints virtio balloon statistics for a `VM_SOCKET`\n  balloon_ws        Prints virtio balloon working set for a `VM_SOCKET`\n  battery           Modify battery\n  create_composite  Create a new composite disk image file\n  device            Start a device process\n  disk              Manage attached virtual disk devices\n  gpu               Manage attached virtual GPU device.\n  make_rt           Enables real-time vcpu priority for crosvm instances started\n                    with `--delay-rt`\n  resume            Resumes the crosvm instance. No-op if already running. When\n                    starting crosvm with `--restore`, this command can be used\n                    to wait until the restore is complete\n  run               Start a new crosvm instance\n  stop              Stops crosvm instances via their control sockets\n  suspend           Suspends the crosvm instance\n  swap              Vmm-swap commands\n  powerbtn          Triggers a power button event in the crosvm instance\n  sleepbtn          Triggers a sleep button event in the crosvm instance\n  gpe               Injects a general-purpose event into the crosvm instance\n  usb               Manage attached virtual USB devices.\n  version           Show package version.\n  vfio              add/remove host vfio pci device into guest\n  snapshot          Snapshot commands\n  run-metrics       Start a new metrics instance\n  run-mp            Start a new mp crosvm instance\n  run-slirp         Start a new slirp instance\n  run-main          Start a new broker instance\n",
+      "stderr": "[2026-11-02T16:21:58.913237800+00:00 INFO  crosvm] exiting with success\n"
+    },
+    {
+      "name": "virtmgr.exe",
+      "exit": 0,
+      "real_stdout_stderr_eof": true,
+      "stdout": "Usage: virtmgr.exe --ndr-endpoint <NDR_ENDPOINT> --ready-handle <READY_HANDLE>\n\nOptions:\n      --ndr-endpoint <NDR_ENDPOINT>  Local RPC endpoint. Its name and READY byte are not peer credentials\n      --ready-handle <READY_HANDLE>  Dedicated inherited byte-pipe writer, passed by the explicit HANDLE list\n  -h, --help                         Print help\n",
+      "stderr": ""
+    },
+    {
+      "name": "vm.exe",
+      "exit": 0,
+      "real_stdout_stderr_eof": true,
+      "stdout": "Usage: vm.exe <COMMAND>\n\nCommands:\n  check-feature-enabled  Check if the feature is enabled on device\n  run-app                Run a virtual machine with a config in APK\n  run-microdroid         Run a virtual machine with Microdroid inside\n  run                    Run a virtual machine\n  list                   List running virtual machines\n  info                   Print information about virtual machine support\n  create-partition       Create a new empty partition to be used as a writable partition for a VM\n  create-idsig           Creates or update the idsig file by digesting the input APK file\n  console                Connect to the serial console of a VM\n  start-adbd             Sends a command to the VM to start adbd\n  stop-adbd              Sends a command to the VM to stop adbd\n  help                   Print this message or the help of the given subcommand(s)\n\nOptions:\n  -h, --help  Print help\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "actual entry help/load only; no VM or acceptance claim",
+  "active": null
+}

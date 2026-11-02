@@ -1,0 +1,933 @@
+{
+  "directories": {},
+  "files": {
+    "E:/bscp/out/aosp17-windows-formal-v1461/runtime-private-v1550/assets/guest/com.android.virt.apex": {
+      "bytes": 110133248,
+      "sha256": "6af2dd6fc128f51de39f59b8d05c445b0a05645d8de73d1547986326e27a5fbb"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\apex_manifest.pb": {
+      "bytes": 402,
+      "sha256": "949763e3eacd06a8282e1c9dc38b71f368521c25a03179e17cac5e99fa82df3c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\app\\EmptyPayloadApp@CP2A.260605.016\\EmptyPayloadApp.apk": {
+      "bytes": 73899,
+      "sha256": "cab41b20a4d98ca289aa00446c934602f4e91cf24d64912da07b06190259fe59"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\app\\android.system.virtualmachine.res@CP2A.260605.016\\android.system.virtualmachine.res.apk": {
+      "bytes": 8351,
+      "sha256": "1c440da46c1b72378bb8ca7bbe85b94178c35e14daffb60a540ee862ab235855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\crosvm": {
+      "bytes": 16311328,
+      "sha256": "fad2b6a9d7461882ac885aabd62035f19306423a45185878b9ce8a32c8ce9553"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\crosvm_vu_fs": {
+      "bytes": 36424,
+      "sha256": "9e8968ebf98ee3c3cf20dcdbde19b2c2fb964e7c9c2ea51ba7e54925ebd41246"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\crosvm_vu_snd": {
+      "bytes": 36432,
+      "sha256": "6d6a32211019f81d6635bbf4fa1334b3a68f9a19f3e4c4cdc0a002a5d947c9e5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\early_virtmgr": {
+      "bytes": 4852608,
+      "sha256": "8bb0a19b8cff943b43874427c94061b04f9fad5ac0e27d1b2da54feffe0e4c14"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\fd_server": {
+      "bytes": 941976,
+      "sha256": "06b87a3604d15340671441be3b1bac3614fc3343924d21e55af925c20139ba48"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\vfio_handler": {
+      "bytes": 520312,
+      "sha256": "242848532656bf2462c86784970d165a0ef54f2d3beb37ea5bd71bb2bfe070cd"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\virtmgr": {
+      "bytes": 5031424,
+      "sha256": "38cbe6a9be50ffbbd4bf871faf91b4794909299aa61b731a2bbabd0532449135"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\virtualizationservice": {
+      "bytes": 3567056,
+      "sha256": "ac955be908d219bf5fe7666732543f97d5a3c46840bec9b7289db4fa99598a81"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\vm": {
+      "bytes": 1914584,
+      "sha256": "2819620a2b75a22993d7c12581f640661ed55f99b55ecf5195cfc230463394a7"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\bin\\vmnic": {
+      "bytes": 501368,
+      "sha256": "171ac7a724b97a7b6ea1734193aa49a459f6f9832f4ce4c99557a9fdd6c0e06b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\aconfig_flags.pb": {
+      "bytes": 2784,
+      "sha256": "722ca3770c657b2f7ecbea3f1a0d4c4c83b97805e2693129b7b1c93d4d0527c4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\classpaths\\bootclasspath.pb": {
+      "bytes": 74,
+      "sha256": "7eae883a27f688ed0ee62b69b6979ff1f281c7317f77df8b17411eba99e84d4f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\classpaths\\systemserverclasspath.pb": {
+      "bytes": 63,
+      "sha256": "a4dd4caa56d6ed12bd8dbc6b14363fb9263d3f309720124371c7b80d9ad7a211"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\flag.info": {
+      "bytes": 45,
+      "sha256": "db0e2ff918a278694d4f9b35d6d3cbaaa70f23a763cfd5e4b6d97204e80eb5ae"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\flag.map": {
+      "bytes": 479,
+      "sha256": "896eec7b358ff44dd06e8ac169c778c7062c6bdef08b547af9b38b4eb9bbcf53"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\flag.val": {
+      "bytes": 45,
+      "sha256": "3b2f674c5c5bfb57f0ae78b607abb46488701515324423b6c9c136bae4e45453"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\fs\\microdroid.img": {
+      "bytes": 41340928,
+      "sha256": "64d7d77afad1018041de816f5bf2272c6e454a7f69b74e88a4f943bb736d86f4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\fs\\microdroid_gki-android15-6.6_kernel": {
+      "bytes": 20865024,
+      "sha256": "34cff791dab9fb2376e96d46bd0957359de0124c74b58a9f70c6f56d6f039a9a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\fs\\microdroid_kernel": {
+      "bytes": 8691712,
+      "sha256": "42596e402a1d82d05b17b9b6a99eaa8112f1be29df43121fbd546c351fef89f9"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\fs\\microdroid_vbmeta.img": {
+      "bytes": 65536,
+      "sha256": "cea3a7c38c9631f4080425b8302e63c56a6ca8320a4ff854d0f224ef7e4d109e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\microdroid.json": {
+      "bytes": 476,
+      "sha256": "0603ef55237e9f1ca379ecc394e21b759221f74ab628290b7fd6266eae4d3556"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\microdroid_gki-android15-6.6.json": {
+      "bytes": 460,
+      "sha256": "4be1730cb23c866696bf113781f7b0ee87c47e4c3b6766346eac318a7491db17"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\microdroid_gki-android15-6.6_initrd_debuggable.img": {
+      "bytes": 1532836,
+      "sha256": "fba03b384dcc5ea731165367e79420843f036cd441172ef411e2bbeed9f2687b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\microdroid_gki-android15-6.6_initrd_normal.img": {
+      "bytes": 1532668,
+      "sha256": "50712bc0f0cb77e0e08ccf70a4100ab1a959fe07f49428807d23cbbe98dbbb86"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\microdroid_initrd_debuggable.img": {
+      "bytes": 1328280,
+      "sha256": "28266ca8522dc779b10b97a7029cb817bfe79f930e4bfbc553715fc0aae4d49e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\microdroid_initrd_normal.img": {
+      "bytes": 1328116,
+      "sha256": "3618c74fb2452676cd3b475b3b0ebf2f7122f869301eb9ca867b177946f9d45b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\package.map": {
+      "bytes": 132,
+      "sha256": "ee93ac81a901a51582e5a5cc3e748084e4538f4607969ff4cb6385217d183147"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\sysconfig\\preinstalled-packages-apex-com.android.virt.xml": {
+      "bytes": 2993,
+      "sha256": "aede518bd9d8d379e521726002b256461e549fbb684ff2451076ff69d7ef1464"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\u-boot.rom": {
+      "bytes": 1048576,
+      "sha256": "42c53a89476c651f42c19813b4a07fe7a19ed7edec19f6b0e0edbbf6383c3cbf"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\vfio_handler.rc": {
+      "bytes": 796,
+      "sha256": "02238cb1f764e80dbfd5124b3f2d8d30147dd72a951a6977b4dfddf5ee542999"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\vintf\\virtualizationservice.xml": {
+      "bytes": 367,
+      "sha256": "24fe8c0384583e2ba1cde204ac9083699650ebcd7199884c81cd1b30ce525d76"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\virtualizationservice.rc": {
+      "bytes": 956,
+      "sha256": "52c58c60bc643117de020539df4d72b8431ea91c099618308faa29a8ffc40688"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\etc\\vmnic.rc": {
+      "bytes": 773,
+      "sha256": "5f163cf715b9760ca241f3fc50a5857b942e1bb4087c40daec697e6af116321f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\javalib\\framework-virtualization.jar": {
+      "bytes": 216853,
+      "sha256": "d0b4e1cbf27f3592b533a935a78c8b1e4cc3a0eda52526e0c34705c069f4b44f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\javalib\\service-virtualization.jar": {
+      "bytes": 22010,
+      "sha256": "57ea2dda50801c359d5f813174406db0807d11deca81a5bbed4fdffb1c21bf61"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\MicrodroidExitNativeLib.so": {
+      "bytes": 35144,
+      "sha256": "6f504cfb8749c46d8162f77cfd327eec5d2adff438f200d8359b02a5d65e433d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\android.system.virtualizationcommon-ndk.so": {
+      "bytes": 85752,
+      "sha256": "ec4ab09ed0111d98cf44cc6139f8a009f09b17f38a30ee81d75827bf531833d3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\android.system.virtualizationservice-ndk.so": {
+      "bytes": 186088,
+      "sha256": "3acdb1286b653fa7c22ca08e0863aa162363c17481212faabcb967216bc13c54"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libanyhow.dylib.so": {
+      "bytes": 56640,
+      "sha256": "13a2e213557cac0c0d64100aa3e7b5200a2b71564e4d50f1e990008bf5f77e97"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libavf.so": {
+      "bytes": 691168,
+      "sha256": "b6c8b5b92826a37afe40642fcc1532c39772042c835dcdfbf3d5f055a6dd57be"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libbase.so": {
+      "bytes": 236256,
+      "sha256": "63277553faeb08cc88ccde4acec379bdbf051312ebab1430b3c148cb3865906a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libc++.so": {
+      "bytes": 1117448,
+      "sha256": "1d01d51b0cdf7ad4224f96e5a3bbd33556cf2ccca6abc6bc886f7e1c4a40fc34"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libcap.so": {
+      "bytes": 68048,
+      "sha256": "cc2ded0d7b73b53d42b174170e7a0b1d197b02de36a4470c985e0b6a6db1d94d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libcrypto.so": {
+      "bytes": 1914728,
+      "sha256": "c7e8152bc03a10c665be14dd918ba8d47c24a0e9e8c75a01e3ad0154d2609d74"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libcutils.so": {
+      "bytes": 118504,
+      "sha256": "0d6ecef3313f82efffcfab9d16713bb12e56c3da17089ea615b5f4797bce8851"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libminijail.so": {
+      "bytes": 182976,
+      "sha256": "c67941ad568ab2af29a982b4ffd1fcc4dfed8b3878b1c164ad7d87534b60d1b3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libprocessgroup.so": {
+      "bytes": 384216,
+      "sha256": "6c65e14ded3d3986f73278744dc4942d44c44cd95678fe3cc4fb542fe96b522d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libsqlite.so": {
+      "bytes": 1391432,
+      "sha256": "0f1c8116944eb7b9712fbed3ceabed7c3c7d246966c074a2a15faec9273b38e7"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libssl.so": {
+      "bytes": 621984,
+      "sha256": "b109a492e1fe024043f652a544938d6fc40253c4f164966f492892e0316440e8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libstd.dylib.so": {
+      "bytes": 1464784,
+      "sha256": "60a79b23f63625203b44833ce4649312f25fb224b2ddf761eaf41f81eff94fef"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libtombstoned_client.so": {
+      "bytes": 53416,
+      "sha256": "95f85c039b3bfc3a74a5b9691fda06f806aec4e76e8df7d940aa8fc7455587d9"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libvirtualizationservice_jni.so": {
+      "bytes": 508536,
+      "sha256": "c7b6e1ccab8f0585819106dda62d31b5ef692e330fe258e2830cf512f18a488b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\lib64\\libvirtualmachine_jni.so": {
+      "bytes": 35920,
+      "sha256": "a024897ac1838dc2c39092f0815417475fc86ce00a9effb199a30126726e4d04"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\apex\\com.android.virt\\priv-app\\VmTerminalApp@CP2A.260605.016\\VmTerminalApp.apk": {
+      "bytes": 21963425,
+      "sha256": "53c9e282761bbc75fd36be6b02a12ccbb4c0ebd4d899c82f428e5b9a489ee632"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\apex\\com.android.runtime.apex": {
+      "bytes": 10100736,
+      "sha256": "29acc89ec0ae5541a00213dce22887d7598536ee110ad84cc459705f34d29369"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\apexd": {
+      "bytes": 2154880,
+      "sha256": "78f09413dd248520c43e580203489c240c0da26e64921c031905bd47148cd04f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\apkdmverity": {
+      "bytes": 890472,
+      "sha256": "038d2bbd529f8f9c2ac9376529fd0bec82f4a485dd5bb9a738f15e9139f58236"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\atrace": {
+      "bytes": 86048,
+      "sha256": "395825d32a67e65db88d8fc31f8fbcbbc01f1d1f92f8d82d83072a6624cddf95"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\authfs": {
+      "bytes": 1165800,
+      "sha256": "6d9813affee400995f0bfd09b36c34e21a05037621c1904d897fdc4b8306b8e1"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\authfs_service": {
+      "bytes": 621328,
+      "sha256": "724de74f7fc466c8ce6cd610b324cd672d5c30a0284d2ff90bf797fea9aa6afa"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\bootstrap\\linker64": {
+      "bytes": 2410504,
+      "sha256": "d68727b6451ec606aff66859e1c750e4330c770ff1fe833228844fb2c32f0a3c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\debuggerd": {
+      "bytes": 51336,
+      "sha256": "bf1875e345f809c91d55e85c716eb92023abdbc25e008d485f8b5803a5dc57b9"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\derive_microdroid_vendor_dice_node": {
+      "bytes": 1076192,
+      "sha256": "ed66324ed627f820caf32fdf3c73748cd27eba9ab866bee7441e0f273e734f7b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\e2fsck": {
+      "bytes": 300704,
+      "sha256": "a3907ce299afa5236033d4bf6f5b3e8e8a3e7e5ecb46c6f6dbd35ce608f0d3b5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\encryptedstore": {
+      "bytes": 1114192,
+      "sha256": "4db0895021089a4d54d8ff7f0f1662745c56a1c05aca6910730d2131e70272e3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\heapprofd": {
+      "bytes": 483960,
+      "sha256": "71458c5dc0730de02a6b8952f9a50b494f7ee74bb4ac347a01f02da5fea11317"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\init": {
+      "bytes": 1671456,
+      "sha256": "e5d9eb404b3ef8b412d34ac1984e5a9a91601128e436d13f52597ead20a509e3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\init_debug_policy": {
+      "bytes": 378696,
+      "sha256": "80b72416c1d655775c563aae8e9046aab90afc85e3ca04ac7cfd2579cf6aead3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\kexec_load": {
+      "bytes": 359600,
+      "sha256": "fb1ea6480895dc05ea8d4adf04be9c810ede7340029d7010dfc5ae293628f1c1"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\microdroid_launcher": {
+      "bytes": 327544,
+      "sha256": "51892dd777dee2e39d6b66777986a6660e69ca8b9443a9691b7759ef08d5cf1a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\microdroid_manager": {
+      "bytes": 2781888,
+      "sha256": "cb4920a83def2fbe197f84698cd653f48d58b8f68becd5bc2e873e48d1b2d0cd"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\mke2fs": {
+      "bytes": 100952,
+      "sha256": "5e8172d3ab364cf06e3ba38d302ba43f616f3645a426fdaf4b49fc6ba453f8dc"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\pageout_bomb": {
+      "bytes": 448736,
+      "sha256": "c85f687bf3e7ee33693d9273004aa126c754224061cd8808085f6bfa57ba9515"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\perfetto": {
+      "bytes": 733432,
+      "sha256": "808739fc2894dd7d0ccd2811dcf8a24fbdc4e7855efb6daf7d15d2a3cd7fc514"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\reboot": {
+      "bytes": 51280,
+      "sha256": "a9202ad16e96e333aff669f5f0bfbc32a9bc0aa74fe864e5d7c56127c15b9f81"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\resize2fs": {
+      "bytes": 101216,
+      "sha256": "feb4d9ca3cb0b8d9e2e7c9e6cb6c4fe7362e2af949b0405e0b642a4f2b8b4f1a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\sh": {
+      "bytes": 334856,
+      "sha256": "92e836ea4b8d0b8831f032eba8fd5a93d7fab9fe101c46ec8f25e9c328c26c13"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\strace": {
+      "bytes": 879864,
+      "sha256": "19af5048437890d9b47107d73676e0a9864848310710733384e69ca3541dca92"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\tombstoned.microdroid": {
+      "bytes": 137560,
+      "sha256": "3ba026c49889762f47997ce2eef91cc8ca5f3c54c1aa02720b07b88702433e06"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\toolbox": {
+      "bytes": 170280,
+      "sha256": "cd548a26dab0a21992fbef575a058e26099f875a6e0dc16f104390154c1fbd63"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\toybox": {
+      "bytes": 612384,
+      "sha256": "f4d71610696a24c12bd300b68351a8c4c2bd2b52bbd61e19d73c975e09209f35"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\traced": {
+      "bytes": 51080,
+      "sha256": "00136260f8e822fda4267726ee09b870d9afe362f534c2b4aaaf44f7a9994155"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\traced_perf": {
+      "bytes": 533320,
+      "sha256": "10984ff2c205c2aa17303e960c032bf80531a10bdc29c31cea9fff09257ee66e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\traced_probes": {
+      "bytes": 51080,
+      "sha256": "ee7b82d6c53e6522532c60f041fc7b4f751d6f72a0a273e52ac615f2098a710b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\traced_relay": {
+      "bytes": 225000,
+      "sha256": "6268670c4654749375e49762bff54b477ebfe80cc2fbe9903e78088d0023463e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\bin\\zipfuse": {
+      "bytes": 1058608,
+      "sha256": "335a813fb2f87173b59c00206132cae83083856acb44b736b483c0372e338c1b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\build.prop": {
+      "bytes": 1329,
+      "sha256": "aa491724335eaf241ad668976595d5f8f3c710c741863e593b028e7d906d1794"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\cgroups.json": {
+      "bytes": 240,
+      "sha256": "f1838d8006080b5d79d05b5d9c1b0fe6a819a0db60205a2ded5c343afe1aa1ca"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\event-log-tags": {
+      "bytes": 2522,
+      "sha256": "7626e7d6f8c9824075187bcb762faf3525219b651ee98170148b94d66b66a4a8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\fstab.microdroid": {
+      "bytes": 491,
+      "sha256": "f90d8ea68d66af18640cc638991f7624418eda4771592618244a5a4e24c3f96a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\ftrace_synthetic_events.conf": {
+      "bytes": 114,
+      "sha256": "2dad34d8e84419e2abcb7ff5edc89a087ef7d5864489eb7ec3e3978461bc887c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\group": {
+      "bytes": 22,
+      "sha256": "7cf771c2910956067ba21d36aacab9c150eac7eb0b60a3af0814ec615a82cdc7"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\atrace.rc": {
+      "bytes": 33435,
+      "sha256": "fe668a397715f63fe7e256a61132e1e406801b3549217be39c072a65ab24ad0e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\atrace_userdebug.rc": {
+      "bytes": 1500,
+      "sha256": "eea193467ec478fb461586e3e1114c6e9676e812bb4d9c8cca5c273c25d538a5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\authfs_service.rc": {
+      "bytes": 213,
+      "sha256": "dbeab7881ecf4ee8b04bdc15766041acfd8cf692afadc7619970d9909fcc620f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\heapprofd.rc": {
+      "bytes": 2121,
+      "sha256": "325c7e57909523e3c617a4d28311f5f15c575b69c0ccbf96c99d6d657b0a6475"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\hw\\init.rc": {
+      "bytes": 8149,
+      "sha256": "cd1fd4fda787534cd4fca910bae1d8adba9fb45ee83caa33532883f0385f5561"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\init-perfetto.rc": {
+      "bytes": 1450,
+      "sha256": "a3de46ffbe93424655648d06f80d1a2664677bb2967906425a9fec02f0d496a5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\microdroid_manager.rc": {
+      "bytes": 1113,
+      "sha256": "fd0507bc82cd2d773c68d5a4e60f90b612b8ed6e26a38b6dafe42b49e9729e86"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\pageout_bomb.rc": {
+      "bytes": 483,
+      "sha256": "571bd5b614a2c0e0b1cef0baecf8b3b2231c417cdd87166be3cdec73db64b59c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\perfetto.rc": {
+      "bytes": 8386,
+      "sha256": "13968b961cf0503df1e6666d33af8b6ffa9fe049851ada523812709435ce1a6c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\prng_seeder.rc": {
+      "bytes": 307,
+      "sha256": "6c4763c65ab372e459e5b1558e733fa08a85615198d2555a4112276b47cb71d4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\tombstoned.microdroid.rc": {
+      "bytes": 209,
+      "sha256": "127b34dd7159f199a4a93871f525def2b4d198022fcf440646482d0533fbed4c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\init\\traced_perf.rc": {
+      "bytes": 2137,
+      "sha256": "757876dc3c2c849394c600b5b823d7a1cd45cb8ba63923c90020be45525341eb"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\linker.config.pb": {
+      "bytes": 466,
+      "sha256": "021c322b33320745a735416e00453bd28e759820a6ce977e0197aaa37a5606e8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\microdroid-graphics-linkerconfig": {
+      "bytes": 34,
+      "sha256": "d0e3b97fb5bd37a34ad9e6483b505400e8c515578eb7ffd862d9a0c032b8b015"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\microdroid_crashdump_initrd.img": {
+      "bytes": 2356992,
+      "sha256": "ccb42e14ea37b05d077adc91d6a61dd4e73066dbe6b558abd6876f11ec5c416f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\microdroid_crashdump_kernel": {
+      "bytes": 3154944,
+      "sha256": "525650c9f764647c1e7135a9c130437da702681a76d39abf402973c2c2f244f5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\mke2fs.conf": {
+      "bytes": 1157,
+      "sha256": "ad58a58dcdd24d85055814ca9cac67db89d4e67c434e96774bdce0d0a007d067"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\mkshrc": {
+      "bytes": 389,
+      "sha256": "57da624ec83cb61d9f81722ec72a6efa93f7ccbfbabc6e3aa3cf5348f80d8617"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\passwd": {
+      "bytes": 31,
+      "sha256": "230acf5930297dd96823db251f64bbdd47d17ce6c335eb24e4e655eee40d3407"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\perfetto\\persistent_cfg.pbtxt": {
+      "bytes": 2303,
+      "sha256": "5eeadba5880d2b2de8f510e0c2e2b8db7ab1c58f588e0c7ab17b18d246b46045"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\public.libraries.txt": {
+      "bytes": 549,
+      "sha256": "63522af72a927a5edb7df539f0f3643f44a91fa11b64cac977796b8ee50bd96f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\selinux\\microdroid_precompiled_sepolicy": {
+      "bytes": 103832,
+      "sha256": "9d9100d68e2668d6343090ed69682858242516eb14afb8a7d67743555983489e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\selinux\\plat_file_contexts": {
+      "bytes": 8240,
+      "sha256": "51836b4bd8e32a170d218299640c40be3f695d865fc8c2c035d4df673f6b7ae0"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\selinux\\plat_property_contexts": {
+      "bytes": 12936,
+      "sha256": "ff63e25a41ec2c8904ccf51ce9bf1db1f0d5ff3c2ace03de1fa83b828a38d1ab"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\ueventd.rc": {
+      "bytes": 1472,
+      "sha256": "14193f94f7a6f47cbe0d92da532df147c1b5cb564b75c18f33f82d701a3a5b53"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\etc\\vintf\\manifest.xml": {
+      "bytes": 112,
+      "sha256": "129aff51ffc54930fa2f0af8144b7b3fd15e27d8dbafa38ace8e93ceccaf9b7c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.atrace@1.0.so": {
+      "bytes": 119352,
+      "sha256": "24b91dbc566e9190bca11c631619945636f11ed97fe60bbb02c778a8ca7963ce"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.common-V2-ndk.so": {
+      "bytes": 51680,
+      "sha256": "1cce79f6204791c44841a5f43a4d3e828db2425dea7acac0a8adf62cdbf223d9"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.allocator-V2-ndk.so": {
+      "bytes": 69088,
+      "sha256": "54ec13a4d56da1aaee69972f43e4fb4cf1c396d654e93ced4d36e448613c9150"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.allocator@2.0.so": {
+      "bytes": 119560,
+      "sha256": "e24aa0bcfa57c184a68cbe814e130bf9656a5b956042b854d522d8d4ec77c8f1"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.allocator@3.0.so": {
+      "bytes": 119560,
+      "sha256": "cf782742cb65a205dda69082de25bd9b48fc1aef5e06b193547684440c076ecd"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.allocator@4.0.so": {
+      "bytes": 103040,
+      "sha256": "9573cadcb22435603ffef51270c822648e25cc56ee80520e4f1163f7427360ff"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.common-V7-ndk.so": {
+      "bytes": 52064,
+      "sha256": "9b125e8b5d0baaf6c32445b50b66eb18898310784a0b010eaf96a0875461e02b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.common@1.0.so": {
+      "bytes": 35224,
+      "sha256": "083bcf9acd5cac306ceefd421679a827c4b6b4d6467fdc43f095d1679b82221f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.common@1.1.so": {
+      "bytes": 35240,
+      "sha256": "bc674de1203b752db6fc6a237eefa1bd74cb6297ce3e5833942e832c72991868"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.common@1.2.so": {
+      "bytes": 35272,
+      "sha256": "b22a3f98f571ceb67cbf0d33e59a51ebdf7aa28ce0358c3d3f9fb4ab8e92ec6a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.mapper@2.0.so": {
+      "bytes": 119824,
+      "sha256": "9f8fc3c2a690a8a2bb10c3ea241731f76e4faacfd83328e19f1b823790625748"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.mapper@2.1.so": {
+      "bytes": 119952,
+      "sha256": "10c836943cddcfcc1be20fb535ba403c38b734898b994b190af43a748680ba27"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.mapper@3.0.so": {
+      "bytes": 136536,
+      "sha256": "e45c965f603456d26361b1435fa7d7e62b1d1c4422729456db62258896230805"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\android.hardware.graphics.mapper@4.0.so": {
+      "bytes": 170288,
+      "sha256": "c8631a90283d6fc8e9757a9a5a46321dbc0379f8c905f0dec9437b1438624707"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\bootstrap\\libc.so": {
+      "bytes": 1218880,
+      "sha256": "0ccccfc9ee6fa18f8e5e2fbeb85f9e2c8a737543b3d69a9294f98824a5d8fdb8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\bootstrap\\libdl.so": {
+      "bytes": 50760,
+      "sha256": "64be03a713154debfd672ea26e3bbfb1c2c21d10e8e05eb97c3d2e64bcece604"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\bootstrap\\libdl_android.so": {
+      "bytes": 34672,
+      "sha256": "9b6828ec81e253a8dfd986480abe92257ca9f8b7bb84b0b4be8291bb93b70563"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\bootstrap\\libm.so": {
+      "bytes": 281744,
+      "sha256": "13db5f82add3bfe272ceba0cf2db1dd219885a82c7d19739c4cf1b61ad14ff63"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\heapprofd_client.so": {
+      "bytes": 51632,
+      "sha256": "9adfea10eba4dbec25bbdb9d8814de3e52405465eabaa748af9b344c59f41874"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\heapprofd_client_api.so": {
+      "bytes": 86272,
+      "sha256": "3f9125517d25d0b749e41e0434c8b58f87aa0fe2fb50d6aa35e2f4a49b76573a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\hw\\vulkan.ranchu.so": {
+      "bytes": 4657472,
+      "sha256": "dacd2c6bd752ff3dd4ec9b7798f1b2009b1de762a4969763044ae7726a58f4b4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\ld-android.so": {
+      "bytes": 34080,
+      "sha256": "5e5ee4ff6f562d81abf02198b0cce5d98f755b338f6df81ddb060adca34b1b8e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libOpenglCodecCommon.so": {
+      "bytes": 218072,
+      "sha256": "6ad778e9bf1f5022fb3579d64a47aba3c7f79c00da0c580d6a17f9a1a2662c7b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libSurfaceFlingerProp.so": {
+      "bytes": 52680,
+      "sha256": "dfef039b68c9ff92502a3ccdf66e45690e893ad2d549cc51421744dcf2e5e0d1"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libaconfig_storage_read_api_cc.so": {
+      "bytes": 447520,
+      "sha256": "f4505c0af3116f5666d28eff90df2317f664bd0ed1e31d92b53ade191b8d8395"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libadbd_auth.so": {
+      "bytes": 324144,
+      "sha256": "cbc808e103e83bc27328bbd7e9ee2dfd31824133809413c2ecbb30a4c5f0d585"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libadbd_fs.so": {
+      "bytes": 52624,
+      "sha256": "52e1ced89f70d1aa7e887d179af027d9df509acecb40113643fbd71013805cfc"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libandroidfw.so": {
+      "bytes": 1193968,
+      "sha256": "b46d47e2e992af99178d3d4f8f4d71d460088e0f9eaac08fd24b0bca804f8d45"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libapexsupport.so": {
+      "bytes": 491112,
+      "sha256": "fe57e43994634c3067ff4b540883b2f59a2795d49cbd4f4d6e8e0939ffd8a753"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libapkmanifest_native.so": {
+      "bytes": 53208,
+      "sha256": "397def7e4b896e30e83b84a3a28cdde3b4930af654ed553b6c4bcda093478aba"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libartpalette-system.so": {
+      "bytes": 51872,
+      "sha256": "4d15ac22f100341b1c43660b0383ceb3505f4043cc401183a2fb12e2c75000af"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libbase.so": {
+      "bytes": 236256,
+      "sha256": "63277553faeb08cc88ccde4acec379bdbf051312ebab1430b3c148cb3865906a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libbinder.so": {
+      "bytes": 876720,
+      "sha256": "7700dddcdae9d3dd89bce3910266e4b600aa541b4c9d4044a5d33f0bd774eed3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libbinder_ndk.so": {
+      "bytes": 186440,
+      "sha256": "5c4262b32fd02f4bbedab0f170cd61c23acdc5750113d3cc360094473c942246"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libbinder_rpc_unstable.so": {
+      "bytes": 36984,
+      "sha256": "3c21535bc30251c2adee48df505ab1bceff079416a0fa71b243f60246866c080"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libc++.so": {
+      "bytes": 1117448,
+      "sha256": "1d01d51b0cdf7ad4224f96e5a3bbd33556cf2ccca6abc6bc886f7e1c4a40fc34"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libcap.so": {
+      "bytes": 68048,
+      "sha256": "cc2ded0d7b73b53d42b174170e7a0b1d197b02de36a4470c985e0b6a6db1d94d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libcrypto.so": {
+      "bytes": 1914728,
+      "sha256": "c7e8152bc03a10c665be14dd918ba8d47c24a0e9e8c75a01e3ad0154d2609d74"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libcutils.so": {
+      "bytes": 118504,
+      "sha256": "0d6ecef3313f82efffcfab9d16713bb12e56c3da17089ea615b5f4797bce8851"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libdebuggerd_client.so": {
+      "bytes": 458120,
+      "sha256": "0d4f484f49d4d0b5365ff6e17c45b635b7ec3fee3b0c3797cb01fbbf5901b206"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libdebugstore_cxx.so": {
+      "bytes": 557096,
+      "sha256": "7dce33216cc6f1cf9ad6528d550cdc295c82373a883a819a0156ac6677fa73cc"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libdrm.so": {
+      "bytes": 117392,
+      "sha256": "6a635fca0b6fbcf85be1bb8ce1c66e81d5e161309ce843f08e16abce37522723"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libext2_blkid.so": {
+      "bytes": 72384,
+      "sha256": "d94cfb10aa69e33b369f07e356212dfbbb8b3e8555c0d1ee8827b70e1c59b594"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libext2_com_err.so": {
+      "bytes": 51496,
+      "sha256": "e72f0f6f3f4da530607a3028a48624658fc1a989e22adf8410b7e5343297d238"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libext2_e2p.so": {
+      "bytes": 51456,
+      "sha256": "85613451e1f43993754afca89041cdd3ef491c53a1a87eb872f34d75429f1cb1"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libext2_misc.so": {
+      "bytes": 35984,
+      "sha256": "c231303bba9d84553cffb0e98ca865cf41aaa64b44ced66bc79dbd7c09b89850"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libext2_quota.so": {
+      "bytes": 101288,
+      "sha256": "4709362c079519a11af16b586547f7094d47af21435950102de6c45a2f705c1e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libext2_uuid.so": {
+      "bytes": 51376,
+      "sha256": "9641e66807b13336bd7cd7cacee58f093b866056d0399e01eca809414e179a26"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libext2fs.so": {
+      "bytes": 399368,
+      "sha256": "9c2e62d5efc4212926087cdec6d9283ec26ee8ec8a0414c8b0605f4267f74a13"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libext4_utils.so": {
+      "bytes": 51376,
+      "sha256": "2122f1f8f34fd03dcbcd7fb1ad8490d96a0edb27f342309d5caea6cb8b5105ed"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libgralloctypes.so": {
+      "bytes": 101568,
+      "sha256": "ba7c40bc7eee4f2b8d8efd6db6e736b42c33ddc9a42ca584c0cf11bb3f101905"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libgraphicsenv.so": {
+      "bytes": 102392,
+      "sha256": "3deacfc50f3384b82b9627626120b6bd56b2c1cd20c9f71d1eb453417fbc9166"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libhardware.so": {
+      "bytes": 35512,
+      "sha256": "664f5803ee2c2a99e6b8837690da888d7e8c0f7b89380a770679cdf94f6978c6"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libhidlbase.so": {
+      "bytes": 720808,
+      "sha256": "59adeec6efb0b8e1c8ccf474c2d93c94b52d75fec9ff0f09361787de7940a24e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libincfs.so": {
+      "bytes": 218904,
+      "sha256": "9459c71f8cc808af4bbf2782662f0d64298848e3446156008ac88e0c00daf90d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libjsoncpp.so": {
+      "bytes": 200840,
+      "sha256": "b00bdd36bcf904273cd44c1b3998b535817b04717850526115fe4c60f8e1b450"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libkeystore2_crypto.so": {
+      "bytes": 37944,
+      "sha256": "045b36f3a267d0e71e8d1304b627ccc1cc5dfbfd6cc9c49302d0fcabbd48a293"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\liblog.so": {
+      "bytes": 101872,
+      "sha256": "2f610f942c6013cf73802310e1842451f134a5842938e09c8a3831c16011857f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\liblogwrap.so": {
+      "bytes": 51512,
+      "sha256": "2d6580c91da887a6bc11a9ede92a7fcc32814d44392bca33f262be9f962d5a12"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\liblzma.so": {
+      "bytes": 183752,
+      "sha256": "04228b21ce1989391812c244fee84a9397672b6c5873546effe5382805455452"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libnativebridge_lazy.so": {
+      "bytes": 51424,
+      "sha256": "ac71d95d2d31be94a0a8aa3cab87d197a5de4eaa84bdc3e36904c8a1df69db19"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libnativeloader_lazy.so": {
+      "bytes": 51512,
+      "sha256": "bb7acd66838446997086db1d4e98e6208d91a23b7ff08e9bcaa56e637a56e88c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libnativewindow.so": {
+      "bytes": 68248,
+      "sha256": "1c95fe4462a6a4ba46c0ed7a7cc96d25eb0feb449cdf7ad5f0136a6cc6d58a97"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libpackagelistparser.so": {
+      "bytes": 51480,
+      "sha256": "6968743e7c3575467a3d4a7491af9e5b30c9b9058fd80fd11d79d3c347bc0de7"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libpcre2.so": {
+      "bytes": 429120,
+      "sha256": "a3bfc90408a85b23b7a90f907321fe52b4ff05ce0e1f1943512a021d0dc7b98c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libperfetto.so": {
+      "bytes": 1720952,
+      "sha256": "b63f95eb71fd46005e7993390c2e2b0cafd6b44c8e0cfb9095b11aec1d5e5749"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libprocessgroup.so": {
+      "bytes": 384216,
+      "sha256": "6c65e14ded3d3986f73278744dc4942d44c44cd95678fe3cc4fb542fe96b522d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libprocessgroup_setup.so": {
+      "bytes": 53488,
+      "sha256": "fa66e77b98ddefa11cd7f7df2bb390df832906222a6dccb232823b952bea3d8b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libprocinfo.so": {
+      "bytes": 35944,
+      "sha256": "80d0ca78d0d171658fc6bb810b7bf9cee26b28a374288de2159def4c879ab08d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libselinux.so": {
+      "bytes": 135624,
+      "sha256": "78fd0c063f166da369c4f2d4463d0301a7d0f3287fa0080b72cb78cb12536f09"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libsparse.so": {
+      "bytes": 52408,
+      "sha256": "ca74a801b987f7ba2d1d611d125dffd454396b8322af69b0341d336cb7e5450f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libssl.so": {
+      "bytes": 621984,
+      "sha256": "b109a492e1fe024043f652a544938d6fc40253c4f164966f492892e0316440e8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libstdc++.so": {
+      "bytes": 35560,
+      "sha256": "81ef73494e4fad5ddfa98a25f79a44800920c8c6cf47c9943125043e8d61aab4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libsync.so": {
+      "bytes": 51232,
+      "sha256": "6cba4362333f390e034c221718190d59ba32bf1c32370cb5ac015bbf4a5784a3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libtombstoned_client.so": {
+      "bytes": 53416,
+      "sha256": "95f85c039b3bfc3a74a5b9691fda06f806aec4e76e8df7d940aa8fc7455587d9"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libui.so": {
+      "bytes": 454040,
+      "sha256": "e61898fd410b85e6d6b79f895dd3909334bc66cf76d87d38e7c85d3f36d81939"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libunwindstack.so": {
+      "bytes": 1096328,
+      "sha256": "f1d6e5849e7ad1f48185a4506c6a874df94503cd7bd694eeab5db7113ee096ab"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libutils.so": {
+      "bytes": 151152,
+      "sha256": "494efd7b99ec8ef2aff4490a6f86058ae840b69ef72d1fcaef35e77788fedf8e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libvendorsupport.so": {
+      "bytes": 35312,
+      "sha256": "c7b6cc928af7d49acbcd59908aed10b7be080bd4c1529a358c1d15c4096550b0"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libvm_payload.so": {
+      "bytes": 536776,
+      "sha256": "6c2e443374dbd05bc24879c18d36611f0cd830624b0557378c17e7c54276b5c7"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libvndksupport.so": {
+      "bytes": 51352,
+      "sha256": "51370ec4e5722711b68ff6870169b084e2519dba4668cf109c3cf1e5e5903c6e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libvulkan.so": {
+      "bytes": 275096,
+      "sha256": "2317f0e0d10f7d2d7770ad17ab1aefb77c46860affa164990c91efd045ba53c2"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libz.so": {
+      "bytes": 117576,
+      "sha256": "38b8636c20924a0085b40569b2569c89bbe61bc2d9e2eb107b87005e05cdd154"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libziparchive.so": {
+      "bytes": 119336,
+      "sha256": "de0a572cc04e2bda61e16880d5624ae86659fee409d2bd8e41dbfccfacab343c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\lib64\\libzstd.so": {
+      "bytes": 856864,
+      "sha256": "d9a0d60293db6c49b9b860fd6c9da8c6320734524b284101b5960fac72040f4b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\usr\\share\\zoneinfo\\tz_version": {
+      "bytes": 17,
+      "sha256": "3d2534002e75bf64d145cd0d229a97c622d9702af3ab914502345de20f5b235a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\apex_dir\\system\\usr\\share\\zoneinfo\\tzdata": {
+      "bytes": 409045,
+      "sha256": "bf87968a2297ebe2b43b03a08b7e1ff3d80562f49c0dd1414832ab9c9518ab5c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\guest\\compute-payload.apk": {
+      "bytes": 13237607,
+      "sha256": "cc10ed47876e4d7af2dbc7018d4d460d88d17fccfaf540c27fb05fbbd76e136b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\WindowsLocalRpcBridge.dll": {
+      "bytes": 53248,
+      "sha256": "3af3c5a829a324bd9ad14bf254b18e512fa3672285bdf6c260344688b70fcba0"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\crosvm.exe": {
+      "bytes": 22260466,
+      "sha256": "d84910b25d70fd64f9093bd8d9ea235bbe6bb8ce44ac64327ff6d1cb5446442d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libbinder_log.dll": {
+      "bytes": 57856,
+      "sha256": "d8a37ff65415043e708ff2b399243b6afbc3fae011cb27d2195525115c7e46a3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libbinder_ndk_sdk.dll": {
+      "bytes": 239104,
+      "sha256": "d7d65937fdaab519e50370ba46db73969b9df4a730942c3da8587b0fccb4aa07"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libbinder_rpc_unstable_host.dll": {
+      "bytes": 68608,
+      "sha256": "ef6fcec81ebf1a3c951f41db1ddf854180073ef3fc3e1609454766aa5eb83bfa"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libbinder_sdk.dll": {
+      "bytes": 967680,
+      "sha256": "f89d2cedf2c6e3ee0f1eb78bc7fdb78361404b6a38f6b954ea5667856f3c781f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libgcc_s_seh-1.dll": {
+      "bytes": 140288,
+      "sha256": "097df5e95968f05836ac2c863ae430a1ff1936cc6703c8d28948de51f1963483"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libgfxstream_backend.dll": {
+      "bytes": 60436992,
+      "sha256": "b775e5da32c89605debf28d5f2ae8ad80d43ac6f6756b9deadc1255181af0d35"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libintl-8.dll": {
+      "bytes": 40654,
+      "sha256": "67886605af8b9d556949e0b758e1c5ad4b308c42850424fca33e6a36c5bcbbe0"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libslirp-0.dll": {
+      "bytes": 1845245,
+      "sha256": "9dc628bfc6ecb1f6d183bfaa276f95ff5e21e4df948d487a09896e1160e97f7f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libstdc++-6.dll": {
+      "bytes": 2319872,
+      "sha256": "f6ea29bb8bee02af0c745f0592f5ab96ec94469e91d65e421c8a5d4c36fbd00e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libutils_binder_sdk.dll": {
+      "bytes": 117760,
+      "sha256": "26a0174d1a23ea70b88790cff53ae1550ab7ba8d45ec541b240981294f6a51b2"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libwinpthread-1.dll": {
+      "bytes": 56320,
+      "sha256": "d1cc54202f86d5e1b6d602b6f76ff4fa75cdd0d0e27a368bfd083a05e6bac32b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\virtmgr.exe": {
+      "bytes": 170490978,
+      "sha256": "1ab2fe0af279a6d7257fc50b0dd187d4c9a65a3b0f2321c800e546a1b8104a7a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\vm.exe": {
+      "bytes": 57341313,
+      "sha256": "2b8201136e51f289973c3a8c2e1f15d05cff5026c86f87df48bbc812e8090dba"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\config\\microdroid-gpu-off.json": {
+      "bytes": 496,
+      "sha256": "e1ccaad6cd32b81ea9f10de821aeeae6bc7acfc9583651b33dd5e612470b1a20"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\config\\microdroid-gpu-on.json": {
+      "bytes": 495,
+      "sha256": "0895ab13f008b7d643cd167aefe50ccc4555679c9eaf5ca2e2e92050b0afc8e5"
+    }
+  },
+  "limitations": [
+    "Static expected destination set; runtime checks all hashes. Not dynamic-load or VM proof.",
+    "205 source host symlinks intentionally omitted per v1719; future runtime paths may expose missing aliases.",
+    "No new OS driver/security change."
+  ],
+  "links": {},
+  "platform": "windows",
+  "system_contract": {
+    "nvidia_registry": {
+      "description": "NVIDIA GeForce RTX 2060",
+      "icd": "C:\\WINDOWS\\System32\\DriverStore\\FileRepository\\nv_dispig.inf_amd64_cc526ccc3287f5cd\\nv-vk64.json",
+      "key": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0001",
+      "version": "32.0.16.1088"
+    },
+    "windows_version": [
+      10,
+      0,
+      26200
+    ]
+  }
+}

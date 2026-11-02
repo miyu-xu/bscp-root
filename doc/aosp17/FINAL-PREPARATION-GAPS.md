@@ -26,3 +26,12 @@ For a portable release, implement a user-selected installation-root admission co
 ## Publication gate
 
 User login was confirmed by a supplied screenshot of github.com/miyu-xu/bscp-root/releases/new. The user subsequently navigated elsewhere. Supported live browser validation/upload remains pending; the old screenshot must not be used for clicks. No credential store probing, new token, ACL change, default switch or binary substitution has occurred. Do not promote the default until installation scope and remaining third-party provenance/notice gaps above have been resolved. r14 remains the working rollback default.
+
+
+## Source-closed Windows replacement, v1830
+
+The original libslirp prebuilt source gap was not waived. A new candidate was built from official libslirp v4.6.1 (cceced0cce9d578ed01db68edf31af78eb66f858), GLib 2.70.5 and the fixed dependency closure in slirp-source-delivery-v1/INDEX.json. Its libslirp SHA256 is 9dc628bfc6ecb1f6d183bfaa276f95ff5e21e4df948d487a09896e1160e97f7f. The required companion libintl-8.dll SHA256 is 67886605af8b9d556949e0b758e1c5ad4b308c42850424fca33e6a36c5bcbbe0. The exact source archive has 2,874 files and 12 collected notice texts; its SHA256 is 01da5677eafb2017b68607f2ccb1ce19071b9c72474e72c956b72de70f7059c9.
+
+The new flat runtime directory is an ordinary inherited-permission child of the already approved private root: assets/host-source-closed-v1828. No ACL was changed. The same EXE/renderer/Guest bytes were copied; only the library pair and runtime paths changed. C/Rust ABI/lifecycle and 55 entry tests passed. Four real GPU-off/on initial/healthy-resume cases passed with original stable identities, real exits/EOF and released storage. The two original fault cases passed resource verification with task UNKNOWN and resources REAPED, retained claims and disks. See WINDOWS-FINAL-RESULT-v1830.json (SHA256 d239e4dfa35305f1a1468452d46d0b490812f80e618b3c523fe3e67234a1003f), 195 rechecked evidence files, no live related process at final observation.
+
+This closes the replacement library's tested dependency/VM gate for the admitted Windows deployment. It does not establish arbitrary-root installation, network forwarding, independent CLI reconnection, or change the old prebuilt's incomplete provenance. Old assets/evidence remain untouched. The new runtime archive and source archive must be distributed together with their notices; the old Windows runtime archive must not be presented as the new candidate.

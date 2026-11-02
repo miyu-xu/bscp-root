@@ -1,0 +1,16 @@
+{
+  "state": "SELF_REVIEW_PASS_FOR_FOUR_CASE_EXECUTION",
+  "single_executor": true,
+  "independent_review": false,
+  "freeze_sha256": "1dd6744d051d56712edd2bb6150a16d5618303650156be0b63cccc11d7d647de",
+  "scope": "New source-closed libslirp+libintl and flat runtime directory; all EXE/renderer/Guest identities unchanged. No VM pass inherited.",
+  "checks": [
+    "55 actual entry/component tests passed after preserving original config bytes and updating exact expected new paths; failures retained",
+    "Production scripts differ only exact new state-root literal; stable HANDLE/Job/EOF/no retry retained",
+    "All 15 runtime files copied and hashed; recursive PE dependencies resolved; all 3 entry --help actual exit0/EOF",
+    "C/Rust ABI26 fields and100 actual disabled-network creation/cleanup loops passed; no network forwarding claim",
+    "Inherited existing private-root permissions only; no ACL/UAC/credential change",
+    "Four cases use exclusive new roots, same CID lease/ports and healthy-disk-only resume; unknown stops later cases"
+  ],
+  "remaining": "actual four-case VM and affected fault validation; not released"
+}

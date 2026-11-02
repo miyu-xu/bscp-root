@@ -1,0 +1,1119 @@
+{
+  "state": "WINDOWS_A17_NORMAL4_FAULT2_LIMITED_PASS",
+  "review_mode": "single executor actual receipt/source self-review; no independent reviewer this turn",
+  "normal": {
+    "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\WINDOWS-NORMAL-RESULT-v1828.json",
+    "sha256": "89a5272e19d19589f8d62a27efb6bdc9f95af460d73a5f2f0824aae37065c166"
+  },
+  "fault_cases": {
+    "timeout": {
+      "result": {
+        "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\result.json",
+        "sha256": "1c674e5577bfc6cd108dab5b5ff6a9b473c7420597c4d3fb8fc99733220548aa"
+      },
+      "outer": {
+        "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.json",
+        "sha256": "a6c969e8a09ef719c17435eab18600086dc4110becf63851e528a6719d039bea"
+      },
+      "task_result": "UNKNOWN",
+      "resource_state": "REAPED",
+      "needsRecovery": true,
+      "sent_commands": [
+        "INFO",
+        "GET",
+        "SET 118",
+        "GET",
+        "ADD 1"
+      ],
+      "observed_failure_to_reaped_seconds": 0.22529219998978078,
+      "case_wall_seconds": 18.806998000014573,
+      "claim_retained": true,
+      "inner_outer_EOF": true,
+      "original_job_handle_closed": true,
+      "original_job_active_count": 0,
+      "original_members": [
+        {
+          "identity": {
+            "pid": 33416,
+            "creation_filetime": 134381105622793806,
+            "exe_path": "e:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\vm.exe",
+            "exe_sha256": "2b8201136e51f289973c3a8c2e1f15d05cff5026c86f87df48bbc812e8090dba"
+          },
+          "retained_handle": true,
+          "observation": {
+            "state": "EXITED",
+            "exit_code": 73,
+            "terminate_requested": false
+          }
+        },
+        {
+          "identity": {
+            "pid": 10300,
+            "creation_filetime": 134381105623291581,
+            "exe_path": "c:\\windows\\system32\\conhost.exe",
+            "exe_sha256": "c86146188b78e484f32cc29e2331689659943b47689a85570342044f499938ac"
+          },
+          "retained_handle": true,
+          "observation": {
+            "state": "EXITED",
+            "exit_code": 73,
+            "terminate_requested": false
+          }
+        },
+        {
+          "identity": {
+            "pid": 20956,
+            "creation_filetime": 134381105623505857,
+            "exe_path": "e:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\virtmgr.exe",
+            "exe_sha256": "1ab2fe0af279a6d7257fc50b0dd187d4c9a65a3b0f2321c800e546a1b8104a7a"
+          },
+          "retained_handle": true,
+          "observation": {
+            "state": "EXITED",
+            "exit_code": 73,
+            "terminate_requested": false
+          }
+        },
+        {
+          "identity": {
+            "pid": 23288,
+            "creation_filetime": 134381105632305407,
+            "exe_path": "e:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\crosvm.exe",
+            "exe_sha256": "d84910b25d70fd64f9093bd8d9ea235bbe6bb8ce44ac64327ff6d1cb5446442d"
+          },
+          "retained_handle": true,
+          "observation": {
+            "state": "EXITED",
+            "exit_code": 73,
+            "terminate_requested": false
+          }
+        }
+      ]
+    },
+    "disconnect": {
+      "result": {
+        "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\result.json",
+        "sha256": "9b083ba5e3485112b9e714bac021b744103692a904a4d6bfe97225d46f554420"
+      },
+      "outer": {
+        "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.json",
+        "sha256": "b35700a1568dd3f171a7abca86bc0c56989557c567bd98b751a7034f008af535"
+      },
+      "task_result": "UNKNOWN",
+      "resource_state": "REAPED",
+      "needsRecovery": true,
+      "sent_commands": [
+        "INFO",
+        "GET",
+        "SET 118",
+        "GET",
+        "ADD 1"
+      ],
+      "observed_failure_to_reaped_seconds": 0.1905178000451997,
+      "case_wall_seconds": 8.69840320001822,
+      "claim_retained": true,
+      "inner_outer_EOF": true,
+      "original_job_handle_closed": true,
+      "original_job_active_count": 0,
+      "original_members": [
+        {
+          "identity": {
+            "pid": 27156,
+            "creation_filetime": 134381106218694713,
+            "exe_path": "e:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\vm.exe",
+            "exe_sha256": "2b8201136e51f289973c3a8c2e1f15d05cff5026c86f87df48bbc812e8090dba"
+          },
+          "retained_handle": true,
+          "observation": {
+            "state": "EXITED",
+            "exit_code": 73,
+            "terminate_requested": false
+          }
+        },
+        {
+          "identity": {
+            "pid": 876,
+            "creation_filetime": 134381106219198615,
+            "exe_path": "c:\\windows\\system32\\conhost.exe",
+            "exe_sha256": "c86146188b78e484f32cc29e2331689659943b47689a85570342044f499938ac"
+          },
+          "retained_handle": true,
+          "observation": {
+            "state": "EXITED",
+            "exit_code": 73,
+            "terminate_requested": false
+          }
+        },
+        {
+          "identity": {
+            "pid": 19048,
+            "creation_filetime": 134381106219414362,
+            "exe_path": "e:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\virtmgr.exe",
+            "exe_sha256": "1ab2fe0af279a6d7257fc50b0dd187d4c9a65a3b0f2321c800e546a1b8104a7a"
+          },
+          "retained_handle": true,
+          "observation": {
+            "state": "EXITED",
+            "exit_code": 73,
+            "terminate_requested": false
+          }
+        },
+        {
+          "identity": {
+            "pid": 34832,
+            "creation_filetime": 134381106228696357,
+            "exe_path": "e:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\crosvm.exe",
+            "exe_sha256": "d84910b25d70fd64f9093bd8d9ea235bbe6bb8ce44ac64327ff6d1cb5446442d"
+          },
+          "retained_handle": true,
+          "observation": {
+            "state": "EXITED",
+            "exit_code": 73,
+            "terminate_requested": false
+          }
+        }
+      ]
+    }
+  },
+  "final_resource_observation": {
+    "state": "CURRENT_RESOURCE_PREFLIGHT_CLEAR",
+    "case": "off-start",
+    "observed_unix": 1793637068.6313343,
+    "cid": 2048,
+    "ports": [
+      46085,
+      46086
+    ],
+    "matched_live_original_identities": [],
+    "occupied_ports": [],
+    "inspection_errors": [],
+    "inspection_complete": true,
+    "context": {
+      "user_sid": "S-1-5-21-1846064740-779845224-3594570509-1001",
+      "thread_impersonation": false,
+      "default_owner_sid": "S-1-5-21-1846064740-779845224-3594570509-1001",
+      "scalar_returned_bytes": {
+        "appcontainer": 4,
+        "uiaccess": 4,
+        "elevated": 4,
+        "elevation_type": 4,
+        "restrictions": 1
+      },
+      "appcontainer": 0,
+      "uiaccess": 0,
+      "elevated": 0,
+      "elevation_type": 3,
+      "restrictions": 1
+    },
+    "records": [
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\prepared\\a17woff",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\prepared\\a17woffv1734",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\prepared\\a17woffv1737",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-partition-v1740\\prepared\\a17woffv1740",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-factory-v1742\\prepared\\a17woffv1742",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-guest-rpc-v1752\\prepared\\a17woffv1752",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-thread-v1754\\prepared\\a17woffv1754",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-serial-v1756\\prepared\\a17woffv1756",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-reset-v1758\\prepared\\a17woffv1758",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-console-diagnostic-v1760\\prepared\\a17woffv1760",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-pci-v1762\\prepared\\a17woffv1762\\record.json",
+        "state": "STOPPED",
+        "resource_state": "REAPED"
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-pci-v1762\\prepared\\a17wonv1763",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1766\\prepared\\a17woffv1766",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "original_resource_state": "REAPED",
+        "original_storage_released": true,
+        "needsRecovery": true,
+        "original_state": "UNKNOWN",
+        "original_task_result": "FAILED"
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1768\\prepared\\a17woffv1768\\record.json",
+        "state": "STOPPED",
+        "resource_state": "REAPED"
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1768\\prepared\\a17wonv1768\\record.json",
+        "state": "STOPPED",
+        "resource_state": "REAPED"
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1772\\prepared\\a17woffv1772\\record.json",
+        "state": "STOPPED",
+        "resource_state": "REAPED"
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1772\\prepared\\a17wonv1772",
+        "state": "HISTORICAL_UNKNOWN_RETAINED_EXACT_RECEIPTS",
+        "storage_reaped": false
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1774\\prepared\\a17woffv1774\\record.json",
+        "state": "STOPPED",
+        "resource_state": "REAPED"
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1774\\prepared\\a17wonv1774\\record.json",
+        "state": "STOPPED",
+        "resource_state": "REAPED"
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\prepared\\a17woffv1828\\record.json",
+        "state": "STOPPED",
+        "resource_state": "REAPED"
+      },
+      {
+        "path": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\prepared\\a17wonv1828\\record.json",
+        "state": "STOPPED",
+        "resource_state": "REAPED"
+      }
+    ],
+    "related_processes": [],
+    "port_observation": {
+      "method": "simultaneous SO_EXCLUSIVEADDRUSE bind to 127.0.0.1, released before production bind",
+      "ports": [
+        46085,
+        46086
+      ],
+      "reserved_for_future": false
+    },
+    "cid_lease_observation": {
+      "path": "C:\\Users\\miyu1\\.bscp-microdroid\\leases\\cid-2048",
+      "state": "EXISTING_LOCK_OBSERVED_FREE_THEN_RELEASED",
+      "reserved_for_future": false,
+      "production_contract": "original native LockFileEx must acquire atomically at allocate; never pre-hold across VM launch"
+    },
+    "limit": "instantaneous inspection, not reservation; production original lease and bind fail closed on a later conflict"
+  },
+  "evidence": {
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\accept.py": {
+      "bytes": 6327,
+      "sha256": "ea89b70947b32656283e87435655fd8e8722fa33eec07f2895e17301cb57f64a"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\ADMISSION.json": {
+      "bytes": 56649,
+      "sha256": "50a0ed73fb2504f1fd022c845390cd11a265029bf71af9db968c7ddf044ff9aa"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\contracts.py": {
+      "bytes": 8619,
+      "sha256": "33bade020effff414b2caee971a183a0259399c64bc5994be7dc698c32da1442"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect-check.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect-check.stdout": {
+      "bytes": 558,
+      "sha256": "b507b0836b951f38c4e4f34afe041d2e736ab3a13fc73c3b45bf0d85521d7724"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\driver_safety.py": {
+      "bytes": 7831,
+      "sha256": "a325803b997a61c3f5e13d5faec4c73079af9f81088bbc1b33fa89e2014aac69"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.intent.json": {
+      "bytes": 153,
+      "sha256": "48caf2850c55aaaa0a6a733e8126835c8f756266e0cc1355fee28cae8cd284a9"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.json": {
+      "bytes": 1036,
+      "sha256": "b35700a1568dd3f171a7abca86bc0c56989557c567bd98b751a7034f008af535"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.stdout": {
+      "bytes": 170,
+      "sha256": "280e2bb22a9f4ba031ba0690488bb415fbb6dc9f5479b04425d466c951d98c63"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.intent.json": {
+      "bytes": 149,
+      "sha256": "9ccc51be3ebdd7ae3e41af2599fbfbc223a86971ee09913947276fa7c73fca98"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.json": {
+      "bytes": 957,
+      "sha256": "a6c969e8a09ef719c17435eab18600086dc4110becf63851e528a6719d039bea"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.stdout": {
+      "bytes": 168,
+      "sha256": "9a325df899f137c010b2689adb948ce0d90ddab57d1c994cdab61dd998af9386"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\preflight-disconnect.json": {
+      "bytes": 6393,
+      "sha256": "07d0899fc8db8c8b593a6b82ad5a3a50152bbfedecd1e8ed8ae53d0ed690c9d3"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\preflight-timeout.json": {
+      "bytes": 6393,
+      "sha256": "7a227535d4c2f3389606c6d2d754aeebeba9eea3b914f970535bb260688a3b1a"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\PREPARATION.json": {
+      "bytes": 1203,
+      "sha256": "4ed709cc1b40bfb6b1f014955d556bcc28d2066aecdad5fd1ef30f4e403e2c7c"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\run_case.py": {
+      "bytes": 3564,
+      "sha256": "e09a08088de0e0187768ccf7472ac16372f9fc4dd0baeca1ce6164fa50f641f3"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\SELF-REVIEW.json": {
+      "bytes": 1140,
+      "sha256": "57676f64c75da5ead10020c20fe29cc8ee07fd5eb5a5bd8ddd77baeff9670212"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\TESTS.json": {
+      "bytes": 121,
+      "sha256": "4a0d3c39e05de243ceb44f2499144f7d97359d880dad1e5ea764066287aa7b09"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\tests.stderr": {
+      "bytes": 1044,
+      "sha256": "29c393e0171559c4434eba5cfc2714de434bbd938406a9a58ee1012d5d43c288"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\tests.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\test_contracts.py": {
+      "bytes": 4708,
+      "sha256": "0988a00ecd402ffff0098cf0915ffbf7aa46595ac6476fcd8d0d09ffa36ea0d0"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\test_reader_start.py": {
+      "bytes": 2278,
+      "sha256": "d9f4f5c22e4aa28b01617053aa8a3592e6190d6a547d72021e6076c680e8e271"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout-check.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout-check.stdout": {
+      "bytes": 558,
+      "sha256": "b507b0836b951f38c4e4f34afe041d2e736ab3a13fc73c3b45bf0d85521d7724"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\check.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\check.stdout": {
+      "bytes": 558,
+      "sha256": "b507b0836b951f38c4e4f34afe041d2e736ab3a13fc73c3b45bf0d85521d7724"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\controller-output.log": {
+      "bytes": 63245,
+      "sha256": "933fe83444e64d3d44a3fd126ccb9b089853a882d8cf75fb41d99394d8d3ec47"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\create.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\create.stdout": {
+      "bytes": 407,
+      "sha256": "7c1824a538e631b28990c5b11af21de6637587dbe552f22ab5f48a801fc93a9b"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\final-record.json": {
+      "bytes": 21843,
+      "sha256": "27ca6e37b8157d38ea06acbdf897f4c8be88d4dae0b7874757559e6ca5df2a71"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\result.json": {
+      "bytes": 221658,
+      "sha256": "9b083ba5e3485112b9e714bac021b744103692a904a4d6bfe97225d46f554420"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\check.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\check.stdout": {
+      "bytes": 558,
+      "sha256": "b507b0836b951f38c4e4f34afe041d2e736ab3a13fc73c3b45bf0d85521d7724"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\controller-output.log": {
+      "bytes": 63107,
+      "sha256": "9a6d68d0e638cf4d65e322b4bff83374a53f87fc9024c833e985c8b0448b596a"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\create.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\create.stdout": {
+      "bytes": 407,
+      "sha256": "258070fcc35e4c9ea4ff5c5fa34a7b2039534e916575b0c9501758895e654ced"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\final-record.json": {
+      "bytes": 21766,
+      "sha256": "c96184cdbdd36830e39fe271b70950cba8382e0b952be858cd10935c033da2c4"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\result.json": {
+      "bytes": 221314,
+      "sha256": "1c674e5577bfc6cd108dab5b5ff6a9b473c7420597c4d3fb8fc99733220548aa"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid.py": {
+      "bytes": 441,
+      "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\vm_windows.ps1": {
+      "bytes": 27645,
+      "sha256": "3422aa015bd0125e6f2e2148efa590d344f414b3cb5fa3157f390ad2e064607e"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\audit_owner.py": {
+      "bytes": 3382,
+      "sha256": "35c4c33ca6b062110fd4a9db8d64bfc78addb8ad6c768ea9db3680136d2ff1c3"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\bound_owner.py": {
+      "bytes": 6716,
+      "sha256": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\closure_check.py": {
+      "bytes": 1975,
+      "sha256": "a301a422935b294434b51a48780c7036f344e8175f5b5c466ee2c85940f9c8fa"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\compute_protocol.py": {
+      "bytes": 3341,
+      "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\endpoint_evidence.py": {
+      "bytes": 2955,
+      "sha256": "474227e9769381485dd36b5cbde20fb74f83c4881a43cd29bb7b8e4b1d71a0a3"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\entry.py": {
+      "bytes": 12030,
+      "sha256": "3823f260c62e551920c50666fd495065ccfbfa9725d5b26085a77071a4f6b1ca"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\environment_evidence.py": {
+      "bytes": 1111,
+      "sha256": "f6516742588ab0bda4d70b38a1a9833811747ba8f266f4aabddf044c7145a8df"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\instance_identity.py": {
+      "bytes": 1619,
+      "sha256": "124b743aab3037274349a30e475ac846e57b4d99078e0ba7553fb11a76f7772f"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\lifecycle.py": {
+      "bytes": 8902,
+      "sha256": "d909e5cd3f22170f8d9b03cc78d4df298d0e627d174f85f97ee0c29f06e5dea2"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\linux_pidfd.py": {
+      "bytes": 1206,
+      "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\mac_audit.py": {
+      "bytes": 5283,
+      "sha256": "b296bca51ca3a897756e2e305fd33eab37ba759458c1e0f1fef9ea3ee8aefcec"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\mac_owner.py": {
+      "bytes": 14920,
+      "sha256": "038061ddf69fa34367eb608f169a92752f5f2e0bf477d7daf1b17c55a110d797"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\native.py": {
+      "bytes": 40435,
+      "sha256": "18480fcab42ef781229ecf7cb405049764bb41e0a0e4e8769744be5f23970779"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\pipe_log.py": {
+      "bytes": 2337,
+      "sha256": "5e61adeb9ed249becdc152504cddc714ccc9775a628da04c93079174a154bb1b"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\runtime.py": {
+      "bytes": 16507,
+      "sha256": "41f338c78ff26616b9d34cec92a13ea0da2be0944085a7676a59d31163e22395"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\strict_json.py": {
+      "bytes": 439,
+      "sha256": "011d298e526256c7e8df5fbca63bd7e13e491ec5d7500a6ec7b42729fadc1041"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\version.py": {
+      "bytes": 48,
+      "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\windows_initial.py": {
+      "bytes": 6866,
+      "sha256": "cfe717384570313712cbeb13b9d117a68d7354aea93117e0c0ef46f3409f83b3"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\vendor\\owned_job.py": {
+      "bytes": 28832,
+      "sha256": "e8198f21332e907e1d91bfcdf237fcffac291bc63a46e53f3c062eda0cd1ade9"
+    },
+    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\vendor\\windows_state.py": {
+      "bytes": 4746,
+      "sha256": "b934401f6e2220f19251bb239fed4dc72e28df2ae1053a89e2a072612f930699"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\admission\\profile-install-v1828.json": {
+      "bytes": 679,
+      "sha256": "e7efe363ffad1410ed77ca225775d15e3975fc3100b4b9cee011287adb38e27e"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\admission\\windows-v1828-off-resume.json": {
+      "bytes": 1511,
+      "sha256": "c386bcb110e0c0a506ea0b3a22d07759b4e45515373c6b539cfd32117e3dfd97"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\admission\\windows-v1828-off-start.json": {
+      "bytes": 1509,
+      "sha256": "402753e253b5a1279990782c5dc5f29349bd5274aaa60190265ae62c55f064e5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\admission\\windows-v1828-on-resume.json": {
+      "bytes": 1509,
+      "sha256": "d07852d7cff40dceb5b280f740784f35923d49b68a634f982e184b14045aabec"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\admission\\windows-v1828-on-start.json": {
+      "bytes": 1507,
+      "sha256": "54dca5fbe911282dfb914fa2e278050bff0f4f987bbf0dc1f7c00ea3e2fa2d99"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\closure\\windows-v1828.json": {
+      "bytes": 58671,
+      "sha256": "583a4f2a9033b36b8a548acc48bcf04639921234724d01cce30d0adf959a043d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\intent.json": {
+      "bytes": 1119,
+      "sha256": "1152e11164c4890ae91bd341d72c742c0577edfd7e494cd1eababcc1fb8d7781"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\off-resume-healthy-input.json": {
+      "bytes": 2294,
+      "sha256": "14f6757d716de99e27ad560525a4f7ff76b61401a07d39a983b9c3e049908996"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\off-resume-post-resources.json": {
+      "bytes": 6128,
+      "sha256": "259b61efc1417148d1a2dd76bd855cbafc16e09ea72a23fe9ba7c7b6fc1410aa"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\off-resume-resources.json": {
+      "bytes": 6128,
+      "sha256": "34515f3e5c1390435540f2993fb97be923d98ab846455f8b5de5c4c061a0ecf8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\off-start-post-resources.json": {
+      "bytes": 6127,
+      "sha256": "3d8c5f3e5060fa56dbd0e201ca09506c9889a91cd2404a781ea99f8f6b722842"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\off-start-resources.json": {
+      "bytes": 5913,
+      "sha256": "0cd88dc6cabad1be6c76a1c48cb6291b1a180765c64e547adc857f809cebaa2a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\on-resume-healthy-input.json": {
+      "bytes": 2288,
+      "sha256": "2aec7fbc70d5f1ba95411fe0a7bb210e25150e9668aec905647b44526899ddbc"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\on-resume-post-resources.json": {
+      "bytes": 6338,
+      "sha256": "d317e0e04afff1f990f0da86adfe357a9b1addbfc8a5f585ab7cff976e1c57d0"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\on-resume-resources.json": {
+      "bytes": 6338,
+      "sha256": "6de9676e12341775df3cc557c8ded00ab511c12f1a4f64dba2fc4426b64fc3ec"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\on-start-post-resources.json": {
+      "bytes": 6336,
+      "sha256": "013e41f07aff29d73bac4af16ec358a6042cae4818ecbfe99ca8cb74b6f4ddb6"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\on-start-resources.json": {
+      "bytes": 6126,
+      "sha256": "faff9f6dacc471cab8f1fffa553726d68211dddd11e25eab5b994f4f64a40c02"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\combined-v1828\\result.json": {
+      "bytes": 1129,
+      "sha256": "58d4cf61162d0834e9d8707d144c7041f8e134bcc1efa3da9494c43d4d4f4e87"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\config\\microdroid-gpu-off.json": {
+      "bytes": 496,
+      "sha256": "e1ccaad6cd32b81ea9f10de821aeeae6bc7acfc9583651b33dd5e612470b1a20"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\config\\microdroid-gpu-on.json": {
+      "bytes": 495,
+      "sha256": "0895ab13f008b7d643cd167aefe50ccc4555679c9eaf5ca2e2e92050b0afc8e5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\profiles\\windows.json": {
+      "bytes": 116574,
+      "sha256": "48dbed81738eb38e805ee32732fbb139557493c455f62d56d4edd4df1fdfb3a6"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\prepared\\a17woffv1828\\launch-plan.json": {
+      "bytes": 2728,
+      "sha256": "ca4628eac6476e36bd19d02383e37a3b6e3b99f1a7afe24cd3fa7efa140118cb"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\prepared\\a17woffv1828\\record.json": {
+      "bytes": 13600,
+      "sha256": "ca7c055ba06d3c4a79fc8d8ae676fc21a133d190dba4abeec6e2b92dfa34e669"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\prepared\\a17wonv1828\\launch-plan.json": {
+      "bytes": 2715,
+      "sha256": "6a5260f3641a78a1ea9e0fb19c6dd0c5dbe5b0cb3dc18b6b45ce8896dfc6c9ee"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\prepared\\a17wonv1828\\record.json": {
+      "bytes": 19422,
+      "sha256": "954143d1312b4a1f39255de66de906a72c19d9c01abfc24af23da96b11cb004c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\r1aedfe\\cleanup.json": {
+      "bytes": 3857,
+      "sha256": "f297fbc042df09929e41b94013785ac8b83e714608e25faa9d0115da1eb95d2c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\r1aedfe\\client-trace.log": {
+      "bytes": 137,
+      "sha256": "ac7c9b7712bd2a74a0ddce3b6e2bccf410b4aaf1af4ed1ce3ad2d65e7eb9adda"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\r1aedfe\\command.json": {
+      "bytes": 4233,
+      "sha256": "54e0356a556702afea7e28c0f57ce69f8b99f3c5fd6af49623f3be6aa0e4e928"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\r1aedfe\\driver.log": {
+      "bytes": 684,
+      "sha256": "08edc7f6804a5a53eb1e35ba8469cc9ca8448f81a8ff5470f764b93eec1f3525"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\re8f1a9\\cleanup.json": {
+      "bytes": 3861,
+      "sha256": "3eae45d027967e5809fdd96ba062121064b555911bf547a2530367539b800163"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\re8f1a9\\client-trace.log": {
+      "bytes": 137,
+      "sha256": "ac7c9b7712bd2a74a0ddce3b6e2bccf410b4aaf1af4ed1ce3ad2d65e7eb9adda"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\re8f1a9\\command.json": {
+      "bytes": 4233,
+      "sha256": "c96dfa406cbaba06aa869e75fe34e2f6a488d79fce0cac79fc353c8c5f3951cc"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\re8f1a9\\driver.log": {
+      "bytes": 684,
+      "sha256": "564d8f30744d483857941a38351eeae0adf0c47f22ea30383a0ffa2d72c9276a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\re8f1a9\\service\\virtmgr-service-17152-1.stderr.log": {
+      "bytes": 26346,
+      "sha256": "051111a1b728657fc4c04024324162114a08beee17a73f0027850ecec7900a45"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\re8f1a9\\service\\virtmgr-service-17152-1.stdout.log": {
+      "bytes": 12192,
+      "sha256": "3656a65835c792c0a96f40206cac323d8c14a8b1a878413a9473c413b8e32c55"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\re8f1a9\\service\\virtmgr-trace.log": {
+      "bytes": 115,
+      "sha256": "5b936dafad29500887ad13f5facfb0456599729776b65bc194ab6951e8b83c9a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\r1aedfe\\service\\virtmgr-service-28992-1.stderr.log": {
+      "bytes": 25653,
+      "sha256": "0ed4da0eb543d91b8a48493682c6be7a8e02c3987289c71c8db78cdfb2b6e9b4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\r1aedfe\\service\\virtmgr-service-28992-1.stdout.log": {
+      "bytes": 12192,
+      "sha256": "c1d96a08662fb8ec44145f4e08f82c7ef2477b2b58cc5fd0d40dcd8bc250375c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\r1aedfe\\service\\virtmgr-trace.log": {
+      "bytes": 115,
+      "sha256": "5b936dafad29500887ad13f5facfb0456599729776b65bc194ab6951e8b83c9a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\apex-tree\\system\\etc\\cgroups.json": {
+      "bytes": 240,
+      "sha256": "f1838d8006080b5d79d05b5d9c1b0fe6a819a0db60205a2ded5c343afe1aa1ca"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\apex-tree\\apex\\com.android.virt\\etc\\microdroid.json": {
+      "bytes": 476,
+      "sha256": "0603ef55237e9f1ca379ecc394e21b759221f74ab628290b7fd6266eae4d3556"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17wonv1828\\apex-tree\\apex\\com.android.virt\\etc\\microdroid_gki-android15-6.6.json": {
+      "bytes": 460,
+      "sha256": "4be1730cb23c866696bf113781f7b0ee87c47e4c3b6766346eac318a7491db17"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\r3d6a79\\cleanup.json": {
+      "bytes": 3861,
+      "sha256": "0968fa52c528b77e9dcce6b1a4ccb129085d0e1a3c474352713722ca1245cfb0"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\r3d6a79\\client-trace.log": {
+      "bytes": 137,
+      "sha256": "ac7c9b7712bd2a74a0ddce3b6e2bccf410b4aaf1af4ed1ce3ad2d65e7eb9adda"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\r3d6a79\\command.json": {
+      "bytes": 4274,
+      "sha256": "9146bcdd5a288fe8f9ea2dfff1b2d6cc88a81576ab90f7d700178aff4bb80bda"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\r3d6a79\\driver.log": {
+      "bytes": 684,
+      "sha256": "74282d5a467a3f38c1f6229b5c50bf76c0c81959687b629a4fc8b9142431bfb6"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\r3d6a79\\microdroid-gpu-off.json": {
+      "bytes": 518,
+      "sha256": "1c7c579e6af6a0f6a38719d8b80440f4b558004774c8dc7c0bb821d532143477"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\rd6a63f\\cleanup.json": {
+      "bytes": 3859,
+      "sha256": "0e238a7e132c0dc8aefe3b07129252a42ee71c4e1da14ccf927356892387b315"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\rd6a63f\\client-trace.log": {
+      "bytes": 137,
+      "sha256": "ac7c9b7712bd2a74a0ddce3b6e2bccf410b4aaf1af4ed1ce3ad2d65e7eb9adda"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\rd6a63f\\command.json": {
+      "bytes": 4274,
+      "sha256": "2204c7f22a83312ff43684fec0e9f872937dd40581ff4c6304727e51917def96"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\rd6a63f\\driver.log": {
+      "bytes": 684,
+      "sha256": "ee4a5cff52ab3db587c4ffa77b3cb37a2f157d5d7c3a8d90b7a1fa303cda7888"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\rd6a63f\\microdroid-gpu-off.json": {
+      "bytes": 518,
+      "sha256": "1c7c579e6af6a0f6a38719d8b80440f4b558004774c8dc7c0bb821d532143477"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\rd6a63f\\service\\virtmgr-service-35988-1.stderr.log": {
+      "bytes": 10352,
+      "sha256": "21d6941d9e6bd4d710b9e25ded55424504f56b6cc733a8000c278fde2414a662"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\rd6a63f\\service\\virtmgr-service-35988-1.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\rd6a63f\\service\\virtmgr-trace.log": {
+      "bytes": 115,
+      "sha256": "5b936dafad29500887ad13f5facfb0456599729776b65bc194ab6951e8b83c9a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\r3d6a79\\service\\virtmgr-service-25432-1.stderr.log": {
+      "bytes": 11059,
+      "sha256": "314da6318c661a7a02585c5f7ceeb2552e1ad3a313d4992aa9ed525b1d35796a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\r3d6a79\\service\\virtmgr-service-25432-1.stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\r3d6a79\\service\\virtmgr-trace.log": {
+      "bytes": 115,
+      "sha256": "5b936dafad29500887ad13f5facfb0456599729776b65bc194ab6951e8b83c9a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\apex-tree\\system\\etc\\cgroups.json": {
+      "bytes": 240,
+      "sha256": "f1838d8006080b5d79d05b5d9c1b0fe6a819a0db60205a2ded5c343afe1aa1ca"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\apex-tree\\apex\\com.android.virt\\etc\\microdroid.json": {
+      "bytes": 476,
+      "sha256": "0603ef55237e9f1ca379ecc394e21b759221f74ab628290b7fd6266eae4d3556"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\instances\\a17woffv1828\\apex-tree\\apex\\com.android.virt\\etc\\microdroid_gki-android15-6.6.json": {
+      "bytes": 460,
+      "sha256": "4be1730cb23c866696bf113781f7b0ee87c47e4c3b6766346eac318a7491db17"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\config-observed.json": {
+      "bytes": 404,
+      "sha256": "402681f405cadaba292f5e48c5f638fe9e3487a799262d72e8101c05c48de9a5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\intent.json": {
+      "bytes": 399,
+      "sha256": "a2f468496c89f6831d80f00d7f235bee905732fb5a4206df1a97272c866c7bb9"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\live-cid-lease-observation.json": {
+      "bytes": 232,
+      "sha256": "2e145ec04373d64e745e19b2d000723cd5264038c195090fe092e0fe3041ff20"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\result.json": {
+      "bytes": 61224,
+      "sha256": "cb64159d4ef019724645083035fedb3343eb6fbf4c4351637c095cf5b152ec2b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\running.json": {
+      "bytes": 541,
+      "sha256": "c9b8c87a5640020a345670f3fc771c3fbb15faa02bb3d16bab6d4fcaa995e26a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\send-01.json": {
+      "bytes": 116,
+      "sha256": "234a63b1055d3594dc5c6217d46f5b3a301c3ffd2af83bcd461f4e78b9ec60fd"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\send-02.json": {
+      "bytes": 123,
+      "sha256": "0ecdcda6d2af1921125a339be51c4a6ae074197e6f49af1941ab495e94b77a8d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\send-03.json": {
+      "bytes": 138,
+      "sha256": "64e523c72cf19d19f3d122c19f15e187df9761968f6be4538600f5be90781b85"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\send-04.json": {
+      "bytes": 140,
+      "sha256": "e4977746b06fdb739024a51090033f3f06234bacd8bb71d6360eba885ca24646"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\send-05.json": {
+      "bytes": 135,
+      "sha256": "ed07be657b06916325aae3f3168811418eb67f8d431838171f422115c1610cb9"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\send-06.json": {
+      "bytes": 171,
+      "sha256": "b26c90feaf21ed1315b2bda3cb160efe2fc400451b9b40b2951f10f20d2536b0"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\send-07.json": {
+      "bytes": 107,
+      "sha256": "db8218437459a05a8a59913a956a33b8e7fac745ac323f3fdf258b92c8319487"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-resume\\stdout.log": {
+      "bytes": 63955,
+      "sha256": "46c2a726655b88446a7973608f8a74b558257b70b4d33b0376820b391e6610f8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\config-observed.json": {
+      "bytes": 404,
+      "sha256": "cd412cac4af2303aba5726970e58d33e11b55e447f77d50f48e36e3d45dcfb5b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\create.json": {
+      "bytes": 604,
+      "sha256": "7b7d774b98c32043fa08a132b5dac6fe6e825827b5b06268d675155f22ff1a53"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\create.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\create.stdout": {
+      "bytes": 409,
+      "sha256": "beb0646720e1cb38e4450401194274ffbe401767e491b0a97b1901664d960036"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\intent.json": {
+      "bytes": 397,
+      "sha256": "b1b963233da34a07e9329eb4efbf912152a867a6f35747f74fa55630e1c75ae2"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\live-cid-lease-observation.json": {
+      "bytes": 232,
+      "sha256": "2e145ec04373d64e745e19b2d000723cd5264038c195090fe092e0fe3041ff20"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\result.json": {
+      "bytes": 65760,
+      "sha256": "b24858d058adf98a8cf3228520cd9f02424b221ef004d050c51f8f55b173b169"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\running.json": {
+      "bytes": 541,
+      "sha256": "8eef21571a89a3d6b8631cbf6d7b783d7dc905e5cfbf01d4fca72fc206b936a7"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\send-01.json": {
+      "bytes": 120,
+      "sha256": "2573df20893d2765b4829c3c5ad4b304ff05e9fb95b0265afccc1c8e865e5cb8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\send-02.json": {
+      "bytes": 116,
+      "sha256": "d1d4178ff60f32f62f0b123e2cf7e3b42002a44346da8ca14592a63ded0082d4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\send-03.json": {
+      "bytes": 123,
+      "sha256": "a8de84a38e2c51a41bd44ecac7e123cbaef210474c52c767eee9cb2b676fc054"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\send-04.json": {
+      "bytes": 138,
+      "sha256": "2442337e1d9a59a224124b9bbb5a9f1ff77942151b73b9cb9bcd944b0fb64809"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\send-05.json": {
+      "bytes": 140,
+      "sha256": "f1275b956049a4698587df59070d39bf75d6e130db2f90ada860b261ea1006de"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\send-06.json": {
+      "bytes": 135,
+      "sha256": "f317a653329ae976b7bfce7369b6bb08da552a897819837d6aedb6ac0c3aa351"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\send-07.json": {
+      "bytes": 171,
+      "sha256": "fc93cf8b16e2f7c171c41ec7787c7ea8f6dc49c479062f4d140561916f0e4eac"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\send-08.json": {
+      "bytes": 107,
+      "sha256": "db8218437459a05a8a59913a956a33b8e7fac745ac323f3fdf258b92c8319487"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\off-start\\stdout.log": {
+      "bytes": 69966,
+      "sha256": "df23aecfcc407578f5231ec7b2c9e0646840b817b288443c4847016ef0810a22"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\config-observed.json": {
+      "bytes": 376,
+      "sha256": "2bd62cebf2a89e1ed051b63677f24b4fb7c4da24778e22c8e8b1c64a6d0e524d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\intent.json": {
+      "bytes": 397,
+      "sha256": "82d9340b48074c2aa6102aced34da5e67bcb26e6576a9b5267f79e7e6a9e2827"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\live-cid-lease-observation.json": {
+      "bytes": 232,
+      "sha256": "2e145ec04373d64e745e19b2d000723cd5264038c195090fe092e0fe3041ff20"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\result.json": {
+      "bytes": 119925,
+      "sha256": "49ac8291d0f7354ea059ed536f0499a8f08cee97eec907b9e8d17e15bbbde15f"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\running.json": {
+      "bytes": 539,
+      "sha256": "4cf0c6988043b6625071e9a43435daba7ff493d2a7b70fe7521822d6cfbf109d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-01.json": {
+      "bytes": 116,
+      "sha256": "234a63b1055d3594dc5c6217d46f5b3a301c3ffd2af83bcd461f4e78b9ec60fd"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-02.json": {
+      "bytes": 123,
+      "sha256": "54a3e8a1eb4c1125f642c5ed3a45989a6e3f29cb03f1d7ab5088c1ce31ca7280"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-03.json": {
+      "bytes": 119,
+      "sha256": "04278eefadc5954d226c1838c6181c429cb38af5c7a403fe3b9dd52934197478"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-04.json": {
+      "bytes": 123,
+      "sha256": "7f7ab4ff017f56b79e3f3f2ebecd935416f2034b5375135ce6d6c42b1a5c2660"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-05.json": {
+      "bytes": 138,
+      "sha256": "346c091b15aa27c182da9ad9bbbee4c1c98551a86e956f72801e32dedbccacc3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-06.json": {
+      "bytes": 140,
+      "sha256": "c8503fee13cfd6927c999272a4520088d67039c03ab0867e0c4d17e63d64054d"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-07.json": {
+      "bytes": 135,
+      "sha256": "af5692006944e2edec6581a53db23da27e781963b5414cf97821ac3ebe904b32"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-08.json": {
+      "bytes": 171,
+      "sha256": "b47131e60ef5b71a82569663b045ad109b3beeba352186b99df7e2e29d390e18"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-09.json": {
+      "bytes": 118,
+      "sha256": "6ca563166012bca7bf9ad4c0b762aa5e6717a9a1dd3888a3b7f4fcd9c20ce4f8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-10.json": {
+      "bytes": 122,
+      "sha256": "683d54f502919139c916f4f306a945ca1a06da2f04934dcc8045c4319e8c460b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\send-11.json": {
+      "bytes": 107,
+      "sha256": "db8218437459a05a8a59913a956a33b8e7fac745ac323f3fdf258b92c8319487"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-resume\\stdout.log": {
+      "bytes": 126437,
+      "sha256": "2a060553250621170ecd69d88df155cf3dda8d6aed701026a3a82a715795be91"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\config-observed.json": {
+      "bytes": 376,
+      "sha256": "36cc69043c329d803da3069b43b8ea3fad1206746cf50d1d5e0b87ef7de4ff73"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\create.json": {
+      "bytes": 602,
+      "sha256": "2c5e3f433756b58b4b80fd2f1335150d3b80bc3a4a33b7143e792e0c6595a50b"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\create.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\create.stdout": {
+      "bytes": 407,
+      "sha256": "12ec31e5e7dc621ea6f2bd4af230008e10086707273de0f05134f65a14bd270a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\intent.json": {
+      "bytes": 395,
+      "sha256": "ea0e49a3bad3cd53ec7f8fc7d94b4f5462b7a187adc428f986fdfe423d571978"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\live-cid-lease-observation.json": {
+      "bytes": 232,
+      "sha256": "2e145ec04373d64e745e19b2d000723cd5264038c195090fe092e0fe3041ff20"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\result.json": {
+      "bytes": 124718,
+      "sha256": "7566afbc5d67ac067b75317e6cd383cddd59fb06ba209fd76080423cd303c251"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\running.json": {
+      "bytes": 538,
+      "sha256": "5d92a67f1be8a03c4b184f37da5760dbd11aee0a706215b60c768cc5cb9c3ea1"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-01.json": {
+      "bytes": 120,
+      "sha256": "2573df20893d2765b4829c3c5ad4b304ff05e9fb95b0265afccc1c8e865e5cb8"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-02.json": {
+      "bytes": 116,
+      "sha256": "d1d4178ff60f32f62f0b123e2cf7e3b42002a44346da8ca14592a63ded0082d4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-03.json": {
+      "bytes": 123,
+      "sha256": "076dcdd51dc536654b91f7b814f9d9335cf7c59c01d51b9601c37cbba37b84b3"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-04.json": {
+      "bytes": 119,
+      "sha256": "fef6d0f5a0c4ac9c3d8db0e35b75d5feb106ddce513d360a124eaf0ed3dd4ba5"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-05.json": {
+      "bytes": 123,
+      "sha256": "fcd66f0882fb37fd2ff1d81790705df60f267f6d0be97fe5be8e25a20e25b434"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-06.json": {
+      "bytes": 138,
+      "sha256": "f7040769bd9b80ece521e79809204c557393447eb2b0be5e3013b9ae1415b93c"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-07.json": {
+      "bytes": 140,
+      "sha256": "9602ed3de5f5196204f19fbdc1ca16bf947114c68869953577057da82ad55a9a"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-08.json": {
+      "bytes": 135,
+      "sha256": "9fe6b4f61567dc803f00354d55b5798586c9bb89a8e50734639162c50b717bd4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-09.json": {
+      "bytes": 171,
+      "sha256": "58e88e8cecceac62b747b2d31d052a3a866e504ed58cdd7ca12fa19b9ad8aff4"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-10.json": {
+      "bytes": 119,
+      "sha256": "762674a4b383810564e05879381c98227bdd9c0ab07a2badb24a179165274cc7"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-11.json": {
+      "bytes": 122,
+      "sha256": "c2d8ad47b7aca8f356c0762e3809d0d741272c60bccd816fef2ac824928546d9"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\send-12.json": {
+      "bytes": 107,
+      "sha256": "db8218437459a05a8a59913a956a33b8e7fac745ac323f3fdf258b92c8319487"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\run-gpu-v1828\\acceptance-v1828\\on-start\\stdout.log": {
+      "bytes": 132808,
+      "sha256": "78ffcb03eae95ae4ec54b2e803c43a9567a18a2b672049b7e668f669bced1a78"
+    }
+  },
+  "scope": "Initial original HANDLE path; four normal and two exact fault cases. UNKNOWN not task success. Original failed disks/claims preserved. No independent CLI credentials, stress, arbitrary faults, UI/input, publication/default switch."
+}

@@ -1,0 +1,45 @@
+{
+  "status": "PASS",
+  "scope": "C/Rust shared-prefix ABI + disabled-network lifecycle only; not crosvm/VM/network forwarding acceptance",
+  "candidate_sha256": "9dc628bfc6ecb1f6d183bfaa276f95ff5e21e4df948d487a09896e1160e97f7f",
+  "ffi_source_sha256": "cfa9c2a8090323d6b2980d33e8bf4542294e7052360d1c17969e02e3252c391e",
+  "layout_fields": 26,
+  "operations": [
+    {
+      "name": "C compile",
+      "exit": 0,
+      "real_stdout_stderr_eof": true,
+      "stdout": "",
+      "stderr": "In file included from C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-rebuild-sources\\bscp-slirp-superbuild-v1\\subprojects\\libslirp\\src/libslirp.h:10,\n                 from E:\\bscp\\out\\aosp17-publication-v1827\\libslirp-known-source-v2\\abi-tests\\probe.c:6:\nC:/workspace/mingw64/x86_64-w64-mingw32/include/winsock2.h:15:2: warning: #warning Please include winsock2.h before windows.h [-Wcpp]\n   15 | #warning Please include winsock2.h before windows.h\n      |  ^~~~~~~\n"
+    },
+    {
+      "name": "exact cached Rust FFI compile",
+      "exit": 0,
+      "real_stdout_stderr_eof": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "Rust ABI probe compile",
+      "exit": 0,
+      "real_stdout_stderr_eof": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "real candidate lifecycle",
+      "exit": 0,
+      "real_stdout_stderr_eof": true,
+      "stdout": "size=184\r\nversion=0\r\nrestricted=4\r\nin_enabled=8\r\nvnetwork=12\r\nvnetmask=16\r\nvhost=20\r\nin6_enabled=24\r\nvprefix_addr6=26\r\nvprefix_len=42\r\nvhost6=44\r\nvhostname=64\r\ntftp_server_name=72\r\ntftp_path=80\r\nbootfile=88\r\nvdhcp_start=96\r\nvnameserver=100\r\nvnameserver6=104\r\nvdnssearch=120\r\nvdomainname=128\r\nif_mtu=136\r\nif_mru=144\r\ndisable_host_loopback=152\r\nenable_emu=153\r\noutbound_addr=160\r\noutbound_addr6=168\r\ndisable_dns=176\r\nlifecycle=PASS version=4.6.1 loops=100 timers=0 fds=0 packets=0\r\n",
+      "stderr": "\r\n(process:21732): Slirp-CRITICAL **: 00:11:15.136: slirp_new: assertion 'cfg->version >= SLIRP_CONFIG_VERSION_MIN' failed\r\n"
+    },
+    {
+      "name": "actual Rust ABI layout",
+      "exit": 0,
+      "real_stdout_stderr_eof": true,
+      "stdout": "size=184\nversion=0\nrestricted=4\nin_enabled=8\nvnetwork=12\nvnetmask=16\nvhost=20\nin6_enabled=24\nvprefix_addr6=26\nvprefix_len=42\nvhost6=44\nvhostname=64\ntftp_server_name=72\ntftp_path=80\nbootfile=88\nvdhcp_start=96\nvnameserver=100\nvnameserver6=104\nvdnssearch=120\nvdomainname=128\nif_mtu=136\nif_mru=144\ndisable_host_loopback=152\nenable_emu=153\noutbound_addr=160\noutbound_addr6=168\ndisable_dns=176\n",
+      "stderr": ""
+    }
+  ],
+  "old_runtime_unchanged": true
+}

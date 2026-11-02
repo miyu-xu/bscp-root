@@ -1,0 +1,82 @@
+{
+  "state": "CANDIDATE_COPIED_NO_VM",
+  "files": {
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\crosvm.exe": {
+      "bytes": 22260466,
+      "sha256": "d84910b25d70fd64f9093bd8d9ea235bbe6bb8ce44ac64327ff6d1cb5446442d",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\crosvm-gpu-v1773\\crosvm.exe"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\virtmgr.exe": {
+      "bytes": 170490978,
+      "sha256": "1ab2fe0af279a6d7257fc50b0dd187d4c9a65a3b0f2321c800e546a1b8104a7a",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-gpu-v1766\\virtmgr.exe"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\WindowsLocalRpcBridge.dll": {
+      "bytes": 53248,
+      "sha256": "3af3c5a829a324bd9ad14bf254b18e512fa3672285bdf6c260344688b70fcba0",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-rpc-v1752\\WindowsLocalRpcBridge.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libbinder_log.dll": {
+      "bytes": 57856,
+      "sha256": "d8a37ff65415043e708ff2b399243b6afbc3fae011cb27d2195525115c7e46a3",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-rpc-v1752\\libbinder_log.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libbinder_ndk_sdk.dll": {
+      "bytes": 239104,
+      "sha256": "d7d65937fdaab519e50370ba46db73969b9df4a730942c3da8587b0fccb4aa07",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-rpc-v1752\\libbinder_ndk_sdk.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libbinder_rpc_unstable_host.dll": {
+      "bytes": 68608,
+      "sha256": "ef6fcec81ebf1a3c951f41db1ddf854180073ef3fc3e1609454766aa5eb83bfa",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-rpc-v1752\\libbinder_rpc_unstable_host.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libbinder_sdk.dll": {
+      "bytes": 967680,
+      "sha256": "f89d2cedf2c6e3ee0f1eb78bc7fdb78361404b6a38f6b954ea5667856f3c781f",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-rpc-v1752\\libbinder_sdk.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libutils_binder_sdk.dll": {
+      "bytes": 117760,
+      "sha256": "26a0174d1a23ea70b88790cff53ae1550ab7ba8d45ec541b240981294f6a51b2",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-rpc-v1752\\libutils_binder_sdk.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\vm.exe": {
+      "bytes": 57341313,
+      "sha256": "2b8201136e51f289973c3a8c2e1f15d05cff5026c86f87df48bbc812e8090dba",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-rpc-v1752\\vm.exe"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libgcc_s_seh-1.dll": {
+      "bytes": 140288,
+      "sha256": "097df5e95968f05836ac2c863ae430a1ff1936cc6703c8d28948de51f1963483",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host\\libgcc_s_seh-1.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libgfxstream_backend.dll": {
+      "bytes": 60436992,
+      "sha256": "b775e5da32c89605debf28d5f2ae8ad80d43ac6f6756b9deadc1255181af0d35",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host\\libgfxstream_backend.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libslirp-0.dll": {
+      "sha256": "9dc628bfc6ecb1f6d183bfaa276f95ff5e21e4df948d487a09896e1160e97f7f",
+      "bytes": 1845245,
+      "source": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\candidate\\libslirp-0.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libstdc++-6.dll": {
+      "bytes": 2319872,
+      "sha256": "f6ea29bb8bee02af0c745f0592f5ab96ec94469e91d65e421c8a5d4c36fbd00e",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host\\libstdc++-6.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libwinpthread-1.dll": {
+      "bytes": 56320,
+      "sha256": "d1cc54202f86d5e1b6d602b6f76ff4fa75cdd0d0e27a368bfd083a05e6bac32b",
+      "source": "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host\\libwinpthread-1.dll"
+    },
+    "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libintl-8.dll": {
+      "sha256": "67886605af8b9d556949e0b758e1c5ad4b308c42850424fca33e6a36c5bcbbe0",
+      "bytes": 40654,
+      "source": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\candidate\\libintl-8.dll"
+    }
+  },
+  "permissions": "ordinary inherited child; no ACL changed",
+  "old_runtime_unchanged": true
+}
