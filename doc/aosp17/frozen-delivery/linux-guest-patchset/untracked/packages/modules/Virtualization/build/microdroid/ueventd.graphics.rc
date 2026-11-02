@@ -1,0 +1,7 @@
+
+# Opt-in graphics: preserve the validated r14 render-only payload access.
+subsystem drm
+    devname uevent_devpath
+    dirname /dev/dri
+
+/dev/dri/renderD128 0600 system_payload_0 system_payload

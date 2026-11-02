@@ -1,0 +1,23 @@
+{
+  "code": "43e4786a48c142b4c8b6f4bfb0db38cd32b20e42",
+  "files": {
+    "microdroid.py": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464",
+    "microdroid_lifecycle/.gitignore": "862263fa1f46c20f0d1e4dac5ffcc75abd55c08211b2c3864c5f8764b9d87793",
+    "microdroid_lifecycle/audit_owner.py": "23a7ea2feb67e9e481e9f9a4dd7ff31a44ee1850d54273dfa472ba0cc7d90e32",
+    "microdroid_lifecycle/bound_owner.py": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0",
+    "microdroid_lifecycle/closure_check.py": "73adaa7603962e5aed5a93bf9be66241283e93169fdc6fe1cb1bb6f53717133f",
+    "microdroid_lifecycle/compute_protocol.py": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b",
+    "microdroid_lifecycle/entry.py": "e058a6f8b4b3e7d5e661a8ab31ba1c4f1753533d35abc44a9e52a8fffe3b8fa8",
+    "microdroid_lifecycle/lifecycle.py": "fed80dd731c1f591484ddbde8857c8657395e143a040e087ef5309143f248387",
+    "microdroid_lifecycle/linux_pidfd.py": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4",
+    "microdroid_lifecycle/mac_audit.py": "fbaa8a6fd61e46846f931f7800e3dea7c91cc903c26f75958803ffc54bf05bb8",
+    "microdroid_lifecycle/mac_owner.py": "f93dbc6840725a53d1a5d4c47e39d6baab60578b4c6ad077659643356f85f5a7",
+    "microdroid_lifecycle/native.py": "707154e025bac962f0bd449ccb36a9c2460af8891d09390cd63fcc5e96bb7b28",
+    "microdroid_lifecycle/pipe_log.py": "4815f8f7dbcd24b3a7fb75b2460705bb5ce23ebfbd198107eef000d1a81762a2",
+    "microdroid_lifecycle/runtime.py": "736c29fda09aff0befa4c625b375bbc7bfdecbb07caf3b3e6a556ad5b1ea1f81",
+    "microdroid_lifecycle/strict_json.py": "a51b489a1b978464323aa894f73ab8e8cba48ce8e29b98f77cdd72d8205ad841",
+    "microdroid_lifecycle/vendor/owned_job.py": "e8198f21332e907e1d91bfcdf237fcffac291bc63a46e53f3c062eda0cd1ade9",
+    "microdroid_lifecycle/vendor/windows_state.py": "ab454bae2a2e85b98c451eb1e6f2b47c43c3ef9375df69261b744c64b65d5a29",
+    "microdroid_lifecycle/version.py": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
+  }
+}

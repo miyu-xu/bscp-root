@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "default_release": "aosp17",
+  "published": false,
+  "release_tag": "bscp-aosp17-20261102",
+  "guest_sdk": 37,
+  "platforms": {
+    "windows": {
+      "host": "1ab2fe0af279a6d7257fc50b0dd187d4c9a65a3b0f2321c800e546a1b8104a7a",
+      "vm": "2b8201136e51f289973c3a8c2e1f15d05cff5026c86f87df48bbc812e8090dba",
+      "crosvm": "d84910b25d70fd64f9093bd8d9ea235bbe6bb8ce44ac64327ff6d1cb5446442d",
+      "guest_apex": "6af2dd6fc128f51de39f59b8d05c445b0a05645d8de73d1547986326e27a5fbb",
+      "normal": "v1774 4 cases",
+      "fault": "v1776 2 cases",
+      "renderer": "b775e5da32c89605debf28d5f2ae8ad80d43ac6f6756b9deadc1255181af0d35",
+      "crosvm_lock": "859cb62ddcd8207a0af12a2a48b216ff8f2e532130410bb0ef9da5cf471f7d36"
+    },
+    "linux": {
+      "host": "826a00ac101386c0084abc6fdc6b18df1e870501509e1700542c1ed4d57bb8ca",
+      "vm": "81877290946fcdf0f27b58672580aba1bb1c771936047260216429f4b62a639e",
+      "crosvm": "25f4e92109fd185e867f751af41e6080d2af871b0324f8d280c6b9c57c778f01",
+      "guest_apex": "6af2dd6fc128f51de39f59b8d05c445b0a05645d8de73d1547986326e27a5fbb",
+      "normal": "v6 4 cases",
+      "fault": "f6 2 cases",
+      "renderer": "5fc398dfc5e936bb91dbd9b4f345a912d2ff739c1d3ff3e8dcd849645c522f79",
+      "virtmgr_lock": "be59884c963959931e2260918100b092f37e2d7171310ba4ec4e862d28e45e08"
+    },
+    "macos": {
+      "host_v30": "3e456fc836d174f3bf419ee9bb84ed4abbd98c3dfd7bd571335a7ec2c7b03558",
+      "host_v32": "3340cdc8882d74482ef0c6c97211d10604b3154f6228432127bb6c439adf3663",
+      "guest_apex": "01fb1a1834019274660accbb422304f0566032ad9e206742be635f6fba4e6747",
+      "normal": "v30 4 cases; v32 affected GPUon initial/resume v1786",
+      "fault": "v32 2 cases",
+      "crosvm": "536c20153f18f73b7919dece22fd5c05c21c6979a41086e6f4baa80532189d62",
+      "vm": "ccf22d546967665449655546901643d2040f6f06df6a6d0b13717e208268d07b",
+      "renderer": "2cb3a478a0802a55bb1ea4478546c5d20242328b700ad670db5dbb531af07e43"
+    }
+  },
+  "independent_windows_cli_reconnect": false,
+  "scope": "Frozen finite foreground lifecycle acceptance; explicit admitted deployment profile remains required. No arbitrary platform installation claim.",
+  "rollback": {
+    "code": "43e4786a48c142b4c8b6f4bfb0db38cd32b20e42",
+    "manifest": "89c0365a4dff5c0e52a5386877592a2f6fd45548"
+  }
+}

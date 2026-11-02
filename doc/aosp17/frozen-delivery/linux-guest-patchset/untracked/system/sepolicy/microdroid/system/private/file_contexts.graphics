@@ -1,0 +1,3 @@
+
+# Opt-in graphics: no new policy type or broader device access.
+/dev/dri/renderD128 u:object_r:payload_accessible_device:s0
