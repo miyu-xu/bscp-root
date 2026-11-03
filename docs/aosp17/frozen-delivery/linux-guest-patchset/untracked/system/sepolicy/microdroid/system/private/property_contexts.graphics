@@ -1,0 +1,3 @@
+
+ro.hardware.vulkan u:object_r:build_prop:s0 exact string
+ro.boot.hardware.gltransport u:object_r:bootloader_prop:s0 exact string

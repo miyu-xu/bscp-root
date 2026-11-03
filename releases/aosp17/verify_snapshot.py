@@ -3,6 +3,9 @@ import ast,hashlib,json,subprocess,sys,xml.etree.ElementTree as ET
 root=Path(__file__).resolve().parents[2]
 assert (root/"docs/README.md").is_file() and (root/"docs/README.zh-CN.md").is_file()
 assert not (root/"doc").exists(), "docs is the sole first-party documentation directory"
+documentation=json.loads((root/"releases/aosp17/DOCUMENTATION-PATHS.json").read_bytes())
+for name in documentation["files"]:
+    assert name.startswith("docs/") and (root/name).is_file(), name
 index=json.loads((root/"releases/aosp17/CONTROLLER-AND-DOC-SOURCE.json").read_bytes())
 for name,row in index["files"].items():
     path=root/name
