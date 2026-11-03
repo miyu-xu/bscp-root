@@ -100,5 +100,43 @@
     "not real display/input, arbitrary Vulkan features, performance, all GPU or driver compatibility",
     "Mac GPU-off v30 and v32 GPU-on scopes remain distinct",
     "UNKNOWN business outcomes are not converted to success by REAPED resources"
-  ]
+  ],
+  "coherent_contract": {
+    "actual_cases_per_command": 12,
+    "orders": 2,
+    "padding_choices": 2,
+    "iterations": 3,
+    "words_per_case": 1024,
+    "mismatches": 0,
+    "fence": "SUCCESS",
+    "application_flush": 0,
+    "application_invalidate": 0,
+    "probe_source_sha256": "4ba9092c44294e0a3eb1e71b51ddded1530c7febf96ce8e285aa491102dd881c",
+    "probe_source_matches_original_build_receipt": true,
+    "CPU_source_types_and_flags": {
+      "windows": {
+        "type": 3,
+        "flags": "0x6"
+      },
+      "linux": {
+        "type": 4,
+        "flags": "0xe"
+      },
+      "macos": {
+        "type": 1,
+        "flags": "0xf"
+      }
+    },
+    "synchronization": [
+      "vkCmdPipelineBarrier",
+      "vkQueueSubmit",
+      "vkWaitForFences"
+    ],
+    "not_claimed": [
+      "cross-host shared memory",
+      "no synchronization required",
+      "all-resource zero-copy",
+      "all hardware or drivers"
+    ]
+  }
 }

@@ -208,6 +208,16 @@ GPU-off 对 GPU 请求明确返回 `GPU_DISABLED`，不是 Vulkan 成功案例�
 
 这些结果不代表真实画面/scanout 或输入支持、任意 Vulkan 功能/shader、性能保证、所有 GPU/驱动/内存类型，或任意新机器部署。本文修订不代表重新运行 VM。超时/断连任务仍为 UNKNOWN，即使资源已 REAPED；历史失败及 Mac ext4 限制继续保留。
 
+### 8.1 三端 coherent memory 已支持，仍需同步
+
+已验 Guest Vulkan 链路为 payload -> virtio-gpu/rutabaga -> gfxstream -> 平台 Vulkan 后端：Linux/KVM、Windows/WHPX 使用已验证的 NVIDIA RTX 2060 配置；macOS/HVF 使用 Apple M1 上的 MoltenVK/Metal。Mac 结果来自选定 M1 设备上的真实 Guest 内存操作，不是仅示例或 CPU 设备回退的结论。
+
+实际探针申请 HOST_VISIBLE | HOST_COHERENT 的 CPU 源/目标缓冲区，写入映射内存，执行带 pipeline barrier 的 GPU buffer copy/fill，提交并等待 fence 后回读检查；应用侧不调用 flush/invalidate。每条命令覆盖 2 种 map/bind 顺序 × 2 种 padding × 3 次迭代，共 12 例，每例比较 1024 个 uint32，记录中均为零不匹配、fence SUCCESS，并包含 unmap/remap。
+
+实测 CPU 源内存标志分别为 Windows type 3 / 0x6、Linux type 4 / 0xe、Mac type 1 / 0xf；这些索引只适用于对应配置，不能硬编码为跨平台常量。Linux 启用的 KVM cached-coherent 映射策略仅暴露兼容的真实 Host 内存类型；该配置与 VulkanAllocateHostMemory 同时启用明确不受支持。Mac 实测了标记为 HOST_VISIBLE/HOST_COHERENT/HOST_CACHED/device-local 的内存分配和映射路径。
+
+Coherence 对这些分配免除了应用显式 cache flush/invalidate 的要求，**不免除** CPU/GPU 执行顺序、barrier 或 fence 等待。这是单个 VM 图形链路内的数据共享，不是跨主机分布式共享内存；不保证所有资源类型、所有传输零拷贝、任意硬件/驱动或性能。[证据摘要](aosp17/OFFSCREEN-VALIDATION.json)记录准确平台制品及探针源码哈希。
+
 ## 9. 安全边界与必须明确的限制
 
 ### 9.1 当前可依赖的边界

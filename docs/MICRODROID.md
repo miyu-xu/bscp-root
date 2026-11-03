@@ -215,6 +215,16 @@ GPU-off explicitly returns `GPU_DISABLED` for GPU tasks; it is not a Vulkan-succ
 
 These results do not establish real display/scanout or input support, arbitrary Vulkan features/shaders, performance guarantees, all GPUs/drivers/memory types, or unrestricted new-machine deployment. No new VM test is implied by this documentation correction. Timeout/disconnect tasks remain UNKNOWN even when resources are REAPED; historical failures and Mac ext4 limitations remain preserved.
 
+### 8.1 Coherent memory: supported on three platforms, with synchronization
+
+The accepted Guest Vulkan path is payload -> virtio-gpu/rutabaga -> gfxstream -> the platform Vulkan backend: Linux/KVM and Windows/WHPX use the validated NVIDIA RTX 2060 profile; macOS/HVF uses MoltenVK/Metal on Apple M1. Mac results are real Guest memory operations against the selected M1 device, not a sample-only or CPU-device fallback claim.
+
+The actual probe requests HOST_VISIBLE | HOST_COHERENT CPU source/destination buffers, writes mapped memory, performs GPU buffer copies/fill with pipeline barriers, submits work and waits for a fence, then checks CPU readback. It makes no application flush/invalidate calls. Each command covers 2 map/bind orders x 2 padding choices x 3 iterations = 12 cases, each comparing 1024 uint32 words; all recorded cases have zero mismatches and fence SUCCESS. Map/unmap/remap is included.
+
+Recorded CPU-source memory flags differ: Windows type 3 / 0x6; Linux type 4 / 0xe; Mac type 1 / 0xf. These are profile-specific indices, not portable constants. Linux's opt-in KVM cached-coherent mapping policy exposes only compatible genuine host memory types; combining that profile with VulkanAllocateHostMemory is explicitly unsupported. The Mac run uses genuine HOST_VISIBLE/HOST_COHERENT/HOST_CACHED/device-local advertised memory and the tested allocation/mapping path.
+
+Coherence removes the application's explicit cache flush/invalidate requirement for these allocations; it does **not** remove CPU/GPU ordering, barriers or fence waits. This is sharing within one VM's graphics path, not cross-host distributed shared memory. The evidence does not promise every resource type, zero-copy for every transfer, all hardware/drivers, or performance. The [evidence summary](aosp17/OFFSCREEN-VALIDATION.json) records exact platform artifacts and the probe source hash.
+
 ## 9. Security Boundary and Explicit Limitations
 
 Current usable boundaries include a separate guest kernel and memory, explicit virtual devices,
