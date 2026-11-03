@@ -1,3 +1,5 @@
+> Historical preparation record, not current release status. AOSP 17 is now published and the default. See [current deployment guide](SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md). Personal environment fields below are redacted presentation values, not executable configuration.
+
 # AOSP17 publication preparation — scope choice pending
 
 No assets have been uploaded and no default has been promoted. The user is

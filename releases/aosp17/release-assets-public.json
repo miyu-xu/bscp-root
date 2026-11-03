@@ -1,0 +1,146 @@
+{
+  "release_url": "https://github.com/miyu-xu/bscp-root/releases/tag/bscp-aosp17-20261102",
+  "assets": [
+    {
+      "file": "bscp-aosp17-linux-x86_64-frozen.tar.gz",
+      "bytes": 224355893,
+      "sha256": "6fc1d93a800fb1e459734ded1061ec8c2d0c877166c16432f6b2021963343c46"
+    },
+    {
+      "file": "linux-renderer-source.tar.gz",
+      "bytes": 7207546,
+      "sha256": "07e09de4777dc7a5a222b6a081efdb46883e53e799e9bc08a3192bf40541c156"
+    },
+    {
+      "file": "linux-binder-source.tar.gz",
+      "bytes": 12446523,
+      "sha256": "2b7293a1dbc2850f22403a1cea126063996b5258d05e1b7776c448848a6f8790"
+    },
+    {
+      "file": "linux-native-source.tar.gz",
+      "bytes": 6611,
+      "sha256": "c59f0832124593b9a6be5ccafae015d174960b905e307a723ce73225c0428e74"
+    },
+    {
+      "file": "bscp-aosp17-macos-arm64-frozen.tar.gz",
+      "bytes": 150858340,
+      "sha256": "a9ddc29219f1eb05e609dfd05ead7f4a2d99ed3e8b0046a11d3a7d955ee8e0a0"
+    },
+    {
+      "file": "macos-renderer-source.tar.gz",
+      "bytes": 7205776,
+      "sha256": "2706e25ceacc5824cefff1e2f04b24c644029971a8cbc9068ee6507f06f1bf75"
+    },
+    {
+      "file": "macos-native-source.tar.gz",
+      "bytes": 868849,
+      "sha256": "b2bc04d68ff8bf29728dc47c4b34ea143d7d9a5b03aafa297a2c1c4420b5a54d"
+    },
+    {
+      "file": "macos-binder-source.tar.gz",
+      "bytes": 5839600,
+      "sha256": "721c417386e394c0e6b4ff7357b6bc59d58543acf7aac55cfa91d42486d0226f"
+    },
+    {
+      "file": "MoltenVK.tar",
+      "bytes": 5017600,
+      "sha256": "5e0efdfe1b0f0803499fb536c6c0640ff9dc816c383fe516e5bbe2cd8b620cff"
+    },
+    {
+      "file": "SPIRV-Cross.tar",
+      "bytes": 16189440,
+      "sha256": "c7b024fd9d99e49c6af671cf6c2d94e6a99c88394b818491c5071d7d75786c67"
+    },
+    {
+      "file": "SPIRV-Headers.tar",
+      "bytes": 4147200,
+      "sha256": "872019140c1a9aae6012fa7b95d5da95c9628979d77263f1fc38ab69d5f062e4"
+    },
+    {
+      "file": "SPIRV-Tools.tar",
+      "bytes": 27381760,
+      "sha256": "6812e8ce3b3b5355d3c88b9dda856abdb5a65229cb211dc937ab4ac43fb52bee"
+    },
+    {
+      "file": "Volk.tar",
+      "bytes": 593920,
+      "sha256": "7fb635874b687be1afc5607c85e7f3a06846530e09c9773c3ddbf8cf74141376"
+    },
+    {
+      "file": "Vulkan-Headers.tar",
+      "bytes": 40826880,
+      "sha256": "0263e67a9887e3a90e8bed65e697f672b2b1ba589ed9c2c22775bd9f2122bde2"
+    },
+    {
+      "file": "Vulkan-Tools.tar",
+      "bytes": 5058560,
+      "sha256": "775b50060386eadc348189c6b494df952a6703d323cc0be0dd2538cd0726bcca"
+    },
+    {
+      "file": "cereal.tar",
+      "bytes": 2416640,
+      "sha256": "04b95299828a72684a69eae0106845a5cbe9392af1c8394dd015063a6e114b32"
+    },
+    {
+      "file": "bscp-aosp17-windows-x86_64-source-closed-v1830.zip",
+      "bytes": 310438830,
+      "sha256": "f9a4e4563b6ea90d17a1a982447b2d988521bda2583bc00c50a70f441041068c"
+    },
+    {
+      "file": "linux-host-source-current-v3.tar.gz",
+      "bytes": 1303576,
+      "sha256": "de3ae2fa32c7823a9387678f19508b1ca0c859aec8ccdb79db2f22101367a105"
+    },
+    {
+      "file": "macos-host-source-current-v4.tar.gz",
+      "bytes": 2683106,
+      "sha256": "a8f9974ee5362e6524987e6cdc30299512713e6448d96db39a6eda6a487ae6a3"
+    },
+    {
+      "file": "windows-host-source-sealed.tar.gz",
+      "bytes": 2399931,
+      "sha256": "d8cbe4075d2bc815b9f874534cbff786998b40decbb09012913aaa9afa05b2a5"
+    },
+    {
+      "file": "windows-crosvm-source-sealed.tar.gz",
+      "bytes": 4373545,
+      "sha256": "dd618f964e601c8321b939cc76beb7e9893fa1d8929e832d0eb68c6de45720b7"
+    },
+    {
+      "file": "windows-renderer-source.tar.gz",
+      "bytes": 7218518,
+      "sha256": "fbc4e27697b7cc312e80e1cbffc0f64845adaadbd2eeed0267b32ffa41e25611"
+    },
+    {
+      "file": "libslirp-superbuild-source.tar.gz",
+      "bytes": 15537047,
+      "sha256": "01da5677eafb2017b68607f2ccb1ce19071b9c72474e72c956b72de70f7059c9"
+    },
+    {
+      "file": "bscp-aosp17-source-notices-and-deployment-v1832.zip",
+      "bytes": 2033710,
+      "sha256": "94af90a71609af679b917539acb2ce9c7f61a883f47e209e1f31775c2b8d7f06"
+    },
+    {
+      "file": "SHA256SUMS",
+      "bytes": 2280,
+      "sha256": "767676149221c3f8baceea39f7bdb0fe784edafc8604ebc2d609cc0e6b23d97d"
+    },
+    {
+      "file": "UPLOAD-INVENTORY.json",
+      "bytes": 9638,
+      "sha256": "938d11e803b4513658e48a1269ac54b6a935a90c05f57b10c706143e979aa574"
+    },
+    {
+      "file": "bscp-license-policy-v1837.zip",
+      "bytes": 7483,
+      "sha256": "67ba38435f6a37de8eba60d72154e1edeeda4620b0e4e5c6ff1d7fcd8b30930d"
+    },
+    {
+      "file": "license-asset-v1837.json",
+      "bytes": 375,
+      "sha256": "99eebfaf20028f0fe92182b93eaa5b3d45624e4fa79a45e09c032c60b463b8e4"
+    }
+  ],
+  "purpose": "Integrity checks only. Legacy assets can contain personal build paths; not a privacy-clean claim."
+}

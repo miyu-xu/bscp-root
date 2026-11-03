@@ -213,7 +213,22 @@
       "bytes": 375,
       "sha256": "99eebfaf20028f0fe92182b93eaa5b3d45624e4fa79a45e09c032c60b463b8e4",
       "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/license-asset-v1837.json"
+    },
+    {
+      "file": "bscp-aosp17-public-docs-v1838.zip",
+      "bytes": 7712,
+      "sha256": "cd52e38f941e31ff0672957c2fb66bf77ce839ff456fc0f239d88dda03f78744",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/bscp-aosp17-public-docs-v1838.zip"
+    },
+    {
+      "file": "bscp-aosp17-public-docs-v1838.sha256",
+      "bytes": 101,
+      "sha256": "8157bcd5cb6ed393a8f07de6bb5c0e73758c95ba98d92770b29cef1705230f12",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/bscp-aosp17-public-docs-v1838.sha256"
     }
   ],
-  "deployment_conditions": "doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md"
+  "deployment_conditions": "doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md",
+  "documentation_revision": "v1838",
+  "deployment_config": "Private binding directory explicitly required by verify_installed.py",
+  "privacy_status": "Current descriptions redacted; legacy assets, original source closures and Git history can retain environment/build paths; not a complete historical purge"
 }

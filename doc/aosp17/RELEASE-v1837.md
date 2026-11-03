@@ -1,12 +1,14 @@
+> Personal environment fields are redacted. Placeholders do not admit a new deployment or preserve executable historical commands. Original evidence is retained privately.
+
 # AOSP 17 — limited-deployment reference release
 
 This release provides the AOSP 17 source baseline and reference runtime packages for the existing validated Windows, Linux and Mac deployments. These packages are **not fresh-machine installers**. They do not create accounts, private runtime directories, ACLs or driver permissions, and must not be extracted over live instances. Guest absolute symlinks are metadata only and must not be blindly materialized on the host.
 
 ## Required deployment conditions
 
-- Windows: existing MARK\miyu1 account and approved `E:\bscp\out\aosp17-windows-formal-v1461\runtime-private-v1550` layout; Host `assets\host-source-closed-v1828`, state `run-gpu-v1828`, matching Guest assets. Validated Windows build 26200, RTX2060 driver 32.0.16.1088. Independent CLI reconnect is disabled.
-- Linux: existing mark account with KVM access, `/home/mark/bscp/out/a17l/v6/s`, matching Host/Guest closure under `/home/mark/bscp/out/a17l/v6/dist/linux/bin`; recorded kernel 7.0.0-38-generic and RTX2060 with the existing NVIDIA ICD/system libraries.
-- Mac: existing huangxiaoling account, Apple M1, macOS 26.5.2/25F84, `/Volumes/Mark SSD` layout, state `a17r/n32-v1786/s`, Host `a17r/v32/virtmgr`, frozen signed crosvm, Vulkan loader, MoltenVK and OpenSSL dependencies. Exact absolute paths and read-only verification commands are in the deployment document below.
+- Windows: existing <DEPLOYMENT_ACCOUNT> account and approved `E:\bscp\out\aosp17-windows-formal-v1461\runtime-private-v1550` layout; Host `assets\host-source-closed-v1828`, state `run-gpu-v1828`, matching Guest assets. Validated Windows build 26200, RTX2060 driver 32.0.16.1088. Independent CLI reconnect is disabled.
+- Linux: existing mark account with KVM access, `<PRIVATE_LINUX_HOME>/bscp/out/a17l/v6/s`, matching Host/Guest closure under `<PRIVATE_LINUX_HOME>/bscp/out/a17l/v6/dist/linux/bin`; recorded kernel 7.0.0-38-generic and RTX2060 with the existing NVIDIA ICD/system libraries.
+- Mac: existing <DEPLOYMENT_IDENTITY> account, Apple M1, macOS 26.5.2/25F84, `<PRIVATE_VOLUME>` layout, state `a17r/n32-v1786/s`, Host `a17r/v32/virtmgr`, frozen signed crosvm, Vulkan loader, MoltenVK and OpenSSL dependencies. Exact absolute paths and read-only verification commands are in the deployment document below.
 
 [Full deployment conditions and commands](https://github.com/miyu-xu/bscp-root/blob/c5e797a0c28948fc9f9b4a5df0155261ea0be078/doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md)
 

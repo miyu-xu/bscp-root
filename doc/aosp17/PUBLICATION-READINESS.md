@@ -1,3 +1,5 @@
+> Historical preparation record, not current release status. AOSP 17 is now published and the default. See [current deployment guide](SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md). Personal environment fields below are redacted presentation values, not executable configuration.
+
 # AOSP 17 publication readiness
 
 The preparation branch is not the default release. `main/default.xml` still selects r14; `releases/default.json` remains unpublished. Do not interpret source/provenance CI as another VM acceptance run.

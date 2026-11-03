@@ -17,20 +17,20 @@
       "sha256": "59cd9d526a2c1db944884267227f6056c36d6f16603eae77e706893fffbfd313"
     },
     "doc/aosp17/FINAL-PREPARATION-GAPS.md": {
-      "bytes": 6206,
-      "sha256": "82ea33ed1fdae447ee8f0da4be8dc768322bdff6bd7a53dde1482380dbcdb1b0"
+      "bytes": 6445,
+      "sha256": "5787b63053ad364dfa2e978b1192529ba6720afe80c2051377865f4f5d467bb6"
     },
     "doc/aosp17/INSTALLATION-SCOPE-v1830.md": {
-      "bytes": 2210,
-      "sha256": "bbfee76b59ecb96a9beb1cf54fa6bdb3b2310dee71a0a22c834e34d496e8934d"
+      "bytes": 2486,
+      "sha256": "4828dbd807fb272384632b9fa0510380fb6934e7e8e18a6d98abcc148499db3b"
     },
     "doc/aosp17/PROJECT-UPDATES.md": {
-      "bytes": 6923,
-      "sha256": "6b33c3b275826e9d77bcfd5d0452df5fb23a93c305f61601613bf88717de690a"
+      "bytes": 7049,
+      "sha256": "8c86d46fba4ae0e5723ac4fc14c7901a360edce1a41b71170a64f14cc50cbbd7"
     },
     "doc/aosp17/RELEASE-PREPARATION-v1831.md": {
-      "bytes": 4280,
-      "sha256": "60f558127361c2c1c81f96557069df529c0b2611e119a26c3c5738334c3b91eb"
+      "bytes": 4556,
+      "sha256": "741154b3bdfbff7c9e08d14373b5d0a80672747faa3364a254ab63a788d20056"
     },
     "doc/aosp17/SLIRP-ACCEPTANCE-REVIEW.json": {
       "bytes": 1153,
@@ -49,8 +49,8 @@
       "sha256": "a203af7aafa9d34333dcf1c01ee643b976fb7ab29311238ec2cbdc15883a6a3f"
     },
     "doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md": {
-      "bytes": 4298,
-      "sha256": "297411988b4b3b37de44cd6c7b2bac2f5583fc309542aa2a284f54bd892ef92b"
+      "bytes": 4803,
+      "sha256": "5e7dcbc75f255ebaf39761ecfbd96402ff3294767ad84dc5be1011748ad5dd05"
     },
     "doc/aosp17/WINDOWS-FINAL-RESULT-v1830.json": {
       "bytes": 64212,
@@ -77,12 +77,12 @@
       "sha256": "b3b37983e66d2024b654fff353eb52e23d9dba0dd0cef4ee528bb5b9e942137f"
     },
     "doc/aosp17/frozen-delivery/RUNBOOK.md": {
-      "bytes": 16949,
-      "sha256": "781a1845bdd6c74e3a9bcb8d634e8605b3742522bcc817c59665bbeafd9b8786"
+      "bytes": 17051,
+      "sha256": "f6b94d8422747ce368ab2f3b9d46bdfba77680756c48eba30ae57c7d4741ed34"
     },
     "doc/aosp17/frozen-delivery/SOURCE-AVAILABILITY.md": {
-      "bytes": 1907,
-      "sha256": "6b3d1a98c1e8b83d90e3b6b84ffc8d5bdb17c119dddc38dffb3ee67bccbef350"
+      "bytes": 2079,
+      "sha256": "409f16f43e15e58b13cb42d1f959f4aada9e5a57929ef32f5468489dfc1beb2f"
     },
     "doc/aosp17/frozen-delivery/SOURCE-INDEX.json": {
       "bytes": 580967,

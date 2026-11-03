@@ -1,3 +1,5 @@
+> Historical preparation record, not current release status. AOSP 17 is now published and the default. See [current deployment guide](SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md). Personal environment fields below are redacted presentation values, not executable configuration.
+
 # Installation scope of the current release candidate
 
 The original repository deployment instructions describe a workspace checkout

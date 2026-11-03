@@ -1,3 +1,5 @@
+> Personal environment fields are redacted. Placeholders do not admit a new deployment or preserve executable historical commands. Original evidence is retained privately.
+
 # AOSP17 Microdroid candidate: reproduce, accept, and roll back
 
 This handoff preserves the tested foreground lifecycle. It does not publish a new branch, switch machine defaults, migrate old VM disks, or enable independent Windows persistent CLI reattachment. Versions and original source/build/lock/tool/runtime evidence are in `versions.json`. Old reports remain historical; use `STATUS.json` for delivery progress and `versions.json` for version-scoped runtime coverage. The v1786 report remains historical; its earlier source/todo status is superseded by this handoff.
@@ -6,8 +8,8 @@ This handoff preserves the tested foreground lifecycle. It does not publish a ne
 
 | Platform | Native entry | State/profile |
 |---|---|---|
-| Linux mark@192.168.1.21 | `/home/mark/bscp/out/a17l/v6/scripts/microdroid.py` | `/home/mark/bscp/out/a17l/v6/s` |
-| Mac huangxiaoling@192.168.1.14 | `/Volumes/Mark SSD/a17r/v32/scripts/microdroid.py` | `/Volumes/Mark SSD/a17r/n32-v1786/s` |
+| Linux mark@<PRIVATE_HOST> | `<PRIVATE_LINUX_HOME>/bscp/out/a17l/v6/scripts/microdroid.py` | `<PRIVATE_LINUX_HOME>/bscp/out/a17l/v6/s` |
+| Mac <DEPLOYMENT_IDENTITY>@<PRIVATE_HOST> | `<PRIVATE_VOLUME>/a17r/v32/scripts/microdroid.py` | `<PRIVATE_VOLUME>/a17r/n32-v1786/s` |
 | Windows MARK | `../windows-headless-gpu-v1774/scripts/microdroid.py` | `E:/bscp/out/aosp17-windows-formal-v1461/runtime-private-v1550/run-gpu-v1774` |
 
 The frozen profile is the authority for the complete paths, normal initrd, noADB, SDK37, GPU mode, loader/renderer/ICD, APEX, APK, Host/crosvm and all dependency hashes. Do not substitute the current AOSP output tree for a frozen graphics APEX, a nongraphics output, or an older r14 library. Validate `profile.instance_root == state-root/instances`, source/closure hashes and recursive native dependencies before creating a new instance.
@@ -31,11 +33,11 @@ Source manifest: `../windows-host-thread-name-v1753/virtmgr/Cargo.toml`. Build c
 
 **Linux virtmgr**
 
-Source: `/home/mark/bscp/out/aosp17-linux-host-v1228/formal-v1293/sources/aosp17-endpoint-retirement-v1253/virtmgr`. Pinned Rust tool path `/home/mark/aosp/prebuilts/rust-toolchain/linux-x86/1.93.1/bin`; Clang `clang-r584948`. Final actual build command in `../BUILD-GPU-v1393.stdout`: `cargo build --locked --offline --manifest-path <source>/Cargo.toml --target x86_64-unknown-linux-gnu --features desktop-gpu -j2`. Binder native source/libs, libcap include/library paths, bindgen resource path and LD_LIBRARY_PATH must match `../build_gpu_v1393.py`'s recorded environment. Use a fresh CARGO_TARGET_DIR; do not execute its source-edit phase again. `../LINUX-FINAL-SOURCE-v1413.stdout` and the v1420 evidence index bind the actual accepted runtime. Renderer KVM coherent adaptation and crosvm have separate receipts; their identities cannot be inferred from virtmgr compilation.
+Source: `<PRIVATE_LINUX_HOME>/bscp/out/aosp17-linux-host-v1228/formal-v1293/sources/aosp17-endpoint-retirement-v1253/virtmgr`. Pinned Rust tool path `<PRIVATE_LINUX_HOME>/aosp/prebuilts/rust-toolchain/linux-x86/1.93.1/bin`; Clang `clang-r584948`. Final actual build command in `../BUILD-GPU-v1393.stdout`: `cargo build --locked --offline --manifest-path <source>/Cargo.toml --target x86_64-unknown-linux-gnu --features desktop-gpu -j2`. Binder native source/libs, libcap include/library paths, bindgen resource path and LD_LIBRARY_PATH must match `../build_gpu_v1393.py`'s recorded environment. Use a fresh CARGO_TARGET_DIR; do not execute its source-edit phase again. `../LINUX-FINAL-SOURCE-v1413.stdout` and the v1420 evidence index bind the actual accepted runtime. Renderer KVM coherent adaptation and crosvm have separate receipts; their identities cannot be inferred from virtmgr compilation.
 
 **Mac virtmgr**
 
-Source: `/Volumes/Mark SSD/aosp17-endpoint-retirement-v1253/virtmgr`. Exact successful recipe and filtered tests are in `../build_endpoint_v1253.py` and `../ENDPOINT-BUILD-v1253.stdout`; the build is `cargo +stable build --offline --locked --manifest-path <source>/Cargo.toml --bin virtmgr -j2 --features desktop-gpu`. Preserve the actual tool binary identity and locked cache from its original evidence rather than assuming today's `stable` is the same compiler. Environment binds official A17 Binder native source and native-host/build plus existing OpenSSL. Use a fresh target/output; do not rerun its exclusive source-copy/patch phase. The signed crosvm and all renderer/Vulkan/MoltenVK inputs remain those in the v32 closure. The new Host normal impact receipts are `../MAC-FINAL-NORMAL-RESULT-v1786.json`; GPUoff v30 is still historical.
+Source: `<PRIVATE_VOLUME>/aosp17-endpoint-retirement-v1253/virtmgr`. Exact successful recipe and filtered tests are in `../build_endpoint_v1253.py` and `../ENDPOINT-BUILD-v1253.stdout`; the build is `cargo +stable build --offline --locked --manifest-path <source>/Cargo.toml --bin virtmgr -j2 --features desktop-gpu`. Preserve the actual tool binary identity and locked cache from its original evidence rather than assuming today's `stable` is the same compiler. Environment binds official A17 Binder native source and native-host/build plus existing OpenSSL. Use a fresh target/output; do not rerun its exclusive source-copy/patch phase. The signed crosvm and all renderer/Vulkan/MoltenVK inputs remain those in the v32 closure. The new Host normal impact receipts are `../MAC-FINAL-NORMAL-RESULT-v1786.json`; GPUoff v30 is still historical.
 
 **Guest**
 

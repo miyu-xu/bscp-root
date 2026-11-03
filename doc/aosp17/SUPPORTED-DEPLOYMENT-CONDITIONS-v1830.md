@@ -1,86 +1,47 @@
-# Explicit supported deployment conditions
+# AOSP 17 default: supported reference deployments
 
-## Recommended publication description
+AOSP 17 is published and selected by the manifest repository's `main/default.xml`. [Release](https://github.com/miyu-xu/bscp-root/releases/tag/bscp-aosp17-20261102). r14 is a preserved rollback baseline, not the current default.
 
-Publish the AOSP17 source/manifest baseline and clearly labelled reference
-runtime archives for the three admitted deployments. Do not advertise the
-archives as arbitrary-machine installers. No new universal installer is
-required by the original workspace-build instructions, but an arbitrary-root
-installation claim would require more implementation and validation.
+These packages are reference artifacts for the already admitted deployments, **not fresh-machine installers**. Their original fixed-path, account, hardware and file-identity requirements still apply. Public documentation omits personal accounts, machine names, home directories and LAN addresses. Place the original binding in a private deployment configuration; placeholders do not authorize a new layout or bypass an admission check.
 
-The archives do not contain existing instance disks, claims, credentials or
-security settings. They must not be extracted over a live deployment. Linux/Mac
-Guest symlinks are represented as metadata, not blindly materialized on the
-host. These archives alone are not a tested fresh-machine restoration command.
+## Platform prerequisites
 
-## Windows existing deployment
+- Windows: original admitted account and protected runtime root, Windows build 26200, RTX2060 driver 32.0.16.1088 and the matching v1830 Host/Guest closure. Independent CLI reconnect is disabled.
+- Linux: original admitted runtime layout, KVM access, recorded kernel 7.0.0-38-generic, RTX2060 and existing NVIDIA ICD/system libraries.
+- Mac: original admitted volume layout, Apple M1, macOS 26.5.2/25F84, frozen signed crosvm, Vulkan loader, MoltenVK and OpenSSL dependencies. No dylib paths or security settings are changed by these instructions.
 
-- Existing account MARK\miyu1 and already approved private root:
-  `E:\bscp\out\aosp17-windows-formal-v1461\runtime-private-v1550`.
-- New Host bundle: `assets\host-source-closed-v1828`; state:
-  `run-gpu-v1828`. Existing matching Guest assets must remain present.
-- Recorded OS: Windows build 26200; GPU provider RTX2060 driver 32.0.16.1088.
-  Exact provider paths/hashes are checked by the frozen closure.
-- No new ACL operation is required for this existing deployment. An absent
-  private root is not permission to recreate it with guessed permissions.
-- Windows independent CLI reconnect remains disabled.
+## Source checkout, build and upgrades
 
-From a checkout of the publication commit, this read-only command checks the
-existing installation, without starting a VM:
+For a new source workspace, use `repo init -u https://github.com/miyu-xu/bscp-manifest-repo.git -b main`, then `repo sync`. The default includes `aosp17.xml`, which fixes 1087 official project SHAs and the published BSCP root commit. Do not force-sync, reset or overwrite existing local changes.
+
+The custom Host closures and their platform-specific build records live under `releases/aosp17/source`. Official AOSP sync alone does not build the BSCP Host ports. A build or `--help` success does not establish VM acceptance. Existing source snapshots and runtime archives are subject to the privacy limitations below; do not republish private build logs.
+
+## Read-only installed-deployment verification
+
+The deployment owner must provide a private directory containing the original `BINDING.json`, `profile.json` and `closure.json`. Do not construct new hashes merely to make a check pass. The verifier preserves exact installed-profile/closure hash checks and the production controller's admission checks. It does not create directories, change ACLs, install dependencies or start a VM.
+
+After setting `BSCP_DEPLOYMENT_CONFIG` to that private directory:
+
+```sh
+python3 -B releases/aosp17/verify_installed.py --platform linux --deployment-config "$BSCP_DEPLOYMENT_CONFIG"
+```
+
+On Mac, use `--platform macos`. On Windows PowerShell:
 
 ```powershell
-python -B releases/aosp17/windows-v1830/scripts/microdroid.py --platform windows --state-root E:/bscp/out/aosp17-windows-formal-v1461/runtime-private-v1550/run-gpu-v1828 check --gpu on
+python -B releases/aosp17/verify_installed.py --platform windows --deployment-config $env:BSCP_DEPLOYMENT_CONFIG
 ```
 
-Repeat with `--gpu off` for the other configuration. The actual six-case VM
-results are in `WINDOWS-FINAL-RESULT-v1830.json`; `check` is not a new VM test.
+An unset variable is an error, not a request to discover or create a deployment. These commands are configuration-dependent examples, not copy-and-run installation commands. Use `python -B scripts/microdroid.py --release-info` to inspect the AOSP17 default and `--help` for the exact platform controller syntax. Actual start/stop commands require the already admitted private state root and existing lifecycle procedure; no generic start command is asserted here.
 
-## Linux existing deployment
+## Downloads, checksums and privacy status
 
-- Existing mark account, KVM access and state
-  `/home/mark/bscp/out/a17l/v6/s`.
-- Host files under `/home/mark/bscp/out/a17l/v6/dist/linux/bin` and exact matching
-  Guest/profile closure must remain present.
-- Recorded kernel: 7.0.0-38-generic; RTX2060 with the existing
-  `/usr/share/vulkan/icd.d/nvidia_icd.json` and system dynamic libraries.
-  No bundled replacement GPU driver or new device permission is supplied.
-- Current production checks for GPU on/off returned exit0 again in this round.
-  The previously accepted Linux VM version was unchanged.
+The Release lists exact package names. Verify the original 24 archives with `SHA256SUMS`, and the additional license archive with `license-asset-v1837.json`. The metadata in `releases/default.json` records the corresponding released files and hashes. Do not extract over a live deployment or blindly materialize Guest absolute symlinks on the host.
 
-Run on that Linux machine from the publication checkout:
+The initial published attachments and Git history can retain personal build paths; binary debug/source paths require rebuild and affected runtime revalidation, not byte substitution. Corrected public descriptions are not proof that old assets or history have been erased. Immutable historical receipts remain preserved privately; any redacted document is a presentation copy, not a new original test result.
 
-```sh
-python3 -B releases/aosp17/verify_installed.py --platform linux
-```
+## Acceptance and rollback
 
-## Mac existing deployment
+Windows v1830 has four normal/healthy-restart and two fault cases. Linux/Mac retain their separate version-specific accepted evidence. Fault tasks remain UNKNOWN when execution is uncertain even if resources are REAPED. Mac ext4 history remains 70 pass / 1 fail. A/H3, real UI and input remain outside this acceptance.
 
-- Existing huangxiaoling account, Apple M1, recorded macOS26.5.2/25F84 and
-  `/Volumes/Mark SSD` layout.
-- State `/Volumes/Mark SSD/a17r/n32-v1786/s`; Host
-  `/Volumes/Mark SSD/a17r/v32/virtmgr`; crosvm
-  `/Volumes/Mark SSD/aosp17-host-port-v1/runtime-signed-v1001/crosvm`.
-- Existing Vulkan loader path
-  `/Volumes/Mark SSD/aosp17-vulkan-loader-v1062/runtime-v1063/lib/libvulkan.1.4.350.dylib`,
-  MoltenVK ICD under `graphics-native-20261023/runtime`, existing OpenSSL and
-  all exact closure files are prerequisites. The recovered MoltenVK source is
-  the retained development commit, not a newly substituted release binary.
-- Current production checks for GPU on/off returned exit0 again. They do not
-  turn historical GPU-off evidence into a new-version run or erase the ext4
-  suite's recorded 70pass/1fail boundary.
-
-Run on that Mac from the publication checkout:
-
-```sh
-python3 -B releases/aosp17/verify_installed.py --platform macos
-```
-
-## Remaining publication action
-
-The source/notice and new Windows runtime gates are closed for this explicitly
-bounded scope. The exact source commit 814a66ede631002a791aa8b51590d8623ea4c3f3 passed Linux, Windows and Mac provenance CI (run41484422286). This is source validation, not a new VM run.
-Release asset upload needs a supported live authenticated browser operation;
-the old login screenshot cannot authorize stale-coordinate interaction.
-Default promotion must follow actual asset/reference verification. Neither
-GitHub default-branch settings nor machine running profiles are changed by
-these preparation commits.
+For r14 rollback, use the preserved manifest branch `bscp-android-15.0.0_r14` and exact manifest `89c0365a4dff5c0e52a5386877592a2f6fd45548`, with root `43e4786a48c142b4c8b6f4bfb0db38cd32b20e42`. Do not overwrite active/failed instance disks or replay UNKNOWN requests. `--release r14` selects the retained controller; it does not restore disk state or change a machine's runtime profile.
