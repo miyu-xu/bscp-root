@@ -249,6 +249,42 @@
       "bytes": 750,
       "sha256": "4f1c6147fff761f32673ded5618159f671fbc6734261d481bc1fad3e047eba3b",
       "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/public-revision-v1840.json"
+    },
+    {
+      "file": "linux-native-source-public-v1842.tar.gz",
+      "bytes": 6981,
+      "sha256": "d772511023c7bd4e7747735c58e313e86a28aedc770bdb48b847cddf3e13ac14",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/linux-native-source-public-v1842.tar.gz"
+    },
+    {
+      "file": "macos-native-source-public-v1842.tar.gz",
+      "bytes": 2004,
+      "sha256": "40cd3758cf411f4329f569a97bbe45f6e470e46e220f56ac85412a77e92e70f7",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/macos-native-source-public-v1842.tar.gz"
+    },
+    {
+      "file": "macos-binder-source-public-v1842.tar.gz",
+      "bytes": 623157,
+      "sha256": "070c84172aded25444f8332dfa05dc9608c70d657dd1dbc9ff09e7ce3a323807",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/macos-binder-source-public-v1842.tar.gz"
+    },
+    {
+      "file": "public-native-revision-v1842.json",
+      "bytes": 779,
+      "sha256": "dbc29f7a8a9484da5be8a308b2a7901c9860b14615f58b0051a061803b8e5f77",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/public-native-revision-v1842.json"
+    },
+    {
+      "file": "bscp-aosp17-source-notices-and-deployment-public-v1844.zip",
+      "bytes": 1365287,
+      "sha256": "894c72880f22fc3fe775955b35c24000ff37f0dd991e0b35d046c35c91ea9d78",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/bscp-aosp17-source-notices-and-deployment-public-v1844.zip"
+    },
+    {
+      "file": "public-support-revision-v1844.json",
+      "bytes": 457,
+      "sha256": "0c1c90fa65490c21690afdbd222e0cd7f2bb63df3c7ebd74a4687458f304d4b1",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/public-support-revision-v1844.json"
     }
   ],
   "deployment_conditions": "doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md",
@@ -260,7 +296,11 @@
   "privacy_revision": {
     "public_source_replacements": [
       "linux-binder-source-public-v1840.tar.gz",
-      "windows-crosvm-source-public-v1840.tar.gz"
+      "windows-crosvm-source-public-v1840.tar.gz",
+      "linux-native-source-public-v1842.tar.gz",
+      "macos-native-source-public-v1842.tar.gz",
+      "macos-binder-source-public-v1842.tar.gz",
+      "bscp-aosp17-source-notices-and-deployment-public-v1844.zip"
     ],
     "bilingual_documents": "bscp-aosp17-bilingual-docs-v1840.zip",
     "scope": "Source-only packaging and documentation; no new runtime acceptance. Original identity-bearing attachments and Git history retained pending separate removal decisions.",
