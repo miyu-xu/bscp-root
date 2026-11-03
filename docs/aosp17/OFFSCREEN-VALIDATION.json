@@ -1,0 +1,104 @@
+{
+  "scope": "Public summary derived from preserved actual AOSP17 Guest execution records; no new VM execution and not a replacement for original private evidence.",
+  "release": "bscp-aosp17-20261102",
+  "platforms": [
+    {
+      "platform": "windows",
+      "accepted_profile": "v1828 normal; v1829 faults; v1830 final",
+      "guest_apex_sha256": "6af2dd6fc128f51de39f59b8d05c445b0a05645d8de73d1547986326e27a5fbb",
+      "host_sha256": "1ab2fe0af279a6d7257fc50b0dd187d4c9a65a3b0f2321c800e546a1b8104a7a",
+      "renderer_sha256": "b775e5da32c89605debf28d5f2ae8ad80d43ac6f6756b9deadc1255181af0d35",
+      "guest_gpu": "NVIDIA GeForce RTX 2060",
+      "pixel_probe": {
+        "pixels": 256,
+        "mismatches": 0
+      },
+      "workloads": [
+        "formal Guest Vulkan enumeration",
+        "VADD uint32 vectors including overflow",
+        "PIXEL offscreen render/readback",
+        "COHERENT map/bind and padding combinations",
+        "healthy same-disk restart"
+      ],
+      "evidence": [
+        {
+          "record": "WINDOWS-NORMAL-RESULT-v1828.json",
+          "sha256": "89a5272e19d19589f8d62a27efb6bdc9f95af460d73a5f2f0824aae37065c166"
+        },
+        {
+          "record": "WINDOWS-FINAL-RESULT-v1830.json",
+          "sha256": "d239e4dfa35305f1a1468452d46d0b490812f80e618b3c523fe3e67234a1003f"
+        }
+      ]
+    },
+    {
+      "platform": "linux",
+      "accepted_profile": "v6 normal start/resume and f6 faults",
+      "guest_apex_sha256": "6af2dd6fc128f51de39f59b8d05c445b0a05645d8de73d1547986326e27a5fbb",
+      "host_sha256": "826a00ac101386c0084abc6fdc6b18df1e870501509e1700542c1ed4d57bb8ca",
+      "renderer_sha256": "5fc398dfc5e936bb91dbd9b4f345a912d2ff739c1d3ff3e8dcd849645c522f79",
+      "guest_gpu": "NVIDIA GeForce RTX 2060",
+      "pixel_probe": {
+        "pixels": 256,
+        "mismatches": 0
+      },
+      "workloads": [
+        "formal Guest Vulkan enumeration",
+        "VADD uint32 vectors including overflow",
+        "PIXEL offscreen render/readback",
+        "COHERENT map/bind and padding combinations",
+        "healthy same-disk restart"
+      ],
+      "evidence": [
+        {
+          "record": "GPU-ACTUAL-v1405.stdout",
+          "sha256": "f4d55a044de83e77780548f848a2c95bd32336944061b30a9c2acb3a68accad6"
+        },
+        {
+          "record": "RESULT-LINUX-V6-v1420.md",
+          "sha256": "4834c63716af5b295b2aa2d318533efbd9ad11fc0f8b6d7ec489a579f60f71df"
+        }
+      ]
+    },
+    {
+      "platform": "macos",
+      "accepted_profile": "v32 GPU-on start/resume v1786; GPU-off retains v30 scope",
+      "guest_apex_sha256": "01fb1a1834019274660accbb422304f0566032ad9e206742be635f6fba4e6747",
+      "host_sha256": "3340cdc8882d74482ef0c6c97211d10604b3154f6228432127bb6c439adf3663",
+      "renderer_sha256": "2cb3a478a0802a55bb1ea4478546c5d20242328b700ad670db5dbb531af07e43",
+      "guest_gpu": "Apple M1",
+      "pixel_probe": {
+        "pixels": 256,
+        "mismatches": 0
+      },
+      "workloads": [
+        "formal Guest Vulkan enumeration",
+        "VADD uint32 vectors including overflow",
+        "PIXEL offscreen render/readback",
+        "COHERENT map/bind and padding combinations",
+        "healthy same-disk restart"
+      ],
+      "evidence": [
+        {
+          "record": "MAC-FINAL-NORMAL-RESULT-v1786.json",
+          "sha256": "7e520975be13875f648d5b79221198719e219b6192e54805580fa87c17a71624"
+        },
+        {
+          "record": "v1786/start/controller.stdout",
+          "sha256": "dad7e25ab5c4c2c1277f449e3970aac22e43740b0a0d6f560c237534adb8a5c1"
+        },
+        {
+          "record": "v1786/resume/controller.stdout",
+          "sha256": "ce89441306fde18ea606fc7ba21bff7a24bf456fa06eac43cb82c32b250cf074"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "finite admitted deployment profiles only",
+    "GPU-off explicitly rejects GPU tasks; it is not Vulkan success",
+    "not real display/input, arbitrary Vulkan features, performance, all GPU or driver compatibility",
+    "Mac GPU-off v30 and v32 GPU-on scopes remain distinct",
+    "UNKNOWN business outcomes are not converted to success by REAPED resources"
+  ]
+}

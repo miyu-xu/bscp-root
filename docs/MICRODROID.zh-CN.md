@@ -117,7 +117,7 @@ sequenceDiagram
 | Console | 文件或持久服务 PTY | 文件或持久服务 PTY | 文件/named-pipe 双向控制台，可抓取独立串口 |
 | ADB bridge | 可选 localhost TCP→Guest vsock | 可选 localhost TCP→UDS-vsock | 可选 localhost TCP→named-pipe-vsock |
 | Protected VM | 取决于 KVM/pKVM、pvmfw 与 host capability；非默认门禁 | 没有与 Android pVM 等价的发布证明 | 包装器明确拒绝 `-Protected` |
-| Vulkan 离屏渲染 | Host 源码路径已具备；图形 profile/Guest 待启用 | Host 路径已具备；Guest 待启用 | Host 源码路径已具备；图形 runtime/Guest 待启用 |
+| Vulkan 离屏渲染 | AOSP17 Guest PIXEL：256 像素、0 不匹配；限定验收配置 | AOSP17 Guest PIXEL：256 像素、0 不匹配；限定验收配置 | AOSP17 Guest PIXEL：256 像素、0 不匹配；限定验收配置 |
 | 自动门禁 | `run_linux_avf_regression.sh` | `run_macos_avf_regression.sh` | `run_windows_avf_regression.ps1` |
 
 ### 5.1 Linux/KVM
@@ -192,40 +192,21 @@ debug policy，并提供 CPU 数与文件句柄路径解析。主要修改分布
 | `system/core` | Host 构建所需 atomic/thread portability，Guest 安全语义仍以 Android 基线为准 |
 | 根仓库 | 三平台构建、APEX staging、运行包装、回归、日志和发布编排 |
 
-## 8. Microdroid Vulkan 离屏渲染准备度
+## 8. 已验证的 Microdroid Vulkan 离屏渲染
 
-当前实现结论是 **Host 已具备基础能力，Guest 尚待启用**。三平台 Host 侧已有 crosvm
-virtio-gpu、rutabaga/gfxstream、命令与资源传输、同步机制及对应平台图形后端。Microdroid
-离屏渲染可以复用这些现有能力，不需要新增一套 Host 图形架构或依赖窗口 scanout。
+**AOSP17 Guest 内真实 Vulkan 离屏执行已在三个准入平台通过验证。** 这不是仅创建 Host 设备或源码/构建就绪的结论。有限的 `PIXEL` 工作负载完成渲染与回读，256 个像素、0 个不匹配；正式 Guest 设备枚举、VADD uint32 向量（含溢出用例）以及选定的 coherent 内存映射/绑定/填充组合也已通过。
 
-这里的“Host 已具备”指源码与构建 profile 已存在，不代表每个默认 dist 都包含图形 runtime。
-macOS 默认启用图形构建；Linux/Windows 发布物需要按现有 `ENABLE_GFXSTREAM_ANGLE=1` profile
-构建或装入匹配的预编译 gfxstream/ANGLE runtime。对于已经完成这一制品配置的 Host，后续
-代码改动集中在 Guest，不需要新增 Host 后端。
+| 平台 | 实际验收版本 | 范围 |
+| --- | --- | --- |
+| Windows x86_64 / RTX 2060 | v1828 正常、v1829 故障、v1830 汇总 | GPU-on 初启和健康同盘重启；GPU 开/关共四例正常验证 |
+| Linux x86_64 / RTX 2060 | v6 正常 / f6 故障 | GPU-on 初启和健康同盘重启；GPU 开/关共四例正常验证 |
+| macOS arm64 / Apple M1 | v32 GPU-on 初启/恢复 v1786 | v32 受影响路径已验证；GPU-off 仍是单独记录的 v30 基线，不能混称全部模式重跑 |
 
-```mermaid
-flowchart LR
-    P["Microdroid Payload"] --> VK["Guest Vulkan loader + ICD"]
-    VK --> VG["virtio-gpu"]
-    VG --> R["crosvm rutabaga"]
-    R --> G["gfxstream / host graphics backend"]
-    G --> O["offscreen image or buffer"]
-    O --> X["controlled readback / export"]
-```
+见[绑定制品的公开证据摘要](aosp17/OFFSCREEN-VALIDATION.json)、[冻结版本索引](aosp17/frozen-delivery/versions.json)和 [Windows 最终记录](aosp17/WINDOWS-FINAL-RESULT-v1830.json)。摘要包含准确的 Host/Guest/renderer 哈希及原始回执哈希；脱敏展示副本不替代私有原始证据。对应发布为 `bscp-aosp17-20261102`，使用固定 AOSP17 图形 Guest 与配套平台 Host。
 
-剩余工作主要位于 Microdroid Guest 与运行 profile：
+GPU-off 对 GPU 请求明确返回 `GPU_DISABLED`，不是 Vulkan 成功案例。VADD 计算、像素回读与 coherent 内存是不同检查。枚举响应里的 `actual_coherent_use=NOT_TESTED` 只描述枚举命令本身；另行执行的 `COHERENT` 命令验证了记录中的内存组合。
 
-- 在 Microdroid 镜像中启用并打包 Vulkan loader、Guest ICD/驱动和所需运行库；
-- 配置 virtio-gpu 设备发现、设备节点访问、SELinux/权限与必要 Android feature/property；
-- 让 VM profile 选择 Host 已有的 GPU 设备能力，同时保持无窗口、无显示 scanout；
-- 建立 `vkEnumeratePhysicalDevices`、device/queue 创建、compute 或 render-to-image、同步、
-  readback/export 和异常清理门禁；
-- 对显存、command buffer、执行时间和并发设置配额，验证恶意 shader、设备重置和 VMM/Guest
-  故障不会突破实例边界。
-
-因此，当前不能再把 Microdroid Vulkan 描述为“Host 不支持”；准确状态是 Host 实现已经就绪，
-Guest 镜像集成及端到端发布证据尚未完成。只有 Guest Vulkan API、离屏输出正确性、跨平台
-一致性和安全/资源门禁全部通过后，才能把它列为正式支持能力。
+这些结果不代表真实画面/scanout 或输入支持、任意 Vulkan 功能/shader、性能保证、所有 GPU/驱动/内存类型，或任意新机器部署。本文修订不代表重新运行 VM。超时/断连任务仍为 UNKNOWN，即使资源已 REAPED；历史失败及 Mac ext4 限制继续保留。
 
 ## 9. 安全边界与必须明确的限制
 
@@ -239,8 +220,8 @@ Guest 镜像集成及端到端发布证据尚未完成。只有 Guest Vulkan API
 
 ### 9.2 当前不能宣称的保证
 
-- 桌面 Linux、macOS 和 Windows 的 Permission/SELinux provider 当前是环境驱动的 mock，
-  不等价于 Android system_server + SELinux policy。
+- 桌面 Permission/SELinux provider 为平台适配，必须使用已准入的认证入口；
+  这不等价于 Android system_server + SELinux policy 的安全保证。
 - `virtmgr` 的 Unix 与 Windows crosvm launcher 当前都传入 `--disable-sandbox`；因此 VMM
   进程沙箱不是当前跨平台发布基线的既成保证。
 - macOS HVF 与 Windows WHPX 不等价于 Android pKVM/pVM；没有硬件 KeyMint、远程证明和
@@ -296,11 +277,11 @@ Windows：
 | 项目 | 当前结论 |
 | --- | --- |
 | pVM/protected VM | Linux 条件能力；macOS 未认证；Windows 明确不支持 |
-| Android SELinux/Permission | 桌面 host 使用 mock/allowlist，不是等价实现 |
+| Android SELinux/Permission | 桌面平台准入不等价于 Android system_server/SELinux 执行机制 |
 | crosvm process sandbox | 当前 launcher 禁用，需额外 host sandbox 或后续实现 |
 | VFIO/device assignment | Linux/Android 专属；Windows launcher 拒绝，macOS 无等价路径 |
 | hugepages/uclamp | 平台语义不同，不能只凭参数存在声明对齐 |
-| Microdroid Vulkan | Host 源码路径已具备；图形制品 profile、Guest 镜像与端到端门禁待确认 |
+| Microdroid Vulkan | 三个准入平台的真实 Guest 离屏像素、VADD 和选定 coherent 用例已验证；见第 8 节 |
 | 生产认证 | 需要签名制品、硬件能力、密钥/证明链和平台实机证据 |
 
 ## 13. 关键代码入口

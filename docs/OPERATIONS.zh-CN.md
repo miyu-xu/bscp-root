@@ -11,3 +11,5 @@
 参阅[故障排查](TROUBLESHOOTING.zh-CN.md)、[发布边界](RELEASE.zh-CN.md)及归档的[超时证据](history/avf-timeout-evidence.zh-CN.md)。
 
 [English](OPERATIONS.md)
+
+Guest Vulkan 离屏 PIXEL、VADD 与 coherent 已在准入 AOSP17 配置中验证，见[准确范围与证据](MICRODROID.zh-CN.md#8-已验证的-microdroid-vulkan-离屏渲染)。GPU-off 必须拒绝 GPU 任务。

@@ -11,3 +11,5 @@ Healthy same-disk restart tests verify retained value 118. They do not authorize
 See [troubleshooting](TROUBLESHOOTING.md), [release boundaries](RELEASE.md) and the archived [timeout evidence](history/avf-timeout-evidence.md).
 
 [简体中文](OPERATIONS.zh-CN.md)
+
+Guest Vulkan offscreen PIXEL, VADD and coherent tests are already verified in the admitted AOSP17 profiles; see [exact scope and evidence](MICRODROID.md#8-verified-microdroid-vulkan-offscreen-rendering). GPU-off must reject GPU work.

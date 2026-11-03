@@ -119,7 +119,7 @@ pipes plus explicit state files.
 | Console | File or persistent-service PTY | File or persistent-service PTY | File/named-pipe duplex console; separate serial capture |
 | Optional ADB bridge | localhost TCP to guest vsock | localhost TCP to UDS-vsock | localhost TCP to named-pipe-vsock |
 | Protected VM | Conditional on KVM/pKVM, pvmfw, and host capability; not a default gate | No release proof equivalent to Android pVM | Wrapper explicitly rejects `-Protected` |
-| Vulkan offscreen rendering | Host source path ready; graphics profile/guest pending | Host path ready; guest pending | Host source path ready; graphics runtime/guest pending |
+| Vulkan offscreen rendering | AOSP17 Guest PIXEL: 256 pixels, 0 mismatches; finite accepted profile | AOSP17 Guest PIXEL: 256 pixels, 0 mismatches; finite accepted profile | AOSP17 Guest PIXEL: 256 pixels, 0 mismatches; finite accepted profile |
 | Automated gate | `run_linux_avf_regression.sh` | `run_macos_avf_regression.sh` | `run_windows_avf_regression.ps1` |
 
 ### 5.1 Linux/KVM
@@ -199,46 +199,21 @@ adds CPU-count and file-handle path resolution.
 | `system/core` | Atomic and thread portability required by host builds; guest security semantics remain Android-derived |
 | Root repository | Three-platform builds, APEX staging, launch wrappers, regression, logging, and release orchestration |
 
-## 8. Microdroid Vulkan Offscreen-Rendering Readiness
+## 8. Verified Microdroid Vulkan Offscreen Rendering
 
-The current implementation status is **host foundation ready; guest enablement pending**. Across
-the three hosts, crosvm already provides virtio-gpu, rutabaga/gfxstream, command and resource
-transport, synchronization, and the platform graphics backends. Microdroid offscreen rendering can
-reuse that implementation without a new host graphics architecture or a windowed display scanout.
+**Actual AOSP17 Guest Vulkan offscreen execution has passed on all three admitted platforms.** This is not merely Host device creation or a source/build readiness claim. The finite `PIXEL` workload renders and reads back 256 pixels with zero mismatches. Formal Guest device enumeration, VADD uint32 vectors (including overflow cases), and the selected coherent-memory map/bind/padding cases also passed.
 
-“Host ready” means that the source path and build profile exist; it does not mean every default
-distribution contains the graphics runtime. macOS enables the graphics build by default. Linux and
-Windows releases must use the existing `ENABLE_GFXSTREAM_ANGLE=1` profile or stage matching
-prebuilt gfxstream/ANGLE runtime. Once that artifact configuration is present, the remaining code
-work is guest-side and no new host backend is required.
+| Platform | Actual accepted profile | Scope |
+| --- | --- | --- |
+| Windows x86_64 / RTX 2060 | v1828 normal, v1829 faults, v1830 final | GPU-on initial start and healthy same-disk restart; four normal cases across GPU on/off |
+| Linux x86_64 / RTX 2060 | v6 normal / f6 faults | GPU-on initial start and healthy same-disk restart; four normal cases across GPU on/off |
+| macOS arm64 / Apple M1 | v32 GPU-on start/resume v1786 | The v32 impact validation passed; GPU-off coverage remains the separately recorded v30 baseline |
 
-```mermaid
-flowchart LR
-    P["Microdroid payload"] --> VK["Guest Vulkan loader + ICD"]
-    VK --> VG["virtio-gpu"]
-    VG --> R["crosvm rutabaga"]
-    R --> G["gfxstream / host graphics backend"]
-    G --> O["offscreen image or buffer"]
-    O --> X["controlled readback / export"]
-```
+See the [artifact-bound public evidence summary](aosp17/OFFSCREEN-VALIDATION.json), [frozen version index](aosp17/frozen-delivery/versions.json), and [Windows final record](aosp17/WINDOWS-FINAL-RESULT-v1830.json). The summary identifies exact Host/Guest/renderer hashes and original receipt hashes; redacted public presentations do not replace the private raw evidence. The release is `bscp-aosp17-20261102`, using the fixed AOSP17 graphics Guest and matching platform Host.
 
-The remaining work is concentrated in the Microdroid guest and runtime profile:
+GPU-off explicitly returns `GPU_DISABLED` for GPU tasks; it is not a Vulkan-success case. VADD compute, pixel readback, and coherent memory are different checks. A Vulkan enumeration response's `actual_coherent_use=NOT_TESTED` only describes that enumeration command; the separate `COHERENT` command exercises the recorded memory cases.
 
-- enable and package the Vulkan loader, guest ICD/driver, and required runtime libraries in the
-  Microdroid image;
-- configure virtio-gpu discovery, device-node access, SELinux/permissions, and required Android
-  features or properties;
-- select the host's existing GPU capability in the VM profile while retaining a windowless,
-  no-scanout execution mode;
-- gate `vkEnumeratePhysicalDevices`, device and queue creation, compute or render-to-image,
-  synchronization, readback/export, and failure cleanup;
-- enforce memory, command-buffer, execution-time, and concurrency quotas, and validate malicious
-  shaders, device reset, and VMM/guest failures against the instance boundary.
-
-Microdroid Vulkan should therefore no longer be described as lacking host support. The precise
-status is that the host implementation is ready, while guest-image integration and end-to-end
-release evidence remain incomplete. It becomes a supported capability only after guest Vulkan API
-behavior, offscreen output correctness, cross-platform parity, and security/resource gates pass.
+These results do not establish real display/scanout or input support, arbitrary Vulkan features/shaders, performance guarantees, all GPUs/drivers/memory types, or unrestricted new-machine deployment. No new VM test is implied by this documentation correction. Timeout/disconnect tasks remain UNKNOWN even when resources are REAPED; historical failures and Mac ext4 limitations remain preserved.
 
 ## 9. Security Boundary and Explicit Limitations
 
@@ -307,11 +282,11 @@ logs, host facts, artifact digests, and exit status from each target machine.
 | Item | Current conclusion |
 | --- | --- |
 | pVM/protected VM | Conditional on Linux; unverified on macOS; explicitly unsupported on Windows |
-| Android SELinux/permission | Desktop providers are mocks/allowlists, not equivalent enforcement |
+| Android SELinux/permission | Platform-specific desktop admission, not equivalent Android system_server/SELinux enforcement |
 | crosvm process sandbox | Disabled by current launchers; requires host sandboxing or implementation work |
 | VFIO/device assignment | Linux/Android-specific; rejected on Windows and has no macOS equivalent |
 | hugepages/uclamp | Platform semantics differ; parameter presence does not establish parity |
-| Microdroid Vulkan | Host source path is ready; graphics artifact profile, guest image, and end-to-end gates need confirmation |
+| Microdroid Vulkan | Actual Guest offscreen pixels, VADD and selected coherent cases verified on three admitted platforms; see section 8 |
 | Production certification | Requires signed artifacts, hardware capabilities, keys/attestation, and target-host evidence |
 
 ## 13. Code Entry Points

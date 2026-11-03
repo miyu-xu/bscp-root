@@ -651,6 +651,10 @@
     "releases/aosp17/windows-v1830/scripts/vm_windows.ps1": {
       "bytes": 27645,
       "sha256": "3422aa015bd0125e6f2e2148efa590d344f414b3cb5fa3157f390ad2e064607e"
+    },
+    "docs/aosp17/OFFSCREEN-VALIDATION.json": {
+      "bytes": 4117,
+      "sha256": "63286ee611b894e0c6e452b14001f5f9eb28a2e60adc735230a993f79bac0fec"
     }
   },
   "scope": "Original accepted controller bytes and historical evidence indexes. This snapshot alone does not make a portable release or publish custom Host source closures.",

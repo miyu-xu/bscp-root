@@ -13,6 +13,8 @@ The separately recorded three-platform acceptance covers GPU on/off, VADD, offsc
 
 `main` selects AOSP 17; `bscp-android-15.0.0_r14` remains the rollback baseline. Do not reset a populated workspace or overwrite instance disks to change versions.
 
+Actual AOSP17 Guest Vulkan offscreen rendering has been verified on Windows/Linux RTX 2060 and Mac M1: the finite PIXEL test read back 256 pixels with zero mismatches. See [versioned evidence and limits](docs/MICRODROID.md#8-verified-microdroid-vulkan-offscreen-rendering).
+
 ## Source and verification
 
 Use a new workspace for this command; it initializes metadata and synchronization downloads source:

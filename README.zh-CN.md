@@ -13,6 +13,8 @@ AOSP 17 是 Linux/KVM、macOS/HVF 和 Windows/WHPX 上 Microdroid 算力流程�
 
 `main` 选择 AOSP 17，`bscp-android-15.0.0_r14` 保留用于回滚。不要通过重置已有工作区或覆盖实例磁盘切换版本。
 
+AOSP17 Guest 内真实 Vulkan 离屏渲染已在 Windows/Linux RTX 2060 和 Mac M1 验证：有限 PIXEL 测试回读 256 像素、0 不匹配。见[准确版本、证据与边界](docs/MICRODROID.zh-CN.md#8-已验证的-microdroid-vulkan-离屏渲染)。
+
 ## 源码与校验
 
 以下命令仅用于新工作区，会初始化元数据并下载源码：
