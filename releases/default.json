@@ -285,6 +285,18 @@
       "bytes": 457,
       "sha256": "0c1c90fa65490c21690afdbd222e0cd7f2bb63df3c7ebd74a4687458f304d4b1",
       "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/public-support-revision-v1844.json"
+    },
+    {
+      "file": "bscp-aosp17-bilingual-docs-v1890.zip",
+      "bytes": 128808,
+      "sha256": "c7709e3a934812cc464776e86aabcca2c87ef84d43b12a06bfc4c03f65c956a0",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/bscp-aosp17-bilingual-docs-v1890.zip"
+    },
+    {
+      "file": "public-documents-v1890.json",
+      "bytes": 361,
+      "sha256": "a6adb3301f80b77ed37c65c906c859ba3d4a83401a0ef073b1239de220d8aa24",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/public-documents-v1890.json"
     }
   ],
   "deployment_conditions": "docs/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md",
@@ -302,7 +314,7 @@
       "macos-binder-source-public-v1842.tar.gz",
       "bscp-aosp17-source-notices-and-deployment-public-v1844.zip"
     ],
-    "bilingual_documents": "bscp-aosp17-bilingual-docs-v1840.zip",
+    "bilingual_documents": "bscp-aosp17-bilingual-docs-v1890.zip",
     "scope": "Source-only packaging and documentation; no new runtime acceptance. Original identity-bearing attachments and Git history retained pending separate removal decisions.",
     "old_assets_deleted": false
   }
