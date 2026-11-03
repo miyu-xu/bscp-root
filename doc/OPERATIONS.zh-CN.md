@@ -1,36 +1,13 @@
-# 运维手册
+# 运行操作
 
-简体中文 | [English](OPERATIONS.md)
+先做[部署校验](DEPLOYMENT.zh-CN.md)，使用已安装包记录的准入平台控制器及私有状态根。Windows 发布选择器使用 `releases/aosp17/windows-v1830/scripts/microdroid.py`，Linux/Mac 使用 `releases/aosp17/controllers/<platform>/microdroid.py`。未经验证不能用通用开发 wrapper 替代冻结验收控制器。
 
-## 支持入口
+用匹配控制器的 `--help` 查看实际接口。安装校验器调用只读的 `check --gpu on` 和 `check --gpu off`，不启动 VM。真实生命周期命令需要原实例/配置所有权和稳定进程句柄；不存在脱离私有配置的通用一键启动命令。
 
-| 用途 | Linux | macOS | Windows |
-| --- | --- | --- | --- |
-| 构建主机工具 | `build_all.sh` | `build_all.sh` | `build_all.bat` |
-| Microdroid 生命周期 | `scripts/vm_linux.sh` | `scripts/vm_macos.sh` | `scripts/vm_windows.ps1` |
-| Guest Shell/控制台 | `vm_shell_linux.sh` | `vm_shell_macos.sh` | `vm_shell_windows.ps1` |
-| 回归验证 | `run_linux_avf_regression.sh` | `run_macos_avf_regression.sh` | `run_windows_avf_regression.ps1` |
-| 完整 Android（附带） | `run_android_linux.sh` | `run_android_macos.sh` | `run_android_windows_gfxstream_angle.ps1` |
+保留日志、原句柄、claim 和磁盘身份。超时/断连后业务结果保持 UNKNOWN，不自动重试 ADD1。发出终止信号不等于进程退出；只有观测真实退出/EOF和磁盘释放后才能判定资源 REAPED。不得按进程名批量杀进程、复用裸 PID、升级信号或删除其他实例端点凑通过。
 
-传递底层 crosvm 参数前先查看包装脚本帮助。推荐顺序为 `validate-prereqs`、`info`、
-`run-microdroid`，这样可把主机配置错误和 Guest 启动错误分开。
+健康同盘重启验证保留值 118，不授权重置失败实例。GPU-on 需要配套图形 Guest 和完整 renderer 依赖；GPU-off 单独验证。Host 创建设备不等于 Guest 硬件枚举或 VADD 通过。
 
-## 验证顺序
+参阅[故障排查](TROUBLESHOOTING.zh-CN.md)、[发布边界](RELEASE.zh-CN.md)及归档的[超时证据](history/avf-timeout-evidence.zh-CN.md)。
 
-1. 执行平台前置检查。
-2. 修改原生 ABI 或 Rust target 后执行干净构建。
-3. 不启用可选设备，先运行 Microdroid 冒烟路径。
-4. 运行平台回归包装脚本并检查输出目录。
-5. 基线通过后再启用网络、图形或完整 Android。
-
-Python 辅助脚本可用 `python -m compileall scripts tests` 检查，Shell 使用 `bash -n`，
-PowerShell 应在干净进程中解析。`tests/` 保存根编排单元测试。
-
-## 日志和失败处理
-
-包装脚本把日志写入 `out/dist/logs/` 或显式指定的日志目录。应把启动命令、主机能力报告、
-crosvm 日志、Guest 控制台和 manifest revision 一起保存。发布日志前必须检查本地路径、令牌、
-Guest 数据与密钥。
-
-常见失败包括主机虚拟化不可用、APEX 架构不匹配、Windows ABI 混用、旧输出目录、TAP 设备
-不可用和图形加载器不匹配。修改主机后应重新执行前置检查，不要绕过检查继续运行。
+[English](OPERATIONS.md)

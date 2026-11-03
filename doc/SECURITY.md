@@ -1,3 +1,5 @@
+> Technical reference. Current AOSP17 deployment/capability boundaries are defined by [deployment](DEPLOYMENT.md) and [release](RELEASE.md). Android/Cuttlefish is outside the current Microdroid release acceptance.
+
 # Security model
 
 [简体中文](SECURITY.zh-CN.md) | English

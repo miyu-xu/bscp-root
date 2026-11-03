@@ -1,52 +1,26 @@
-# 部署指南
+# 限定部署条件参考运行包
 
-简体中文 | [English](DEPLOYMENT.md)
+[当前发布](https://github.com/miyu-xu/bscp-root/releases/tag/bscp-aosp17-20261102)为 AOSP17，仅支持已有验收部署。运行包不会创建账户、私有目录、ACL、驱动或虚拟化访问权限。公开示例省略个人路径不代表产物可以任意迁移。
 
-## 检出
+| 平台 | 已验环境与必要依赖 |
+| --- | --- |
+| Windows x86_64 | 原有准入账户/运行根；build 26200、RTX2060 驱动 32.0.16.1088、WHPX；匹配 v1830 Host、DLL 闭包及 x86 Guest |
+| Linux x86_64 | 原有准入布局/KVM 权限；记录内核 7.0.0-38-generic 及 NVIDIA ICD/系统库；匹配 Linux Host 和 x86 Guest |
+| macOS arm64 | 原有准入卷布局；Apple M1、macOS 26.5.2/25F84、签名 crosvm、冻结 Vulkan loader/MoltenVK/OpenSSL 及 arm64 Guest |
 
-使用 manifest 仓库及其固定分支。`repo sync` 成功后会得到本根仓库和各独立组件仓库。
-不要在现有工作区上覆盖克隆组件目录，也不要提交生成的 `.repo/` 元数据。
+存在 arm64 源码目标不等于 Linux arm64 运行验收通过。Windows 独立 CLI 重连禁用。启动、重启或清理前请先读[运行操作](OPERATIONS.zh-CN.md)。
 
-## 主机依赖
+[下载校验](RELEASE.zh-CN.md)后，使用原有私有部署配置，包含 `BINDING.json`、`profile.json`、`closure.json`。它必须对应已准入安装文件和状态根，不是新准入模板。在本仓库检出目录中执行以下只读校验，不启动 VM：
 
-- 通用：Git、Python 3、CMake、Ninja、通过 rustup 安装的 Rust，以及兼容 AOSP 的 `repo`。
-- Linux：KVM 权限、受支持的 C/C++ 工具链；启用网络测试时还需创建网络设备的权限。
-- macOS：Apple Silicon、Xcode Command Line Tools、Hypervisor.framework entitlement，以及
-  arm64 `com.android.virt` APEX 树。
-- Windows：启用 WHPX、PowerShell 5.1 或更新版本、CMake、Ninja、MinGW-w64、固定的 GNU
-  主机 Rust 工具链，并通过 `LIBCLANG_PATH` 或受支持安装提供 `libclang.dll`。
-
-## 构建
-
-```bash
-./build_all.sh
-./build_all.sh --clean
+```sh
+python3 -B releases/aosp17/verify_installed.py --platform linux --deployment-config "$BSCP_DEPLOYMENT_CONFIG"
+python3 -B releases/aosp17/verify_installed.py --platform macos --deployment-config "$BSCP_DEPLOYMENT_CONFIG"
 ```
 
 ```powershell
-.\build_all.bat
-.\build_all.bat --clean
+python -B releases/aosp17/verify_installed.py --platform windows --deployment-config "$env:BSCP_DEPLOYMENT_CONFIG"
 ```
 
-构建会把 `virtmgr`、`vm`、`crosvm`、binder RPC 库及可选图形运行时放入
-`out/dist/<platform>/`。源码目录保持不变，生成状态只写入 `out/`。
+只运行实际宿主对应的一条，先将环境变量设为原有私有配置目录。配置缺失时明确拒绝。独立文档 ZIP 不含全部相邻生产控制器，不能仅在该 ZIP 中运行此校验器。不要发布私有绑定，也不要从哈希通过推断权限已具备。
 
-## Microdroid Guest 资源
-
-Linux 与 Windows 通常使用同步 Android 构建中的匹配 `com.android.virt` APEX 树。macOS
-必须显式提供 arm64 版本：
-
-```bash
-MACOS_AVF_APEX_TREE_SOURCE=/absolute/path/to/apex_tree ./build_all.sh
-```
-
-启动前用 `vm_linux.sh`、`vm_macos.sh` 或 `vm_windows.ps1` 的 `validate-prereqs` 命令检查环境。
-
-## 生产检查表
-
-- 发布标签必须把每个 manifest revision 固定到已审查提交。
-- 除非业务明确需要，否则关闭调试策略、Shell、无限制网络和主机路径透传。
-- 使用实例级可写存储，主机密钥保存在工作区之外。
-- 校验产物哈希，并随发布包保留第三方声明。
-- 晋级前运行平台回归脚本并归档日志。
-- 阅读[安全模型](SECURITY.zh-CN.md)；开发模式可运行不等于满足生产安全要求。
+[English](DEPLOYMENT.md)

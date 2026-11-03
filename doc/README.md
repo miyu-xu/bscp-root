@@ -1,25 +1,25 @@
 # Documentation
 
-[简体中文](README.zh-CN.md) | English
+`doc/` is the canonical first-party documentation directory. The former `docs/` contained only a bilingual timeout-evidence note; its authoritative copies now live in `doc/history/`, with compatibility links retained for existing URLs. Third-party notices are not translated or relocated.
 
-This directory contains the maintained documentation set. Historical bring-up journals and
-duplicated platform notes were consolidated so each topic has one authoritative English document
-and one Simplified Chinese counterpart.
+AOSP17 is the default. Start with the current operational guides below; technical implementation references describe mechanisms, not proof of every current feature.
 
-- [Architecture](ARCHITECTURE.md): components, trust boundaries, and cross-platform design.
-- [Microdroid implementation](MICRODROID.md): detailed Linux, macOS, and Windows guest,
-  virtualization, payload, transport, security, and feature-alignment review.
-- [Full Android implementation](ANDROID.md): detailed Cuttlefish-derived artifacts, graphics,
-  virtual devices, platform parity, source changes, and release evidence.
-- [AOSP artifact packaging](AOSP_ARTIFACT_PACKAGING.md): inputs, direct-boot disk synthesis,
-  Microdroid collection, output layout, validation, release hygiene, and current limitations.
-- [Deployment](DEPLOYMENT.md): checkout, prerequisites, build, staging, and release layout.
-- [Security](SECURITY.md): threat model, isolation guarantees, limitations, and hardening.
-- [Operations](OPERATIONS.md): supported scripts, validation sequence, logs, and troubleshooting.
-- [Cuttlefish compatibility](CUTTLEFISH.md): concise optional full Android workflow.
+- [Source and build](BUILD.md) | [中文](BUILD.zh-CN.md)
+- [Deployment](DEPLOYMENT.md) | [中文](DEPLOYMENT.zh-CN.md)
+- [Operations](OPERATIONS.md) | [中文](OPERATIONS.zh-CN.md)
+- [Release and rollback](RELEASE.md) | [中文](RELEASE.zh-CN.md)
+- [Troubleshooting](TROUBLESHOOTING.md) | [中文](TROUBLESHOOTING.zh-CN.md)
+- [Architecture](ARCHITECTURE.md) | [中文](ARCHITECTURE.zh-CN.md)
+- [Microdroid technical reference](MICRODROID.md) | [中文](MICRODROID.zh-CN.md)
+- [Artifact packaging reference](AOSP_ARTIFACT_PACKAGING.md) | [中文](AOSP_ARTIFACT_PACKAGING.zh-CN.md)
+- [Security](SECURITY.md) | [中文](SECURITY.zh-CN.md)
+- [Android historical/optional reference](ANDROID.md) | [中文](ANDROID.zh-CN.md)
+- [Cuttlefish historical/optional reference](CUTTLEFISH.md) | [中文](CUTTLEFISH.zh-CN.md)
 
-The root [README](../README.md) is the repository overview. The manifest repository README remains
-the primary entry point for a complete multi-repository checkout.
+- [Archived timeout evidence](history/avf-timeout-evidence.md)
+- [AOSP17 source, provenance and frozen records](aosp17/) (historical records retain their original scope)
+- [Contributing](../CONTRIBUTING.md), [license policy](../LICENSE_POLICY.md), [root overview](../README.md)
 
-Licensing is defined at repository scope. See the root [license](../LICENSE),
-[license policy](../LICENSE_POLICY.md), and [commercial licensing](../COMMERCIAL_LICENSING.md).
+Current guides supersede historical preparation status. They do not rewrite original failures or grant new installation/security permissions.
+
+[简体中文](README.zh-CN.md)

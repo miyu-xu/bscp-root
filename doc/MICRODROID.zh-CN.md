@@ -1,3 +1,5 @@
+> 技术参考。当前 AOSP17 部署和能力边界以[部署指南](DEPLOYMENT.zh-CN.md)、[发布说明](RELEASE.zh-CN.md)为准；Android/Cuttlefish 不属于当前 Microdroid 发布验收。
+
 # Microdroid 跨平台实现详解
 
 简体中文 | [English](MICRODROID.md)

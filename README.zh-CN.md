@@ -1,123 +1,31 @@
-# AOSP 17 default release
+# BSCP — AOSP 17
 
-AOSP 17 is the default source baseline. Reference binaries support only the documented existing deployments, not arbitrary-machine installation. See [release and rollback](doc/aosp17/RELEASE-v1837.md) and [deployment requirements](doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md).
+AOSP 17 是 Linux/KVM、macOS/HVF 和 Windows/WHPX 上 Microdroid 算力流程的默认源码基线。已发布二进制是**限定部署条件的参考运行包**，不是新机器通用安装器。必须保留原有私有准入配置及匹配的 Host/Guest 产物；改名或替换路径不代表支持新账户、新目录。
 
-# BSCP
+- [文档入口](doc/README.zh-CN.md)：中英文导航及当前/历史边界。
+- [下载、校验与回滚](doc/RELEASE.zh-CN.md)。
+- [部署条件](doc/DEPLOYMENT.zh-CN.md)与[运行操作](doc/OPERATIONS.zh-CN.md)。
+- [架构](doc/ARCHITECTURE.zh-CN.md)、[源码与构建](doc/BUILD.zh-CN.md)、[故障排查](doc/TROUBLESHOOTING.zh-CN.md)。
 
-简体中文 | [English](README.md)
+## 当前能力边界
 
-BSCP 是一个跨平台、安全隔离的 Android 通用算力平台。项目把 Android Virtualization
-Framework 的主机工作流扩展到 Linux/KVM、macOS/HVF 与 Windows/WHPX，并在三个平台上
-保持一致的控制模型：`virtmgr` 与 `vm` 管理载荷，`crosvm` 提供虚拟机监控器，Microdroid
-作为首要的精简 Android Guest。
+分平台记录的验收覆盖 GPU 开/关、VADD、离屏/coherent、健康同盘重启，以及有界超时/断连回收。资源 REAPED 不会把 UNKNOWN 业务改成成功。Windows 独立 CLI 重连仍禁用；Mac 历史 ext4 结果保留 70 通过、1 失败。A/H3、真实画面/输入及任意新机器安装均不属于本发布验收。构建或源码 CI 通过不等于 VM 测试通过。
 
-本项目面向隔离计算、可复现构建和跨平台运行，不以手机模拟器为定位。基于 Cuttlefish
-镜像运行完整 Android 仅作为兼容性附带能力，文档和发布流程均以 Microdroid 为先。
+`main` 选择 AOSP 17，`bscp-android-15.0.0_r14` 保留用于回滚。不要通过重置已有工作区或覆盖实例磁盘切换版本。
 
-> manifest 仓库是规范的检出和发布主入口。多仓库同步、固定版本与分支选择应从 manifest
-> 仓库开始。
+## 源码与校验
 
-## 平台模型
+以下命令仅用于新工作区，会初始化元数据并下载源码：
 
-| 主机 | 虚拟化后端 | 首要 Guest | 能力边界 |
-| --- | --- | --- | --- |
-| Linux x86_64/arm64 | KVM | Microdroid | 参考开发与验证平台 |
-| macOS arm64 | Hypervisor.framework | arm64 Microdroid | 需要 arm64 `com.android.virt` APEX 树 |
-| Windows x86_64 | Windows Hypervisor Platform | x86_64 Microdroid | 使用 MinGW 主机工具链；受保护虚拟机能力取决于主机 |
-
-安全隔离由多层共同实现：硬件虚拟化、独立 Guest 内核、显式 virtio 设备、最小权限主机
-服务、经过认证的载荷元数据和实例级存储。处理不可信载荷前，请先阅读
-[安全模型](doc/SECURITY.zh-CN.md)。
-
-## 仓库边界
-
-本仓库只负责编排、主机脚本、发布文档、测试与固件资源。`external/`、`frameworks/`、
-`hardware/`、`packages/` 和 `system/` 下的源码由 `repo` 管理，分别属于独立 Git 仓库；
-根仓库不再重复跟踪这些文件，避免版本漂移和双重提交。
-
-组件职责参见[架构说明](doc/ARCHITECTURE.zh-CN.md)，脚本入口参见
-[运维手册](doc/OPERATIONS.zh-CN.md)。
-
-## 快速开始：Microdroid
-
-先从 manifest 仓库初始化工作区，再进入本仓库根目录构建。
-
-```bash
-./build_all.sh
-./scripts/vm_linux.sh --command validate-prereqs
-./scripts/vm_linux.sh --command run-microdroid
-
-MACOS_AVF_APEX_TREE_SOURCE=/path/to/arm64/apex_tree ./build_all.sh
-./scripts/vm_macos.sh --command validate-prereqs
-./scripts/vm_macos.sh --command run-microdroid
+```sh
+repo init -u https://github.com/miyu-xu/bscp-manifest-repo.git -b main
+repo sync
 ```
 
-```powershell
-.\build_all.bat
-.\scripts\vm_windows.ps1 -Command validate-prereqs
-.\scripts\run_microdroid_windows.ps1
-```
+这不是运行包安装命令。请查阅固定的[清单](https://github.com/miyu-xu/bscp-manifest-repo/blob/main/aosp17.xml)、[发布选择器](releases/default.json)和[构建说明](doc/BUILD.zh-CN.md)，并保存解析到的清单提交用于复现。
 
-构建成功后，使用 `run_linux_avf_regression.sh`、`run_macos_avf_regression.sh` 或
-`run_windows_avf_regression.ps1` 运行对应平台回归。工具链、产物、APEX 准备与生产加固
-要求见[部署指南](doc/DEPLOYMENT.zh-CN.md)。
+## 许可与贡献
 
-## 无硬件 AVF 检查器测试
+BSCP 原创部分采用 [PolyForm Noncommercial 1.0.0](LICENSE)，属于源码可用，不宣称是 OSI 认可的开源软件。商业使用须取得[单独授权](COMMERCIAL_LICENSING.md)。第三方组件保留原许可，参阅[许可政策](LICENSE_POLICY.md)、[贡献说明](CONTRIBUTING.md)及[安全说明](SECURITY.md)。
 
-Linux/macOS 日志检查器要求 Ready 证据，不能只凭创建或启动消息放行；按 CID 字段或
-完整控制台行匹配目标 CID，并保留持久模式重试失败的退出码。超时、场景选择和清理
-策略保持不变。
-
-trace 检查要求当次客户端 Ready callback 或持久 detach 成功行，从运行日志的 Created
-记录取得 CID，仅接受最新 virtmgr 会话中该 CID
-创建之后的成功 `notify_payload_ready` 事件。RPC 入口的 `notifyPayloadReady`、其他 VM
-或旧会话记录不能证明本次 Ready。截断或轮转导致会话/创建记录缺失时拒绝通过；应保留
-完整 trace 与对应运行日志。trace 写入可能静默失败，因此旧 trace 单独不能证明新鲜度；
-这些保守检查可能拒绝已经 Ready、但 trace 证据不完整的 VM。
-这是在包装脚本每个服务独占 trace 的约定下关联日志，
-不独立证明 VM 仍在运行。无 trace 时原有 Guest/客户端 Ready 回退仍受支持。
-
-使用 Python 3、Bash、grep 和 awk 运行以下专项检查，不会启动虚拟机：
-
-```bash
-python3 tests/check_avf_markers_fixtures.py
-python3 tests/check_avf_gate_boundaries.py --repo-root .
-python3 tests/test_retry_exit_status.py --repo-root .
-python3 -m unittest discover -s tests -p test_avf_trace_correlation.py -v
-python3 tests/test_service_status_validation.py --repo-root .
-python3 -m unittest discover -s tests -v
-```
-
-合成日志与模拟重试测试不能证明原生 macOS/Windows 运行、Guest 启停、虚拟化后端、
-图形或发布就绪。macOS UDS 单元测试在其他主机上跳过；平台前置条件和完整回归检查
-仍须另行执行。
-
-macOS 完整回归要求停止服务后的状态命令执行成功，且只有一个明确的 `Running: 0`
-字段。状态读取失败或输出含糊时，先执行最终清理，再使验证失败。此检查验证封装脚本
-报告的状态，不能独立证明宿主进程退出或 Guest 正常关机。
-
-## 附带的完整 Android 路径
-
-基于 Cuttlefish 的路径用于兼容性验证、图形链路调试及必须依赖完整 Android Framework
-的工作负载，不是默认运行时。请先阅读[Cuttlefish 兼容路径](doc/CUTTLEFISH.zh-CN.md)，
-再使用各平台的 `run_android_*` 包装脚本。生成镜像和可写覆盖层不得加入 Git。
-
-## 发布与贡献约束
-
-- 构建产物统一写入 `out/`，不得提交。
-- 组件改动必须提交到对应组件仓库，不能提交到根编排仓库。
-- 发布分支必须通过 Shell 语法、Python 编译与测试、文档链接、提交身份和提交日期审查。
-- 本仓库不包含 GitHub Actions；验证由文档化的本地流程或下游发布系统执行。
-
-提交修改前请阅读[贡献指南](CONTRIBUTING.zh-CN.md)、[安全说明](SECURITY.zh-CN.md)和
-[中英文文档索引](doc/README.zh-CN.md)。
-## 许可证与商业使用
-
-本仓库直接跟踪的 BSCP 原创编排、脚本、测试、配置和文档采用
-[PolyForm Noncommercial License 1.0.0](LICENSE)。商业使用必须事先取得书面授权，并另行
-签订或获得[商业许可证](COMMERCIAL_LICENSING.zh-CN.md)。
-
-由于限制商业用途，BSCP 原创部分属于 source-available，而不是 OSI 批准的开源软件。独立
-AOSP、crosvm、gfxstream、aemu、固件和其他第三方组件继续适用其自身许可证与声明；BSCP
-许可证不会替换或限制它们。使用或再分发前请阅读完整[许可证策略](LICENSE_POLICY.zh-CN.md)。
-
+[English](README.md)

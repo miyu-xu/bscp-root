@@ -1,56 +1,26 @@
-# Deployment
+# Limited-deployment reference packages
 
-[简体中文](DEPLOYMENT.zh-CN.md) | English
+The [current release](https://github.com/miyu-xu/bscp-root/releases/tag/bscp-aosp17-20261102) is AOSP17. These packages support existing validated deployments only. They do not provision accounts, protected directories, ACLs, drivers or hypervisor access. They are not relocatable merely because public examples omit private paths.
 
-## Checkout
+| Platform | Validated environment and required dependencies |
+| --- | --- |
+| Windows x86_64 | Existing admitted account/runtime root; build 26200, RTX2060 driver 32.0.16.1088, WHPX; matching v1830 Host, DLL closure and x86 Guest |
+| Linux x86_64 | Existing admitted layout/KVM access; recorded kernel 7.0.0-38-generic and NVIDIA ICD/system libraries; matching Linux Host and x86 Guest |
+| macOS arm64 | Existing admitted volume layout; Apple M1, macOS 26.5.2/25F84, signed crosvm, frozen Vulkan loader/MoltenVK/OpenSSL and arm64 Guest |
 
-Use the manifest repository and its pinned branch. A successful `repo sync` creates this root plus
-the independent component repositories. Do not clone component directories over an existing
-workspace or commit generated `.repo/` metadata.
+An arm64 source target does not establish Linux arm64 runtime acceptance. Windows independent CLI reconnect is disabled. See [operations](OPERATIONS.md) before any start, restart or cleanup.
 
-## Host prerequisites
+After [download verification](RELEASE.md), use the original private deployment configuration containing `BINDING.json`, `profile.json`, and `closure.json`. It must match the admitted installed files and state root; it is not a template for new admission. In a checkout of this repository, the following is read-only and starts no VM:
 
-- Common: Git, Python 3, CMake, Ninja, Rust through rustup, and an AOSP-compatible `repo` launcher.
-- Linux: KVM access, a supported C/C++ toolchain, and permission to create networking devices when
-  network tests are enabled.
-- macOS: Apple Silicon, Xcode command-line tools, Hypervisor.framework entitlement, and an arm64
-  `com.android.virt` APEX tree.
-- Windows: WHPX enabled, PowerShell 5.1 or newer, CMake, Ninja, MinGW-w64, the pinned GNU-hosted
-  Rust toolchain, and `libclang.dll` discoverable through `LIBCLANG_PATH` or a supported install.
-
-## Build
-
-```bash
-./build_all.sh            # incremental Linux/macOS build
-./build_all.sh --clean    # clean output directories first
+```sh
+python3 -B releases/aosp17/verify_installed.py --platform linux --deployment-config "$BSCP_DEPLOYMENT_CONFIG"
+python3 -B releases/aosp17/verify_installed.py --platform macos --deployment-config "$BSCP_DEPLOYMENT_CONFIG"
 ```
 
 ```powershell
-.\build_all.bat
-.\build_all.bat --clean
+python -B releases/aosp17/verify_installed.py --platform windows --deployment-config "$env:BSCP_DEPLOYMENT_CONFIG"
 ```
 
-The build assembles `virtmgr`, `vm`, `crosvm`, binder RPC libraries, and optional graphics runtime
-artifacts under `out/dist/<platform>/`. Source directories remain immutable; generated state stays
-under `out/`.
+Run only the line for your actual host. Set the environment variable to the original private configuration directory first. Missing configuration fails closed. The standalone documentation ZIP does not contain all sibling production controllers, so run this verifier from the repository checkout, not from that ZIP alone. Do not publish the private binding or infer permissions from a successful hash check.
 
-## Microdroid guest assets
-
-Linux and Windows normally consume the matching `com.android.virt` APEX tree from the synchronized
-Android build. macOS must receive an arm64 tree explicitly:
-
-```bash
-MACOS_AVF_APEX_TREE_SOURCE=/absolute/path/to/apex_tree ./build_all.sh
-```
-
-Validate before launch with `vm_linux.sh`, `vm_macos.sh`, or `vm_windows.ps1` and the
-`validate-prereqs` command.
-
-## Production checklist
-
-- Pin every manifest revision to a reviewed commit for a release tag.
-- Disable debug policy, shell, unrestricted networking, and host-path passthrough unless required.
-- Use per-instance writable storage and protect host keys outside the workspace.
-- Verify artifact hashes and preserve third-party notices with the release.
-- Run the platform regression wrapper and archive its logs before promotion.
-- Review [Security](SECURITY.md); a development launch is not automatically production-safe.
+[简体中文](DEPLOYMENT.zh-CN.md)
