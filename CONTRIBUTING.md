@@ -12,11 +12,9 @@ Before committing:
 2. Run formatters and focused tests for every modified component.
 3. Run root script syntax checks and the relevant platform prerequisite/regression wrapper.
 4. Update both English and Simplified Chinese documents when behavior or operations change.
-5. Check that author and committer identities are approved and that release commit timestamps
-   follow the repository's weekend publication policy.
+5. Keep legitimate author attribution while excluding private deployment identities from published material.
 
-Do not add hosted CI workflow files to this repository. Downstream automation may invoke the same
-documented commands without changing the source tree.
+The existing AOSP17 GitHub workflow checks source/provenance on three platforms; it does not run VM acceptance. Review any new workflow permissions separately. AOSP17 is default; retain r14 rollback, bilingual doc/ navigation, reachable pinned commits and exact asset checksums. Do not rewrite frozen evidence or treat a documentation commit as a new binary acceptance run.
 
 ## Contribution licensing
 
