@@ -224,8 +224,8 @@ at its wrapper.
 
 The following are **not** current cross-platform guarantees:
 
-- Desktop Linux, macOS, and Windows permission and SELinux providers are environment-driven mocks,
-  not Android `system_server` plus SELinux policy.
+- Desktop permission providers are platform-specific and require the admitted authenticated entry.
+  This does not establish equivalence to Android `system_server` plus SELinux policy.
 - Both Unix and Windows `virtmgr` crosvm launchers currently pass `--disable-sandbox`; VMM process
   sandboxing is therefore not an established release baseline.
 - macOS HVF and Windows WHPX are not Android pKVM/pVM. Without hardware KeyMint, attestation, and a
