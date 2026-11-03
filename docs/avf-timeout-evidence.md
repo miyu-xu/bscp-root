@@ -1,3 +1,3 @@
-# Compatibility entry
+# Historical evidence navigation
 
-This note moved to [doc/history](../doc/history/avf-timeout-evidence.md). Use [the documentation index](../doc/README.md) for current guidance.
+[Archived evidence](history/avf-timeout-evidence.md) | [Current documentation](README.md)

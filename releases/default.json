@@ -287,12 +287,12 @@
       "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/public-support-revision-v1844.json"
     }
   ],
-  "deployment_conditions": "doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md",
+  "deployment_conditions": "docs/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md",
   "documentation_revision": "v1838",
   "deployment_config": "Private binding directory explicitly required by verify_installed.py",
   "privacy_status": "Current descriptions redacted; legacy assets, original source closures and Git history can retain environment/build paths; not a complete historical purge",
-  "documentation_entry": "doc/README.md",
-  "documentation_entry_zh_CN": "doc/README.zh-CN.md",
+  "documentation_entry": "docs/README.md",
+  "documentation_entry_zh_CN": "docs/README.zh-CN.md",
   "privacy_revision": {
     "public_source_replacements": [
       "linux-binder-source-public-v1840.tar.gz",

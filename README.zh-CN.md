@@ -2,10 +2,10 @@
 
 AOSP 17 是 Linux/KVM、macOS/HVF 和 Windows/WHPX 上 Microdroid 算力流程的默认源码基线。已发布二进制是**限定部署条件的参考运行包**，不是新机器通用安装器。必须保留原有私有准入配置及匹配的 Host/Guest 产物；改名或替换路径不代表支持新账户、新目录。
 
-- [文档入口](doc/README.zh-CN.md)：中英文导航及当前/历史边界。
-- [下载、校验与回滚](doc/RELEASE.zh-CN.md)。
-- [部署条件](doc/DEPLOYMENT.zh-CN.md)与[运行操作](doc/OPERATIONS.zh-CN.md)。
-- [架构](doc/ARCHITECTURE.zh-CN.md)、[源码与构建](doc/BUILD.zh-CN.md)、[故障排查](doc/TROUBLESHOOTING.zh-CN.md)。
+- [文档入口](docs/README.zh-CN.md)：中英文导航及当前/历史边界。
+- [下载、校验与回滚](docs/RELEASE.zh-CN.md)。
+- [部署条件](docs/DEPLOYMENT.zh-CN.md)与[运行操作](docs/OPERATIONS.zh-CN.md)。
+- [架构](docs/ARCHITECTURE.zh-CN.md)、[源码与构建](docs/BUILD.zh-CN.md)、[故障排查](docs/TROUBLESHOOTING.zh-CN.md)。
 
 ## 当前能力边界
 
@@ -22,7 +22,7 @@ repo init -u https://github.com/miyu-xu/bscp-manifest-repo.git -b main
 repo sync
 ```
 
-这不是运行包安装命令。请查阅固定的[清单](https://github.com/miyu-xu/bscp-manifest-repo/blob/main/aosp17.xml)、[发布选择器](releases/default.json)和[构建说明](doc/BUILD.zh-CN.md)，并保存解析到的清单提交用于复现。
+这不是运行包安装命令。请查阅固定的[清单](https://github.com/miyu-xu/bscp-manifest-repo/blob/main/aosp17.xml)、[发布选择器](releases/default.json)和[构建说明](docs/BUILD.zh-CN.md)，并保存解析到的清单提交用于复现。
 
 ## 许可与贡献
 

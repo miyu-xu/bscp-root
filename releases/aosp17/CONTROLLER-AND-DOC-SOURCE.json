@@ -1,314 +1,314 @@
 {
   "files": {
-    "doc/aosp17/CORE-PROJECT-BASELINES.json": {
+    "docs/aosp17/CORE-PROJECT-BASELINES.json": {
       "bytes": 18994,
       "sha256": "b7bff1e091d38c0ee84248308b170aa050d30c6102bc034968a974ad9875bf6b"
     },
-    "doc/aosp17/FINAL-ASSETS-linux-v1831.json": {
+    "docs/aosp17/FINAL-ASSETS-linux-v1831.json": {
       "bytes": 1635,
       "sha256": "d4c1383a201dcf343fb019b8275faf0b802099e59a287f87922d63c93543b43a"
     },
-    "doc/aosp17/FINAL-ASSETS-local-v1831.json": {
+    "docs/aosp17/FINAL-ASSETS-local-v1831.json": {
       "bytes": 9508,
       "sha256": "67bf0214b59ccafd6d88a535bb272dbc39156a40b3d8f033efa2842ce8446462"
     },
-    "doc/aosp17/FINAL-ASSETS-macos-v1831.json": {
+    "docs/aosp17/FINAL-ASSETS-macos-v1831.json": {
       "bytes": 3848,
       "sha256": "2697c8599d9db9aa74aa83a0070b0eee8e07170f67bfb0821ca2fa1da933ff44"
     },
-    "doc/aosp17/FINAL-PREPARATION-GAPS.md": {
+    "docs/aosp17/FINAL-PREPARATION-GAPS.md": {
       "bytes": 6445,
       "sha256": "5787b63053ad364dfa2e978b1192529ba6720afe80c2051377865f4f5d467bb6"
     },
-    "doc/aosp17/INSTALLATION-SCOPE-v1830.md": {
+    "docs/aosp17/INSTALLATION-SCOPE-v1830.md": {
       "bytes": 2486,
       "sha256": "4828dbd807fb272384632b9fa0510380fb6934e7e8e18a6d98abcc148499db3b"
     },
-    "doc/aosp17/PROJECT-UPDATES.md": {
+    "docs/aosp17/PROJECT-UPDATES.md": {
       "bytes": 7049,
       "sha256": "8c86d46fba4ae0e5723ac4fc14c7901a360edce1a41b71170a64f14cc50cbbd7"
     },
-    "doc/aosp17/RELEASE-PREPARATION-v1831.md": {
+    "docs/aosp17/RELEASE-PREPARATION-v1831.md": {
       "bytes": 4556,
       "sha256": "741154b3bdfbff7c9e08d14373b5d0a80672747faa3364a254ab63a788d20056"
     },
-    "doc/aosp17/SLIRP-ACCEPTANCE-REVIEW.json": {
+    "docs/aosp17/SLIRP-ACCEPTANCE-REVIEW.json": {
       "bytes": 1153,
       "sha256": "e2d7aba8219839fe8a26f28a337571b16d64d3aa9f4b5fd4cc85b9b14a2b345d"
     },
-    "doc/aosp17/SLIRP-CANDIDATE-TESTS.json": {
+    "docs/aosp17/SLIRP-CANDIDATE-TESTS.json": {
       "bytes": 3068,
       "sha256": "011a0c0af89222cbeea3710c699cd0d07e8da90006fa80fb4abfff3f0aed3495"
     },
-    "doc/aosp17/SLIRP-RUNTIME-CHECK.json": {
+    "docs/aosp17/SLIRP-RUNTIME-CHECK.json": {
       "bytes": 8320,
       "sha256": "2abe761f50f4e1909e951568f8c38d1f2595c6d3efd534a3c1a2879f1a04d751"
     },
-    "doc/aosp17/SLIRP-RUNTIME-COPY.json": {
+    "docs/aosp17/SLIRP-RUNTIME-COPY.json": {
       "bytes": 6095,
       "sha256": "f8213b8240afad11df068229e668d2618a7d809118ac4c11b8f517f54d612570"
     },
-    "doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md": {
+    "docs/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md": {
       "bytes": 4803,
       "sha256": "5e7dcbc75f255ebaf39761ecfbd96402ff3294767ad84dc5be1011748ad5dd05"
     },
-    "doc/aosp17/WINDOWS-FINAL-RESULT-v1830.json": {
+    "docs/aosp17/WINDOWS-FINAL-RESULT-v1830.json": {
       "bytes": 63808,
       "sha256": "d810aa7636ec9c9fb43f6322704f2f91fc5e8dcbaa71dbd0809727944856d3e1"
     },
-    "doc/aosp17/frozen-delivery/CLI-CAPABILITY-BOUNDARY.md": {
-      "bytes": 1870,
-      "sha256": "7344baf65e5ed4974c948248f9623a89c790fd3a52ff2daa41ee3613cc5c1c8e"
+    "docs/aosp17/frozen-delivery/CLI-CAPABILITY-BOUNDARY.md": {
+      "bytes": 1862,
+      "sha256": "1d2911e89db35e8c194732af4494ba91d452906975c1ecf7dc3cc15ba5d48809"
     },
-    "doc/aosp17/frozen-delivery/DELIVERY-MANIFEST.json": {
+    "docs/aosp17/frozen-delivery/DELIVERY-MANIFEST.json": {
       "bytes": 7112,
       "sha256": "fce366f22e6f5cd7765f9494722b41f90d183a05fb51cc2d110ec2ae93ae335a"
     },
-    "doc/aosp17/frozen-delivery/DOCUMENT-CHECKS.json": {
+    "docs/aosp17/frozen-delivery/DOCUMENT-CHECKS.json": {
       "bytes": 755,
       "sha256": "24d293c57220a94bc3fb741b8ad5429df1ae43d8180a5aee70cd0b0a65d4d4f9"
     },
-    "doc/aosp17/frozen-delivery/PATCHSET-CHECKS.json": {
+    "docs/aosp17/frozen-delivery/PATCHSET-CHECKS.json": {
       "bytes": 7275,
       "sha256": "0217bbb5870cd87eb2e60237005e984200208a270b1438dd8dbf11d75d8db654"
     },
-    "doc/aosp17/frozen-delivery/PINNED-MANIFEST-CHECKS.json": {
+    "docs/aosp17/frozen-delivery/PINNED-MANIFEST-CHECKS.json": {
       "bytes": 339,
       "sha256": "b3b37983e66d2024b654fff353eb52e23d9dba0dd0cef4ee528bb5b9e942137f"
     },
-    "doc/aosp17/frozen-delivery/RUNBOOK.md": {
+    "docs/aosp17/frozen-delivery/RUNBOOK.md": {
       "bytes": 17051,
       "sha256": "f6b94d8422747ce368ab2f3b9d46bdfba77680756c48eba30ae57c7d4741ed34"
     },
-    "doc/aosp17/frozen-delivery/SOURCE-AVAILABILITY.md": {
+    "docs/aosp17/frozen-delivery/SOURCE-AVAILABILITY.md": {
       "bytes": 2079,
       "sha256": "409f16f43e15e58b13cb42d1f959f4aada9e5a57929ef32f5468489dfc1beb2f"
     },
-    "doc/aosp17/frozen-delivery/SOURCE-INDEX.json": {
+    "docs/aosp17/frozen-delivery/SOURCE-INDEX.json": {
       "bytes": 582326,
       "sha256": "b0d45803819957d5b59e14246736833149ebae25314d6cb2a1728b88adb1bb45"
     },
-    "doc/aosp17/frozen-delivery/STATUS.json": {
+    "docs/aosp17/frozen-delivery/STATUS.json": {
       "bytes": 3741,
       "sha256": "9e0bf55a122a9b6ee34b7f27f33bec95970544e3f7f57c15e35c153569b09a52"
     },
-    "doc/aosp17/frozen-delivery/android17-locked.xml": {
+    "docs/aosp17/frozen-delivery/android17-locked.xml": {
       "bytes": 168058,
       "sha256": "5e0a772d1e3669607638529f95f420bbdc9b228d52b8777094dd3ad4bd7f8938"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/0.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/0.patch": {
       "bytes": 2256,
       "sha256": "815bde7fadaa9852668561d09303ce6df7dee677a008ecfb3eee74073ff344d6"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/1.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/1.patch": {
       "bytes": 2131,
       "sha256": "a52543173c227b11f378f3a3cfb91f5baf433db15d3166fdce49d22dad59a093"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/10.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/10.patch": {
       "bytes": 2822,
       "sha256": "b70b4832ad6e1214773a862a77e863a9e8a1e651d920d832fea05c6ccb9651ba"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/2.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/2.patch": {
       "bytes": 92956,
       "sha256": "d634232a5d69e1dead3503d69ce7a209f53044f7bb357a5125aee8056bc63770"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/3.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/3.patch": {
       "bytes": 636,
       "sha256": "c82287078e66a09bed3092421265b76d2f55c38f1446888ce9e18048b8bdb053"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/4.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/4.patch": {
       "bytes": 785,
       "sha256": "670c6d422e78cde4a386436dc835539af7455fa277fd47f3707c4b77f758baa8"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/5.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/5.patch": {
       "bytes": 825,
       "sha256": "d61f7d5ff588d95fafc84a8efec854f3dd5afb4ab32a3b8aa0eb6ffec71d2422"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/6.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/6.patch": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/7.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/7.patch": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/8.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/8.patch": {
       "bytes": 5419,
       "sha256": "02783ab756dd8e3150e5e202019cf79f6f35cc5fb91ef0c1ea7ea38d4f6ba6f5"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/9.patch": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/9.patch": {
       "bytes": 4640,
       "sha256": "53238af02665b55a6c3ac2fd8bff3ccbec8f8271e3c5c2d23eaaf86e1a949fb6"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/manifest.json": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/manifest.json": {
       "bytes": 9189,
       "sha256": "270090975aa17c5a15855d26ff3688e06f9e018ba21ef91451782f1072741d9f"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/kernel/prebuilts/common-modules/virtual-device/6.6/arm64/Android.bp": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/kernel/prebuilts/common-modules/virtual-device/6.6/arm64/Android.bp": {
       "bytes": 316,
       "sha256": "40d2eadbb2efb9da21e06767a68d24296ea8043056e5af829d69c88d4253b74e"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/kernel/prebuilts/common-modules/virtual-device/6.6/x86-64/Android.bp": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/kernel/prebuilts/common-modules/virtual-device/6.6/x86-64/Android.bp": {
       "bytes": 318,
       "sha256": "510902a42fc0f4cd88fb23c012246d78d07e22b7f0677481d83877960a6279b7"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/bootconfig.graphics": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/bootconfig.graphics": {
       "bytes": 51,
       "sha256": "53e1ebcf6301a9bf6fb8d71b213590623c2e9163841b176cf890404d9438c05d"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/microdroid-graphics-linkerconfig": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/microdroid-graphics-linkerconfig": {
       "bytes": 34,
       "sha256": "d0e3b97fb5bd37a34ad9e6483b505400e8c515578eb7ffd862d9a0c032b8b015"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/ueventd.graphics.rc": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/packages/modules/Virtualization/build/microdroid/ueventd.graphics.rc": {
       "bytes": 195,
       "sha256": "2b15976ede307d85eac4c82fa3253fc22a723240c2ee8c85ee240bbb6dd40157"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/system/linkerconfig/modules/include/linkerconfig/microdroid_graphics.h": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/system/linkerconfig/modules/include/linkerconfig/microdroid_graphics.h": {
       "bytes": 2053,
       "sha256": "f05606a941ffb3ca8e9eb1e9bb9adb72a97a957be8e4639bc8e36abe2d79c4e1"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/system/linkerconfig/modules/tests/microdroid_graphics_test.cc": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/system/linkerconfig/modules/tests/microdroid_graphics_test.cc": {
       "bytes": 2446,
       "sha256": "1481049732e134d2f37b39408a8ed4f5ba8310eefb7f55276b2b46ab3f397d03"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/system/sepolicy/microdroid/system/private/file_contexts.graphics": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/system/sepolicy/microdroid/system/private/file_contexts.graphics": {
       "bytes": 125,
       "sha256": "67aa3b035df1eec83410ed6cea76b347911c900e30b7ab4297c1b8402f19a9e2"
     },
-    "doc/aosp17/frozen-delivery/linux-guest-patchset/untracked/system/sepolicy/microdroid/system/private/property_contexts.graphics": {
+    "docs/aosp17/frozen-delivery/linux-guest-patchset/untracked/system/sepolicy/microdroid/system/private/property_contexts.graphics": {
       "bytes": 130,
       "sha256": "8a0b6ae666a8d9d095f21fb3ebce772afb79f8da38d09705e99db0f29afefd13"
     },
-    "doc/aosp17/frozen-delivery/r14-published-lifecycle-contract.md": {
+    "docs/aosp17/frozen-delivery/r14-published-lifecycle-contract.md": {
       "bytes": 4900,
       "sha256": "15ffed88c0ee6b0937b71b8a75ea9a1102272577d28d658c8513f2e8221a29ed"
     },
-    "doc/aosp17/frozen-delivery/r14-rollback.json": {
+    "docs/aosp17/frozen-delivery/r14-rollback.json": {
       "bytes": 1717,
       "sha256": "e61ba6a086842b39ef86ef1786d39d39044d58692222473a9557b274e50ee018"
     },
-    "doc/aosp17/frozen-delivery/rollback-plan-tests.json": {
+    "docs/aosp17/frozen-delivery/rollback-plan-tests.json": {
       "bytes": 278,
       "sha256": "a21ed57b8e6f2ec48c78c03dac55ce580185f8ebc27da1e69e24c0dd2b29fb70"
     },
-    "doc/aosp17/frozen-delivery/upstream-lock.json": {
+    "docs/aosp17/frozen-delivery/upstream-lock.json": {
       "bytes": 231142,
       "sha256": "34b22070025d08c2d7c9f1371789a6981ef3ef415f7c4c1588745c7ba0b20bce"
     },
-    "doc/aosp17/frozen-delivery/verify_delivery.py": {
+    "docs/aosp17/frozen-delivery/verify_delivery.py": {
       "bytes": 4285,
       "sha256": "be42ac757c5d58da1479b3071706f9fc1a42bcb5bd87cd1403cb0b4c2ae236d5"
     },
-    "doc/aosp17/frozen-delivery/verify_patchset.py": {
+    "docs/aosp17/frozen-delivery/verify_patchset.py": {
       "bytes": 1605,
       "sha256": "e88b33b1643d6d0bee00f03d7f5ff6a4ba8295bfc9cf04882bb2b7478ed9d1a3"
     },
-    "doc/aosp17/frozen-delivery/verify_r14.py": {
+    "docs/aosp17/frozen-delivery/verify_r14.py": {
       "bytes": 1599,
       "sha256": "a40504f26aa8ecb850fef2970643f5aafecf86b63013b2bf10a785ee144d54b9"
     },
-    "doc/aosp17/frozen-delivery/versions.json": {
+    "docs/aosp17/frozen-delivery/versions.json": {
       "bytes": 11550,
       "sha256": "d1a8975c679627f4c961977668cd096cf0e25771b70a8402761494eab903674b"
     },
-    "doc/aosp17/linux-supported-check-v1830.json": {
+    "docs/aosp17/linux-supported-check-v1830.json": {
       "bytes": 1846,
       "sha256": "9be10dc2635ed36962863e6235c92b21ac8729136dac779669c285ad937fcb2e"
     },
-    "doc/aosp17/macos-supported-check-v1830.json": {
+    "docs/aosp17/macos-supported-check-v1830.json": {
       "bytes": 2068,
       "sha256": "0621ca930e27c782732feaad0bd384b358b0d1c3b636dea585cd525101c1e8d1"
     },
-    "doc/aosp17/slirp-source-delivery-v1/INDEX.json": {
-      "bytes": 525925,
-      "sha256": "6afb24513b6db04b5808bf28bfafac6d33c78a2a0444e72d46d8e947cae827e7"
+    "docs/aosp17/slirp-source-delivery-v1/INDEX.json": {
+      "bytes": 526039,
+      "sha256": "d0971ba271000571a4bfc937860fa354d1f7ecf9a6a981689490df3d6999dec5"
     },
-    "doc/aosp17/slirp-source-delivery-v1/NOTICE-SUPPLEMENT.json": {
+    "docs/aosp17/slirp-source-delivery-v1/NOTICE-SUPPLEMENT.json": {
       "bytes": 422,
       "sha256": "9dd39ddd9b4386ebbd377f58d259ed362b698565df9214d9a583156d92b13c5e"
     },
-    "doc/aosp17/slirp-source-delivery-v1/README.md": {
+    "docs/aosp17/slirp-source-delivery-v1/README.md": {
       "bytes": 2337,
       "sha256": "9669258ac71bd2d98458dc8c8f5659689e83ed9559dd4f48291ac50e15d1c3ab"
     },
-    "doc/aosp17/slirp-source-delivery-v1/SLIRP-BUILD-TOOLS.json": {
+    "docs/aosp17/slirp-source-delivery-v1/SLIRP-BUILD-TOOLS.json": {
       "bytes": 502,
       "sha256": "db216ab423be5856342967569a9246ad3ffc9d3356059a2568da50db5ff07daa"
     },
-    "doc/aosp17/slirp-source-delivery-v1/SLIRP-SUPERBUILD-BUILD.json": {
+    "docs/aosp17/slirp-source-delivery-v1/SLIRP-SUPERBUILD-BUILD.json": {
       "bytes": 1019,
       "sha256": "18c498b90c638b71b9d19ea191d414f204c50134adb31bb57a358c40a5d9e5d5"
     },
-    "doc/aosp17/slirp-source-delivery-v1/SLIRP-SUPERBUILD-CONFIGURE-v4.json": {
+    "docs/aosp17/slirp-source-delivery-v1/SLIRP-SUPERBUILD-CONFIGURE-v4.json": {
       "bytes": 944,
       "sha256": "98f41d89162e79265cc5b4a171f9fd4c160309eed693cc772a56eaa2d394e6ea"
     },
-    "doc/aosp17/slirp-source-delivery-v1/additional-notices/subprojects/libslirp/COPYRIGHT": {
+    "docs/aosp17/slirp-source-delivery-v1/additional-notices/subprojects/libslirp/COPYRIGHT": {
       "bytes": 3022,
       "sha256": "646d383273ad82322768993bf903b1ffb3bc4345b8a214bfd9da7e533c5a5954"
     },
-    "doc/aosp17/slirp-source-delivery-v1/build_slirp_superbuild.py": {
+    "docs/aosp17/slirp-source-delivery-v1/build_slirp_superbuild.py": {
       "bytes": 1484,
       "sha256": "4d7f7a38bdd1c18775fa634c517cc1e19b1fbb98eae48f45dc4ac86e47ca01bc"
     },
-    "doc/aosp17/slirp-source-delivery-v1/configure_slirp_superbuild.py": {
+    "docs/aosp17/slirp-source-delivery-v1/configure_slirp_superbuild.py": {
       "bytes": 1730,
       "sha256": "df4aaaddc15e0d5f9dfb6b9acfdc7d78bf82d9c923a50ceead9584c277f0783d"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/AUTHORS": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/AUTHORS": {
       "bytes": 1347,
       "sha256": "52ca4a84d8dc412ead87bc3223c2ec2ac819938337cabecb2bd1994e979d1171"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/COPYING": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/COPYING": {
       "bytes": 26530,
       "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/docs/reference/AUTHORS": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/docs/reference/AUTHORS": {
       "bytes": 122,
       "sha256": "b4f60a02b2b1f82764f8295b2eafbfcd4c33f596d70abcf5cb3c3623b1cfbc6d"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/docs/reference/COPYING": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/docs/reference/COPYING": {
       "bytes": 1698,
       "sha256": "b1ec1d0e5947f81e815d8771f7d4d90671a94bb10a42dc687fb566de461a57aa"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/gmodule/AUTHORS": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/gmodule/AUTHORS": {
       "bytes": 25,
       "sha256": "28073c8c65c072387b778ba00b6c24a2ff1b573ca4415e151aa91fab5a6454be"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/gmodule/COPYING": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/gmodule/COPYING": {
       "bytes": 26530,
       "sha256": "dc626520dcd53a22f727af3ee42c770e56c97a64fe3adb063799d8ab032fe551"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/subprojects/libffi/LICENSE": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/subprojects/libffi/LICENSE": {
       "bytes": 1153,
       "sha256": "f02e8e7361fa83bbe845f029571bbd1248bed85320f6dad0541db8ec66d90178"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/subprojects/proxy-libintl/COPYING": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/glib/subprojects/proxy-libintl/COPYING": {
       "bytes": 25774,
       "sha256": "aa092600e3f475f0a55821fb9c529583d8e23e41bf0461254f02fcf94d3a32c2"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/AUTHORS": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/AUTHORS": {
       "bytes": 851,
       "sha256": "eeeac138d044b2dc7bed1f145bad783e06da7b9344c8e9be4d96f803b22cc008"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/COPYING": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/COPYING": {
       "bytes": 95,
       "sha256": "17abe1dbb92b21ab173cf9757dd57b0b15cd8d863b2ccdef635fdbef03077fb0"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/LICENSE.build": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/LICENSE.build": {
       "bytes": 1070,
       "sha256": "cb3101cb814ef48ae95cdbdb74ef44a335484f4e190837fc8df38e3c3c1f9361"
     },
-    "doc/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/cmake/COPYING-CMAKE-SCRIPTS": {
+    "docs/aosp17/slirp-source-delivery-v1/notices/subprojects/pcre-8.37/cmake/COPYING-CMAKE-SCRIPTS": {
       "bytes": 1327,
       "sha256": "46cde7dc11e64c78d650b4851b88f6704b4665ff60f22a1caf68ceb15e217e5b"
     },
-    "doc/aosp17/slirp-source-delivery-v1/test_slirp_candidate.py": {
+    "docs/aosp17/slirp-source-delivery-v1/test_slirp_candidate.py": {
       "bytes": 5066,
       "sha256": "547b497db762f3ad5f38694a74c790e249a6b3ab1bcf7a20779cbe6e40b7c3c9"
     },
-    "doc/aosp17/windows-package-v1830-result.json": {
+    "docs/aosp17/windows-package-v1830-result.json": {
       "bytes": 319,
       "sha256": "e2adb7d25643b5c5aa926184c0ebf437e91b614ba0139fe8ec68058e6a0b9f0d"
     },
@@ -465,8 +465,8 @@
       "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
     },
     "releases/aosp17/controllers/macos/vm_macos.sh": {
-      "bytes": 25131,
-      "sha256": "e938ed96bf6ace83f9ef27f18ce4efff21932d765ad90ecea1ac5012457f3a4a"
+      "bytes": 25132,
+      "sha256": "2e3c31a79005bfd614a3ba3976d45ae616606ce3e6e7a9a086c22ef006d2b793"
     },
     "releases/aosp17/controllers/windows/microdroid.py": {
       "bytes": 441,

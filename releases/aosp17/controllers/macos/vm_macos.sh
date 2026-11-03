@@ -408,7 +408,7 @@ case "$COMMAND" in
             echo "  [OK]   Host architecture: arm64" | tee -a "$RUN_LOG_FILE"
         else
             echo "  [FAIL] Host architecture: $host_arch (requires arm64 for HVF)" | tee -a "$RUN_LOG_FILE"
-            echo "         Intel Macs are not supported (see doc/HVF_X86_64_FEASIBILITY.md)" | tee -a "$RUN_LOG_FILE"
+            echo "         Intel Macs are not supported (see docs/HVF_X86_64_FEASIBILITY.md)" | tee -a "$RUN_LOG_FILE"
             ALL_PASS=0
         fi
 

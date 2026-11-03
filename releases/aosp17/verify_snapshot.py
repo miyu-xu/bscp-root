@@ -1,6 +1,8 @@
 from pathlib import Path
 import ast,hashlib,json,subprocess,sys,xml.etree.ElementTree as ET
 root=Path(__file__).resolve().parents[2]
+assert (root/"docs/README.md").is_file() and (root/"docs/README.zh-CN.md").is_file()
+assert not (root/"doc").exists(), "docs is the sole first-party documentation directory"
 index=json.loads((root/"releases/aosp17/CONTROLLER-AND-DOC-SOURCE.json").read_bytes())
 for name,row in index["files"].items():
     path=root/name
@@ -12,7 +14,7 @@ for path in (root/"releases").rglob("*.py"):
 old=json.loads((root/"releases/r14/SOURCE.json").read_bytes())
 for name,h in old["files"].items():
     assert hashlib.sha256((root/"releases/r14/controller"/name).read_bytes()).hexdigest()==h
-m=ET.parse(root/"doc/aosp17/frozen-delivery/android17-locked.xml")
+m=ET.parse(root/"docs/aosp17/frozen-delivery/android17-locked.xml")
 projects=m.findall("project")
 assert len(projects)==1087 and len({p.get("path") for p in projects})==1087
 assert all(len(p.get("revision",""))==40 and all(c in "0123456789abcdef" for c in p.get("revision","")) for p in projects)

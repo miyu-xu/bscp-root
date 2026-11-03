@@ -9,4 +9,4 @@
 受支持版本仅包括当前 manifest 发布分支固定的 revision。未固定的开发工作区和历史快照不
 提供安全支持。
 
-信任假设与部署加固参见详细[安全模型](doc/SECURITY.zh-CN.md)。
+信任假设与部署加固参见详细[安全模型](docs/SECURITY.zh-CN.md)。

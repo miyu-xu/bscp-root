@@ -14,7 +14,7 @@ Before committing:
 4. Update both English and Simplified Chinese documents when behavior or operations change.
 5. Keep legitimate author attribution while excluding private deployment identities from published material.
 
-The existing AOSP17 GitHub workflow checks source/provenance on three platforms; it does not run VM acceptance. Review any new workflow permissions separately. AOSP17 is default; retain r14 rollback, bilingual doc/ navigation, reachable pinned commits and exact asset checksums. Do not rewrite frozen evidence or treat a documentation commit as a new binary acceptance run.
+The existing AOSP17 GitHub workflow checks source/provenance on three platforms; it does not run VM acceptance. Review any new workflow permissions separately. AOSP17 is default; retain r14 rollback, bilingual docs/ navigation, reachable pinned commits and exact asset checksums. Do not rewrite frozen evidence or treat a documentation commit as a new binary acceptance run.
 
 ## Contribution licensing
 

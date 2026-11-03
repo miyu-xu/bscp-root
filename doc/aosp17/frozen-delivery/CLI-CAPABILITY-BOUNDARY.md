@@ -1,9 +1,0 @@
-# Independent CLI boundary against the actual r14 baseline
-
-The published r14 doc/MICRODROID_LIFECYCLE.md at code43e4786a48c142b4c8b6f4bfb0db38cd32b20e42 explicitly specifies a foreground controller, keeping its stdin/stdout open. Standalone status reads persisted state only; standalone stop refuses process takeover. Healthy resume starts a new owned execution; it is not authentication to a still-running detached service. The frozen actual r14 normal driver uses this same foreground channel.
-
-Therefore independent persistent CLI reattachment is NOT established as part of that tested r14 foreground capability contract. This does not prove that every historical low-level vm command lacked such behavior: defaults/low-level commands were explicitly outside the lifecycle integration change, and their complete parity has not been certified here. Do not call Initial-path PASS universal CLI equivalence.
-
-Current Windows A17 Initial/original-HANDLE path is verified; independent persistent reattachment remains disabled/unverified. The earlier per-generation256-bit credential design is a proposed extension, not an implemented safety bypass or approved credential. Minimum additional decision if that extension is selected: allow exclusive per-generation authentication records under the already-approved private instance root, inherited-pipe initial delivery, association-bound mutual challenge, and retention of retired records. No new root ACL, system service, account or Guest wire change is inherently included. Native channel-binding feasibility remains a technical gate even after approval. No credential was created in this phase.
-
-This delivery does not promote that untested extension into an upgrade prerequisite or silently claim it works. It preserves the original foreground scope and reports the lower-level CLI parity boundary explicitly.

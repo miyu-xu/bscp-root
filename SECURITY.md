@@ -11,4 +11,4 @@ only after users have a reasonable upgrade path.
 Supported releases are the revisions pinned by the current manifest release branch. Unpinned
 development worktrees and historical snapshots receive no security support.
 
-See the detailed [security model](doc/SECURITY.md) for trust assumptions and deployment hardening.
+See the detailed [security model](docs/SECURITY.md) for trust assumptions and deployment hardening.

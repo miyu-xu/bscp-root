@@ -2,10 +2,10 @@
 
 AOSP 17 is the default source baseline for the Microdroid compute workflow on Linux/KVM, macOS/HVF and Windows/WHPX. The published binaries are **limited-deployment reference packages**, not fresh-machine installers. Keep existing private admission configuration and matching Host/Guest artifacts; an arbitrary new account or directory is not supported by renaming paths.
 
-- [Start here](doc/README.md): bilingual documentation and current/historical boundaries.
-- [Download, verify and roll back](doc/RELEASE.md).
-- [Supported deployment](doc/DEPLOYMENT.md) and [operations](doc/OPERATIONS.md).
-- [Architecture](doc/ARCHITECTURE.md), [source/build](doc/BUILD.md), [troubleshooting](doc/TROUBLESHOOTING.md).
+- [Start here](docs/README.md): bilingual documentation and current/historical boundaries.
+- [Download, verify and roll back](docs/RELEASE.md).
+- [Supported deployment](docs/DEPLOYMENT.md) and [operations](docs/OPERATIONS.md).
+- [Architecture](docs/ARCHITECTURE.md), [source/build](docs/BUILD.md), [troubleshooting](docs/TROUBLESHOOTING.md).
 
 ## Current capability boundary
 
@@ -22,7 +22,7 @@ repo init -u https://github.com/miyu-xu/bscp-manifest-repo.git -b main
 repo sync
 ```
 
-This is not a runtime installation command. See the pinned [manifest](https://github.com/miyu-xu/bscp-manifest-repo/blob/main/aosp17.xml), [release selector](releases/default.json), and [build guide](doc/BUILD.md). Keep the resolved manifest commit for reproduction.
+This is not a runtime installation command. See the pinned [manifest](https://github.com/miyu-xu/bscp-manifest-repo/blob/main/aosp17.xml), [release selector](releases/default.json), and [build guide](docs/BUILD.md). Keep the resolved manifest commit for reproduction.
 
 ## License and contribution
 

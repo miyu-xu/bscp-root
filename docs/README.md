@@ -1,6 +1,6 @@
 # Documentation
 
-`doc/` is the canonical first-party documentation directory. The former `docs/` contained only a bilingual timeout-evidence note; its authoritative copies now live in `doc/history/`, with compatibility links retained for existing URLs. Third-party notices are not translated or relocated.
+`docs/` is the sole first-party documentation directory. The former `doc/` content has been merged here; timeout evidence remains under `docs/history/`. There is no `doc/` compatibility directory in the current branch. Links pinned to old Git commits retain their original paths. Third-party license text is preserved.
 
 AOSP17 is the default. Start with the current operational guides below; technical implementation references describe mechanisms, not proof of every current feature.
 
