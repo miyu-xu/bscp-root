@@ -14,7 +14,7 @@ def main():
     if a.release_info:
         print(json.dumps({"selected":a.release,"host":host,"release":state},indent=2));return
     if a.release=="aosp17":
-        entry=ROOT/"releases"/"aosp17"/"controllers"/host/"microdroid.py"
+        entry=(ROOT/"releases"/"aosp17"/"windows-v1830"/"scripts"/"microdroid.py") if host=="windows" else (ROOT/"releases"/"aosp17"/"controllers"/host/"microdroid.py")
         if not state["published"] and not any(x in ("-h","--help") for x in rest):
             raise SystemExit("AOSP17 publication is not complete; no runtime was started")
     else:entry=ROOT/"releases"/"r14"/"controller"/"microdroid.py"

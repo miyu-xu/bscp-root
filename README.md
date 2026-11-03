@@ -1,3 +1,7 @@
+# AOSP 17 default release
+
+AOSP 17 is the default source baseline. Reference binaries support only the documented existing deployments, not arbitrary-machine installation. See [release and rollback](doc/aosp17/RELEASE-v1837.md) and [deployment requirements](doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md).
+
 # BSCP
 
 [简体中文](README.zh-CN.md) | English
