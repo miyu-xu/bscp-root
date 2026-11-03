@@ -225,10 +225,45 @@
       "bytes": 101,
       "sha256": "8157bcd5cb6ed393a8f07de6bb5c0e73758c95ba98d92770b29cef1705230f12",
       "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/bscp-aosp17-public-docs-v1838.sha256"
+    },
+    {
+      "file": "linux-binder-source-public-v1840.tar.gz",
+      "bytes": 12662889,
+      "sha256": "250658f48fd07c28bcae662c08af0e87786d27831dcffaa8d883c95e0fd6ff19",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/linux-binder-source-public-v1840.tar.gz"
+    },
+    {
+      "file": "windows-crosvm-source-public-v1840.tar.gz",
+      "bytes": 4461140,
+      "sha256": "ca6581ce2010021396afcd269adba72b9e25bffc07a58858a18588d7ab33e630",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/windows-crosvm-source-public-v1840.tar.gz"
+    },
+    {
+      "file": "bscp-aosp17-bilingual-docs-v1840.zip",
+      "bytes": 125515,
+      "sha256": "2c6d5e97e81ad4c3f77f32ab6616b5a2bd88e66aef336533807541bd4654825a",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/bscp-aosp17-bilingual-docs-v1840.zip"
+    },
+    {
+      "file": "public-revision-v1840.json",
+      "bytes": 750,
+      "sha256": "4f1c6147fff761f32673ded5618159f671fbc6734261d481bc1fad3e047eba3b",
+      "url": "https://github.com/miyu-xu/bscp-root/releases/download/bscp-aosp17-20261102/public-revision-v1840.json"
     }
   ],
   "deployment_conditions": "doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md",
   "documentation_revision": "v1838",
   "deployment_config": "Private binding directory explicitly required by verify_installed.py",
-  "privacy_status": "Current descriptions redacted; legacy assets, original source closures and Git history can retain environment/build paths; not a complete historical purge"
+  "privacy_status": "Current descriptions redacted; legacy assets, original source closures and Git history can retain environment/build paths; not a complete historical purge",
+  "documentation_entry": "doc/README.md",
+  "documentation_entry_zh_CN": "doc/README.zh-CN.md",
+  "privacy_revision": {
+    "public_source_replacements": [
+      "linux-binder-source-public-v1840.tar.gz",
+      "windows-crosvm-source-public-v1840.tar.gz"
+    ],
+    "bilingual_documents": "bscp-aosp17-bilingual-docs-v1840.zip",
+    "scope": "Source-only packaging and documentation; no new runtime acceptance. Original identity-bearing attachments and Git history retained pending separate removal decisions.",
+    "old_assets_deleted": false
+  }
 }
