@@ -5,7 +5,7 @@
     "mesonbuild.mesonmain",
     "setup",
     "E:\\bscp\\out\\aosp17-publication-v1827\\libslirp-known-source-v2\\build",
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-rebuild-sources\\bscp-slirp-superbuild-v1",
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-rebuild-sources\\bscp-slirp-superbuild-v1",
     "--buildtype=release",
     "--wrap-mode=nodownload",
     "--prefix",
@@ -14,5 +14,10 @@
   "state": "EXITED",
   "pid": 29400,
   "scope": "official-source superbuild configure only; no VM/runtime replacement",
-  "exit": 0
+  "exit": 0,
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

@@ -1,7 +1,7 @@
 {
   "assets": [
     {
-      "path": "/home/mark/bscp/out/aosp17-publication-v1827/assets/bscp-aosp17-linux-x86_64-frozen.tar.gz",
+      "path": "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-publication-v1827/assets/bscp-aosp17-linux-x86_64-frozen.tar.gz",
       "bytes": 224355893,
       "sha256": "6fc1d93a800fb1e459734ded1061ec8c2d0c877166c16432f6b2021963343c46",
       "files": 238,
@@ -11,17 +11,17 @@
       "ready_for_install": false
     },
     {
-      "path": "/home/mark/bscp/out/aosp17-publication-v1827/assets/linux-renderer-source.tar.gz",
+      "path": "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-publication-v1827/assets/linux-renderer-source.tar.gz",
       "bytes": 7207546,
       "sha256": "07e09de4777dc7a5a222b6a081efdb46883e53e799e9bc08a3192bf40541c156"
     },
     {
-      "path": "/home/mark/bscp/out/aosp17-publication-v1827/assets/linux-binder-source.tar.gz",
+      "path": "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-publication-v1827/assets/linux-binder-source.tar.gz",
       "bytes": 12446523,
       "sha256": "2b7293a1dbc2850f22403a1cea126063996b5258d05e1b7776c448848a6f8790"
     },
     {
-      "path": "/home/mark/bscp/out/aosp17-publication-v1827/assets/linux-native-source.tar.gz",
+      "path": "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-publication-v1827/assets/linux-native-source.tar.gz",
       "bytes": 6611,
       "sha256": "c59f0832124593b9a6be5ccafae015d174960b905e307a723ce73225c0428e74"
     }
@@ -30,5 +30,10 @@
   "state": "PASS",
   "checked_utc": "2026-11-02T16:52:36.199333+00:00",
   "scope": "Archive/source-index/notice identity check, not new VM or arbitrary-root install verification",
-  "platform": "linux"
+  "platform": "linux",
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

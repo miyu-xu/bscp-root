@@ -11,7 +11,7 @@
       "role": "accepted Windows v1830 runtime"
     },
     {
-      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\linux-host-source-current-v3.tar.gz",
+      "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\linux-host-source-current-v3.tar.gz",
       "bytes": 1303576,
       "sha256": "de3ae2fa32c7823a9387678f19508b1ca0c859aec8ccdb79db2f22101367a105",
       "verified_source_files": 779,
@@ -19,7 +19,7 @@
       "source_scope": "Current exact local Cargo package closure. Compare with original build seals before claiming build-time identity; native tools/renderer/crosvm separate."
     },
     {
-      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\macos-host-source-current-v4.tar.gz",
+      "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\macos-host-source-current-v4.tar.gz",
       "bytes": 2683106,
       "sha256": "a8f9974ee5362e6524987e6cdc30299512713e6448d96db39a6eda6a487ae6a3",
       "verified_source_files": 1126,
@@ -27,7 +27,7 @@
       "source_scope": "Current exact local Cargo package closure. Compare with original build seals before claiming build-time identity; native tools/renderer/crosvm separate."
     },
     {
-      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-host-source-sealed.tar.gz",
+      "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-host-source-sealed.tar.gz",
       "bytes": 2399931,
       "sha256": "d8cbe4075d2bc815b9f874534cbff786998b40decbb09012913aaa9afa05b2a5",
       "verified_source_files": 1475,
@@ -35,7 +35,7 @@
       "source_scope": "Exact sealed virtmgr package closure, not the separate final crosvm/renderer closure or complete native toolchain"
     },
     {
-      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-crosvm-source-sealed.tar.gz",
+      "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-crosvm-source-sealed.tar.gz",
       "bytes": 4373545,
       "sha256": "dd618f964e601c8321b939cc76beb7e9893fa1d8929e832d0eb68c6de45720b7",
       "verified_source_files": 1813,
@@ -43,13 +43,13 @@
       "source_scope": "Exact final Windows crosvm tree, verified against equal original build-before/build-after seals; dependencies separately recorded, not bundled toolchains"
     },
     {
-      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-renderer-source.tar.gz",
+      "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\windows-renderer-source.tar.gz",
       "bytes": 7218518,
       "sha256": "fbc4e27697b7cc312e80e1cbffc0f64845adaadbd2eeed0267b32ffa41e25611",
       "role": "exact source archive"
     },
     {
-      "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\libslirp-superbuild-source.tar.gz",
+      "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\libslirp-superbuild-source.tar.gz",
       "bytes": 15537047,
       "sha256": "01da5677eafb2017b68607f2ccb1ce19071b9c72474e72c956b72de70f7059c9",
       "role": "exact source archive"
@@ -196,5 +196,10 @@
   "state": "PASS",
   "checked_utc": "2026-11-02T16:52:27.206450+00:00",
   "scope": "Archive/source-index/notice identity check, not new VM or arbitrary-root install verification",
-  "platform": "local"
+  "platform": "local",
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

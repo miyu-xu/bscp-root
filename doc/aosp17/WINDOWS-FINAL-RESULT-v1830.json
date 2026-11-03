@@ -2,17 +2,17 @@
   "state": "WINDOWS_A17_NORMAL4_FAULT2_LIMITED_PASS",
   "review_mode": "single executor actual receipt/source self-review; no independent reviewer this turn",
   "normal": {
-    "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\WINDOWS-NORMAL-RESULT-v1828.json",
+    "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\WINDOWS-NORMAL-RESULT-v1828.json",
     "sha256": "89a5272e19d19589f8d62a27efb6bdc9f95af460d73a5f2f0824aae37065c166"
   },
   "fault_cases": {
     "timeout": {
       "result": {
-        "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\result.json",
+        "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\result.json",
         "sha256": "1c674e5577bfc6cd108dab5b5ff6a9b473c7420597c4d3fb8fc99733220548aa"
       },
       "outer": {
-        "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.json",
+        "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.json",
         "sha256": "a6c969e8a09ef719c17435eab18600086dc4110becf63851e528a6719d039bea"
       },
       "task_result": "UNKNOWN",
@@ -92,11 +92,11 @@
     },
     "disconnect": {
       "result": {
-        "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\result.json",
+        "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\result.json",
         "sha256": "9b083ba5e3485112b9e714bac021b744103692a904a4d6bfe97225d46f554420"
       },
       "outer": {
-        "path": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.json",
+        "path": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.json",
         "sha256": "b35700a1568dd3f171a7abca86bc0c56989557c567bd98b751a7034f008af535"
       },
       "task_result": "UNKNOWN",
@@ -326,7 +326,7 @@
       "reserved_for_future": false
     },
     "cid_lease_observation": {
-      "path": "C:\\Users\\miyu1\\.bscp-microdroid\\leases\\cid-2048",
+      "path": "<PRIVATE_WINDOWS_HOME>\\.bscp-microdroid\\leases\\cid-2048",
       "state": "EXISTING_LOCK_OBSERVED_FREE_THEN_RELEASED",
       "reserved_for_future": false,
       "production_contract": "original native LockFileEx must acquire atomically at allocate; never pre-hold across VM launch"
@@ -334,251 +334,251 @@
     "limit": "instantaneous inspection, not reservation; production original lease and bind fail closed on a later conflict"
   },
   "evidence": {
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\accept.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\accept.py": {
       "bytes": 6327,
       "sha256": "ea89b70947b32656283e87435655fd8e8722fa33eec07f2895e17301cb57f64a"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\ADMISSION.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\ADMISSION.json": {
       "bytes": 56649,
       "sha256": "50a0ed73fb2504f1fd022c845390cd11a265029bf71af9db968c7ddf044ff9aa"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\contracts.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\contracts.py": {
       "bytes": 8619,
       "sha256": "33bade020effff414b2caee971a183a0259399c64bc5994be7dc698c32da1442"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect-check.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect-check.stderr": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect-check.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect-check.stdout": {
       "bytes": 558,
       "sha256": "b507b0836b951f38c4e4f34afe041d2e736ab3a13fc73c3b45bf0d85521d7724"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\driver_safety.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\driver_safety.py": {
       "bytes": 7831,
       "sha256": "a325803b997a61c3f5e13d5faec4c73079af9f81088bbc1b33fa89e2014aac69"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.intent.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.intent.json": {
       "bytes": 153,
       "sha256": "48caf2850c55aaaa0a6a733e8126835c8f756266e0cc1355fee28cae8cd284a9"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.json": {
       "bytes": 1036,
       "sha256": "b35700a1568dd3f171a7abca86bc0c56989557c567bd98b751a7034f008af535"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.stderr": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-disconnect.stdout": {
       "bytes": 170,
       "sha256": "280e2bb22a9f4ba031ba0690488bb415fbb6dc9f5479b04425d466c951d98c63"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.intent.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.intent.json": {
       "bytes": 149,
       "sha256": "9ccc51be3ebdd7ae3e41af2599fbfbc223a86971ee09913947276fa7c73fca98"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.json": {
       "bytes": 957,
       "sha256": "a6c969e8a09ef719c17435eab18600086dc4110becf63851e528a6719d039bea"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.stderr": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\outer-timeout.stdout": {
       "bytes": 168,
       "sha256": "9a325df899f137c010b2689adb948ce0d90ddab57d1c994cdab61dd998af9386"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\preflight-disconnect.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\preflight-disconnect.json": {
       "bytes": 6393,
       "sha256": "07d0899fc8db8c8b593a6b82ad5a3a50152bbfedecd1e8ed8ae53d0ed690c9d3"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\preflight-timeout.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\preflight-timeout.json": {
       "bytes": 6393,
       "sha256": "7a227535d4c2f3389606c6d2d754aeebeba9eea3b914f970535bb260688a3b1a"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\PREPARATION.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\PREPARATION.json": {
       "bytes": 1203,
       "sha256": "4ed709cc1b40bfb6b1f014955d556bcc28d2066aecdad5fd1ef30f4e403e2c7c"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\run_case.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\run_case.py": {
       "bytes": 3564,
       "sha256": "e09a08088de0e0187768ccf7472ac16372f9fc4dd0baeca1ce6164fa50f641f3"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\SELF-REVIEW.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\SELF-REVIEW.json": {
       "bytes": 1140,
       "sha256": "57676f64c75da5ead10020c20fe29cc8ee07fd5eb5a5bd8ddd77baeff9670212"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\TESTS.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\TESTS.json": {
       "bytes": 121,
       "sha256": "4a0d3c39e05de243ceb44f2499144f7d97359d880dad1e5ea764066287aa7b09"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\tests.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\tests.stderr": {
       "bytes": 1044,
       "sha256": "29c393e0171559c4434eba5cfc2714de434bbd938406a9a58ee1012d5d43c288"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\tests.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\tests.stdout": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\test_contracts.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\test_contracts.py": {
       "bytes": 4708,
       "sha256": "0988a00ecd402ffff0098cf0915ffbf7aa46595ac6476fcd8d0d09ffa36ea0d0"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\test_reader_start.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\test_reader_start.py": {
       "bytes": 2278,
       "sha256": "d9f4f5c22e4aa28b01617053aa8a3592e6190d6a547d72021e6076c680e8e271"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout-check.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout-check.stderr": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout-check.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout-check.stdout": {
       "bytes": 558,
       "sha256": "b507b0836b951f38c4e4f34afe041d2e736ab3a13fc73c3b45bf0d85521d7724"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\check.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\check.stderr": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\check.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\check.stdout": {
       "bytes": 558,
       "sha256": "b507b0836b951f38c4e4f34afe041d2e736ab3a13fc73c3b45bf0d85521d7724"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\controller-output.log": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\controller-output.log": {
       "bytes": 63245,
       "sha256": "933fe83444e64d3d44a3fd126ccb9b089853a882d8cf75fb41d99394d8d3ec47"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\create.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\create.stderr": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\create.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\create.stdout": {
       "bytes": 407,
       "sha256": "7c1824a538e631b28990c5b11af21de6637587dbe552f22ab5f48a801fc93a9b"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\final-record.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\final-record.json": {
       "bytes": 21843,
       "sha256": "27ca6e37b8157d38ea06acbdf897f4c8be88d4dae0b7874757559e6ca5df2a71"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\result.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\disconnect\\result.json": {
       "bytes": 221658,
       "sha256": "9b083ba5e3485112b9e714bac021b744103692a904a4d6bfe97225d46f554420"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\check.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\check.stderr": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\check.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\check.stdout": {
       "bytes": 558,
       "sha256": "b507b0836b951f38c4e4f34afe041d2e736ab3a13fc73c3b45bf0d85521d7724"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\controller-output.log": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\controller-output.log": {
       "bytes": 63107,
       "sha256": "9a6d68d0e638cf4d65e322b4bff83374a53f87fc9024c833e985c8b0448b596a"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\create.stderr": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\create.stderr": {
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\create.stdout": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\create.stdout": {
       "bytes": 407,
       "sha256": "258070fcc35e4c9ea4ff5c5fa34a7b2039534e916575b0c9501758895e654ced"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\final-record.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\final-record.json": {
       "bytes": 21766,
       "sha256": "c96184cdbdd36830e39fe271b70950cba8382e0b952be858cd10935c033da2c4"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\result.json": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\timeout\\result.json": {
       "bytes": 221314,
       "sha256": "1c674e5577bfc6cd108dab5b5ff6a9b473c7420597c4d3fb8fc99733220548aa"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid.py": {
       "bytes": 441,
       "sha256": "414b9ff3fa10dc2511877438d36be5d904a8d1cdd6b1bcbffe47c12782231464"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\vm_windows.ps1": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\vm_windows.ps1": {
       "bytes": 27645,
       "sha256": "3422aa015bd0125e6f2e2148efa590d344f414b3cb5fa3157f390ad2e064607e"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\audit_owner.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\audit_owner.py": {
       "bytes": 3382,
       "sha256": "35c4c33ca6b062110fd4a9db8d64bfc78addb8ad6c768ea9db3680136d2ff1c3"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\bound_owner.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\bound_owner.py": {
       "bytes": 6716,
       "sha256": "787967d68f14235e7c3642d33abded5c4655414ec685a04b11e7f8bdaf3fede0"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\closure_check.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\closure_check.py": {
       "bytes": 1975,
       "sha256": "a301a422935b294434b51a48780c7036f344e8175f5b5c466ee2c85940f9c8fa"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\compute_protocol.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\compute_protocol.py": {
       "bytes": 3341,
       "sha256": "c685d1d0c7e09bcf22c33025434e29b8a0b341321056ea72eb51efcb3113c76b"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\endpoint_evidence.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\endpoint_evidence.py": {
       "bytes": 2955,
       "sha256": "474227e9769381485dd36b5cbde20fb74f83c4881a43cd29bb7b8e4b1d71a0a3"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\entry.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\entry.py": {
       "bytes": 12030,
       "sha256": "3823f260c62e551920c50666fd495065ccfbfa9725d5b26085a77071a4f6b1ca"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\environment_evidence.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\environment_evidence.py": {
       "bytes": 1111,
       "sha256": "f6516742588ab0bda4d70b38a1a9833811747ba8f266f4aabddf044c7145a8df"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\instance_identity.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\instance_identity.py": {
       "bytes": 1619,
       "sha256": "124b743aab3037274349a30e475ac846e57b4d99078e0ba7553fb11a76f7772f"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\lifecycle.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\lifecycle.py": {
       "bytes": 8902,
       "sha256": "d909e5cd3f22170f8d9b03cc78d4df298d0e627d174f85f97ee0c29f06e5dea2"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\linux_pidfd.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\linux_pidfd.py": {
       "bytes": 1206,
       "sha256": "f1005dee500aa9a55978f99a6af7422dae8b94f374b9c40c84ab6d876d459ef4"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\mac_audit.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\mac_audit.py": {
       "bytes": 5283,
       "sha256": "b296bca51ca3a897756e2e305fd33eab37ba759458c1e0f1fef9ea3ee8aefcec"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\mac_owner.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\mac_owner.py": {
       "bytes": 14920,
       "sha256": "038061ddf69fa34367eb608f169a92752f5f2e0bf477d7daf1b17c55a110d797"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\native.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\native.py": {
       "bytes": 40435,
       "sha256": "18480fcab42ef781229ecf7cb405049764bb41e0a0e4e8769744be5f23970779"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\pipe_log.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\pipe_log.py": {
       "bytes": 2337,
       "sha256": "5e61adeb9ed249becdc152504cddc714ccc9775a628da04c93079174a154bb1b"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\runtime.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\runtime.py": {
       "bytes": 16507,
       "sha256": "41f338c78ff26616b9d34cec92a13ea0da2be0944085a7676a59d31163e22395"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\strict_json.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\strict_json.py": {
       "bytes": 439,
       "sha256": "011d298e526256c7e8df5fbca63bd7e13e491ec5d7500a6ec7b42729fadc1041"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\version.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\version.py": {
       "bytes": 48,
       "sha256": "520965a01f30e9fb84340619767b1e679f0dd754a43e0118a00b5923a1515762"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\windows_initial.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\windows_initial.py": {
       "bytes": 6866,
       "sha256": "cfe717384570313712cbeb13b9d117a68d7354aea93117e0c0ef46f3409f83b3"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\vendor\\owned_job.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\vendor\\owned_job.py": {
       "bytes": 28832,
       "sha256": "e8198f21332e907e1d91bfcdf237fcffac291bc63a46e53f3c062eda0cd1ade9"
     },
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\vendor\\windows_state.py": {
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\windows-fault-a17-v1829\\production\\scripts\\microdroid_lifecycle\\vendor\\windows_state.py": {
       "bytes": 4746,
       "sha256": "b934401f6e2220f19251bb239fed4dc72e28df2ae1053a89e2a072612f930699"
     },
@@ -1115,5 +1115,10 @@
       "sha256": "78ffcb03eae95ae4ec54b2e803c43a9567a18a2b672049b7e668f669bced1a78"
     }
   },
-  "scope": "Initial original HANDLE path; four normal and two exact fault cases. UNKNOWN not task success. Original failed disks/claims preserved. No independent CLI credentials, stress, arbitrary faults, UI/input, publication/default switch."
+  "scope": "Initial original HANDLE path; four normal and two exact fault cases. UNKNOWN not task success. Original failed disks/claims preserved. No independent CLI credentials, stress, arbitrary faults, UI/input, publication/default switch.",
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

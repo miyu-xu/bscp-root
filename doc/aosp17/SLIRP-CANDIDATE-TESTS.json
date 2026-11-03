@@ -10,7 +10,7 @@
       "exit": 0,
       "real_stdout_stderr_eof": true,
       "stdout": "",
-      "stderr": "In file included from C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-rebuild-sources\\bscp-slirp-superbuild-v1\\subprojects\\libslirp\\src/libslirp.h:10,\n                 from E:\\bscp\\out\\aosp17-publication-v1827\\libslirp-known-source-v2\\abi-tests\\probe.c:6:\nC:/workspace/mingw64/x86_64-w64-mingw32/include/winsock2.h:15:2: warning: #warning Please include winsock2.h before windows.h [-Wcpp]\n   15 | #warning Please include winsock2.h before windows.h\n      |  ^~~~~~~\n"
+      "stderr": "In file included from <PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-rebuild-sources\\bscp-slirp-superbuild-v1\\subprojects\\libslirp\\src/libslirp.h:10,\n                 from E:\\bscp\\out\\aosp17-publication-v1827\\libslirp-known-source-v2\\abi-tests\\probe.c:6:\nC:/workspace/mingw64/x86_64-w64-mingw32/include/winsock2.h:15:2: warning: #warning Please include winsock2.h before windows.h [-Wcpp]\n   15 | #warning Please include winsock2.h before windows.h\n      |  ^~~~~~~\n"
     },
     {
       "name": "exact cached Rust FFI compile",
@@ -41,5 +41,10 @@
       "stderr": ""
     }
   ],
-  "old_runtime_unchanged": true
+  "old_runtime_unchanged": true,
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

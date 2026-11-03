@@ -1,6 +1,6 @@
 {
   "platform": "macos",
-  "state_root": "/Volumes/Mark SSD/a17r/n32-v1786/s",
+  "state_root": "<PRIVATE_VOLUME>/a17r/n32-v1786/s",
   "checks": [
     {
       "gpu": "on",
@@ -49,5 +49,10 @@
   ],
   "vm_started": false,
   "security_settings_changed": false,
-  "scope": "Existing admitted deployment only; no fresh installation or new runtime acceptance"
+  "scope": "Existing admitted deployment only; no fresh installation or new runtime acceptance",
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

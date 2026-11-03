@@ -1,6 +1,6 @@
 {
   "platform": "linux",
-  "state_root": "/home/mark/bscp/out/a17l/v6/s",
+  "state_root": "<PRIVATE_LINUX_HOME>/bscp/out/a17l/v6/s",
   "checks": [
     {
       "gpu": "on",
@@ -47,5 +47,10 @@
   ],
   "vm_started": false,
   "security_settings_changed": false,
-  "scope": "Existing admitted deployment only; no fresh installation or new runtime acceptance"
+  "scope": "Existing admitted deployment only; no fresh installation or new runtime acceptance",
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

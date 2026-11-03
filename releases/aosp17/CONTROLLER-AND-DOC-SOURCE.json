@@ -1,20 +1,20 @@
 {
   "files": {
     "doc/aosp17/CORE-PROJECT-BASELINES.json": {
-      "bytes": 19149,
-      "sha256": "b6db0eb10591d1d9f00e05eac545a4cc6a54ee3c94fdf95cbecc23accd40e7f1"
+      "bytes": 18994,
+      "sha256": "b7bff1e091d38c0ee84248308b170aa050d30c6102bc034968a974ad9875bf6b"
     },
     "doc/aosp17/FINAL-ASSETS-linux-v1831.json": {
-      "bytes": 1322,
-      "sha256": "65d8fdc195f6e4597920257468edc3c5c207fcd8c40f979c6742286122816fc0"
+      "bytes": 1635,
+      "sha256": "d4c1383a201dcf343fb019b8275faf0b802099e59a287f87922d63c93543b43a"
     },
     "doc/aosp17/FINAL-ASSETS-local-v1831.json": {
-      "bytes": 9365,
-      "sha256": "ced9c10cce50328ae89d2560c8ee463ef2b582c8909e5e613fa3793c003d95be"
+      "bytes": 9508,
+      "sha256": "67bf0214b59ccafd6d88a535bb272dbc39156a40b3d8f033efa2842ce8446462"
     },
     "doc/aosp17/FINAL-ASSETS-macos-v1831.json": {
-      "bytes": 3635,
-      "sha256": "59cd9d526a2c1db944884267227f6056c36d6f16603eae77e706893fffbfd313"
+      "bytes": 3848,
+      "sha256": "2697c8599d9db9aa74aa83a0070b0eee8e07170f67bfb0821ca2fa1da933ff44"
     },
     "doc/aosp17/FINAL-PREPARATION-GAPS.md": {
       "bytes": 6445,
@@ -37,24 +37,24 @@
       "sha256": "e2d7aba8219839fe8a26f28a337571b16d64d3aa9f4b5fd4cc85b9b14a2b345d"
     },
     "doc/aosp17/SLIRP-CANDIDATE-TESTS.json": {
-      "bytes": 2800,
-      "sha256": "1c14e6a86e4e14f76d7593d3dad2c313444b44917deedd218ed2547dd9b3d93a"
+      "bytes": 3068,
+      "sha256": "011a0c0af89222cbeea3710c699cd0d07e8da90006fa80fb4abfff3f0aed3495"
     },
     "doc/aosp17/SLIRP-RUNTIME-CHECK.json": {
       "bytes": 8320,
       "sha256": "2abe761f50f4e1909e951568f8c38d1f2595c6d3efd534a3c1a2879f1a04d751"
     },
     "doc/aosp17/SLIRP-RUNTIME-COPY.json": {
-      "bytes": 5858,
-      "sha256": "a203af7aafa9d34333dcf1c01ee643b976fb7ab29311238ec2cbdc15883a6a3f"
+      "bytes": 6095,
+      "sha256": "f8213b8240afad11df068229e668d2618a7d809118ac4c11b8f517f54d612570"
     },
     "doc/aosp17/SUPPORTED-DEPLOYMENT-CONDITIONS-v1830.md": {
       "bytes": 4803,
       "sha256": "5e7dcbc75f255ebaf39761ecfbd96402ff3294767ad84dc5be1011748ad5dd05"
     },
     "doc/aosp17/WINDOWS-FINAL-RESULT-v1830.json": {
-      "bytes": 64212,
-      "sha256": "d239e4dfa35305f1a1468452d46d0b490812f80e618b3c523fe3e67234a1003f"
+      "bytes": 63808,
+      "sha256": "d810aa7636ec9c9fb43f6322704f2f91fc5e8dcbaa71dbd0809727944856d3e1"
     },
     "doc/aosp17/frozen-delivery/CLI-CAPABILITY-BOUNDARY.md": {
       "bytes": 1870,
@@ -85,12 +85,12 @@
       "sha256": "409f16f43e15e58b13cb42d1f959f4aada9e5a57929ef32f5468489dfc1beb2f"
     },
     "doc/aosp17/frozen-delivery/SOURCE-INDEX.json": {
-      "bytes": 580967,
-      "sha256": "afcc6580778821da7450736d62b6a0e15a0d59ef40ffcca44009f858acbdee66"
+      "bytes": 582326,
+      "sha256": "b0d45803819957d5b59e14246736833149ebae25314d6cb2a1728b88adb1bb45"
     },
     "doc/aosp17/frozen-delivery/STATUS.json": {
-      "bytes": 3450,
-      "sha256": "8b763f4271a88f00723aa48a98681e70086d8b4553a8aec707ff8c62917fdc51"
+      "bytes": 3741,
+      "sha256": "9e0bf55a122a9b6ee34b7f27f33bec95970544e3f7f57c15e35c153569b09a52"
     },
     "doc/aosp17/frozen-delivery/android17-locked.xml": {
       "bytes": 168058,
@@ -185,8 +185,8 @@
       "sha256": "15ffed88c0ee6b0937b71b8a75ea9a1102272577d28d658c8513f2e8221a29ed"
     },
     "doc/aosp17/frozen-delivery/r14-rollback.json": {
-      "bytes": 1396,
-      "sha256": "d8c06ef1500244b453eebf3b708d4e3c425fdfbd0a61a59a7611262bb0320bf9"
+      "bytes": 1717,
+      "sha256": "e61ba6a086842b39ef86ef1786d39d39044d58692222473a9557b274e50ee018"
     },
     "doc/aosp17/frozen-delivery/rollback-plan-tests.json": {
       "bytes": 278,
@@ -213,16 +213,16 @@
       "sha256": "d1a8975c679627f4c961977668cd096cf0e25771b70a8402761494eab903674b"
     },
     "doc/aosp17/linux-supported-check-v1830.json": {
-      "bytes": 1531,
-      "sha256": "3237ca62756a324510495e22a1f2aa8e4a7295afd100b6fd28d07438324560c7"
+      "bytes": 1846,
+      "sha256": "9be10dc2635ed36962863e6235c92b21ac8729136dac779669c285ad937fcb2e"
     },
     "doc/aosp17/macos-supported-check-v1830.json": {
-      "bytes": 1764,
-      "sha256": "8e43cb29fc304a8dc56804d58a128e871ddea14b79ab1874a1d254677344a1fd"
+      "bytes": 2068,
+      "sha256": "0621ca930e27c782732feaad0bd384b358b0d1c3b636dea585cd525101c1e8d1"
     },
     "doc/aosp17/slirp-source-delivery-v1/INDEX.json": {
-      "bytes": 540156,
-      "sha256": "7438ec16f7dd0f43f6df69c39e4d4b6976c5ad1b6ead3bb1d1aace244ed8ba45"
+      "bytes": 525925,
+      "sha256": "6afb24513b6db04b5808bf28bfafac6d33c78a2a0444e72d46d8e947cae827e7"
     },
     "doc/aosp17/slirp-source-delivery-v1/NOTICE-SUPPLEMENT.json": {
       "bytes": 422,
@@ -237,12 +237,12 @@
       "sha256": "db216ab423be5856342967569a9246ad3ffc9d3356059a2568da50db5ff07daa"
     },
     "doc/aosp17/slirp-source-delivery-v1/SLIRP-SUPERBUILD-BUILD.json": {
-      "bytes": 724,
-      "sha256": "e3748c7da83b4906f40f3ab430e303b12e9562a3df75c652e9277c9e90f788db"
+      "bytes": 1019,
+      "sha256": "18c498b90c638b71b9d19ea191d414f204c50134adb31bb57a358c40a5d9e5d5"
     },
     "doc/aosp17/slirp-source-delivery-v1/SLIRP-SUPERBUILD-CONFIGURE-v4.json": {
-      "bytes": 649,
-      "sha256": "676f0ce2704a6ebeb93d016c8113762f6128710cb0cc5f577d3169e07f1f2650"
+      "bytes": 944,
+      "sha256": "98f41d89162e79265cc5b4a171f9fd4c160309eed693cc772a56eaa2d394e6ea"
     },
     "doc/aosp17/slirp-source-delivery-v1/additional-notices/subprojects/libslirp/COPYRIGHT": {
       "bytes": 3022,

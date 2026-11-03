@@ -1,6 +1,6 @@
 {
   "argv": [
-    "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-rebuild-tools\\python\\bin\\ninja.exe",
+    "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-rebuild-tools\\python\\bin\\ninja.exe",
     "-C",
     "E:\\bscp\\out\\aosp17-publication-v1827\\libslirp-known-source-v2\\build",
     "-j2",
@@ -14,5 +14,10 @@
     "path": "E:\\bscp\\out\\aosp17-publication-v1827\\libslirp-known-source-v2\\build\\subprojects\\libslirp\\libslirp-0.dll",
     "sha256": "9dc628bfc6ecb1f6d183bfaa276f95ff5e21e4df948d487a09896e1160e97f7f",
     "bytes": 1845245
+  },
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
   }
 }

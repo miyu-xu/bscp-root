@@ -19,7 +19,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/home/mark/bscp/packages/modules/Virtualization\n",
+            "out": "<PRIVATE_LINUX_HOME>/bscp/packages/modules/Virtualization\n",
             "err": ""
           },
           "remotes": {
@@ -46,7 +46,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/Users/huangxiaoling/Workspace/bscp/packages/modules/Virtualization\n",
+            "out": "<PRIVATE_MAC_HOME>/Workspace/bscp/packages/modules/Virtualization\n",
             "err": ""
           },
           "remotes": {
@@ -84,7 +84,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/home/mark/bscp/external/crosvm\n",
+            "out": "<PRIVATE_LINUX_HOME>/bscp/external/crosvm\n",
             "err": ""
           },
           "remotes": {
@@ -111,7 +111,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/Users/huangxiaoling/Workspace/bscp/external/crosvm\n",
+            "out": "<PRIVATE_MAC_HOME>/Workspace/bscp/external/crosvm\n",
             "err": ""
           },
           "remotes": {
@@ -149,7 +149,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/home/mark/bscp/external/minijail\n",
+            "out": "<PRIVATE_LINUX_HOME>/bscp/external/minijail\n",
             "err": ""
           },
           "remotes": {
@@ -176,7 +176,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/Users/huangxiaoling/Workspace/bscp/external/minijail\n",
+            "out": "<PRIVATE_MAC_HOME>/Workspace/bscp/external/minijail\n",
             "err": ""
           },
           "remotes": {
@@ -214,7 +214,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/home/mark/bscp/external/rust/rutabaga_gfx\n",
+            "out": "<PRIVATE_LINUX_HOME>/bscp/external/rust/rutabaga_gfx\n",
             "err": ""
           },
           "remotes": {
@@ -241,7 +241,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/Users/huangxiaoling/Workspace/bscp/external/rust/rutabaga_gfx\n",
+            "out": "<PRIVATE_MAC_HOME>/Workspace/bscp/external/rust/rutabaga_gfx\n",
             "err": ""
           },
           "remotes": {
@@ -279,7 +279,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/home/mark/bscp/hardware/google/gfxstream\n",
+            "out": "<PRIVATE_LINUX_HOME>/bscp/hardware/google/gfxstream\n",
             "err": ""
           },
           "remotes": {
@@ -306,7 +306,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/Users/huangxiaoling/Workspace/bscp/hardware/google/gfxstream\n",
+            "out": "<PRIVATE_MAC_HOME>/Workspace/bscp/hardware/google/gfxstream\n",
             "err": ""
           },
           "remotes": {
@@ -458,7 +458,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/home/mark/bscp/system/core\n",
+            "out": "<PRIVATE_LINUX_HOME>/bscp/system/core\n",
             "err": ""
           },
           "remotes": {
@@ -485,7 +485,7 @@
           },
           "toplevel": {
             "rc": 0,
-            "out": "/Users/huangxiaoling/Workspace/bscp/system/core\n",
+            "out": "<PRIVATE_MAC_HOME>/Workspace/bscp/system/core\n",
             "err": ""
           },
           "remotes": {
@@ -506,5 +506,10 @@
         }
       }
     }
-  ]
+  ],
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

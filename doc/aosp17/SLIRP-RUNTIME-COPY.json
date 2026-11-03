@@ -59,7 +59,7 @@
     "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libslirp-0.dll": {
       "sha256": "9dc628bfc6ecb1f6d183bfaa276f95ff5e21e4df948d487a09896e1160e97f7f",
       "bytes": 1845245,
-      "source": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\candidate\\libslirp-0.dll"
+      "source": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\candidate\\libslirp-0.dll"
     },
     "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libstdc++-6.dll": {
       "bytes": 2319872,
@@ -74,9 +74,14 @@
     "E:\\bscp\\out\\aosp17-windows-formal-v1461\\runtime-private-v1550\\assets\\host-source-closed-v1828\\libintl-8.dll": {
       "sha256": "67886605af8b9d556949e0b758e1c5ad4b308c42850424fca33e6a36c5bcbbe0",
       "bytes": 40654,
-      "source": "C:\\Users\\miyu1\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\candidate\\libintl-8.dll"
+      "source": "<PRIVATE_WINDOWS_HOME>\\Documents\\Codex\\2026-10-23\\task\\bscp-delivery\\aosp17-upgrade-v1\\publication-v1827\\slirp-source-delivery-v1\\candidate\\libintl-8.dll"
     }
   },
   "permissions": "ordinary inherited child; no ACL changed",
-  "old_runtime_unchanged": true
+  "old_runtime_unchanged": true,
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
+  }
 }

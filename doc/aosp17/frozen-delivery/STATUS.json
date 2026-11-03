@@ -24,11 +24,11 @@
     "active": null,
     "recovery_receipt": "E:/bscp/out/aosp17-source-recovery-v1825/result.json",
     "linux_isolated_roots": [
-      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1800/trees",
-      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1808/trees",
-      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1812/trees",
-      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1814/trees",
-      "/home/mark/bscp/out/aosp17-source-transition-v1/full-source-batch-v1819/trees"
+      "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-source-transition-v1/full-source-batch-v1800/trees",
+      "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-source-transition-v1/full-source-batch-v1808/trees",
+      "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-source-transition-v1/full-source-batch-v1812/trees",
+      "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-source-transition-v1/full-source-batch-v1814/trees",
+      "<PRIVATE_LINUX_HOME>/bscp/out/aosp17-source-transition-v1/full-source-batch-v1819/trees"
     ],
     "boundary": "All pinned snapshots are available on Linux across preserved original and isolated roots; this is not a new build, VM acceptance, or destructive repo sync.",
     "linux_final_free_bytes": 156597710848
@@ -62,5 +62,10 @@
     "source_sessions_terminal": true,
     "new_vm_started": false,
     "boundary": "Read-only task resource check; no signals or settings changes. Ancillary empty read session30212 was canceled and no stdin reader remained."
+  },
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
   }
 }

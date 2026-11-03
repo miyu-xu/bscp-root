@@ -1,5 +1,5 @@
 {
-  "root": "/Users/huangxiaoling/Workspace/MoltenVK",
+  "root": "<PRIVATE_MAC_HOME>/Workspace/MoltenVK",
   "head": {
     "exit": 0,
     "stdout": "3afb1b3be8f508cee8ed67aad4bd2f3088826b79\n",
@@ -113,7 +113,12 @@
     }
   },
   "binary": {
-    "path": "/Users/huangxiaoling/Workspace/MoltenVK/Package/Latest/MoltenVK/dynamic/dylib/macOS/libMoltenVK.dylib",
+    "path": "<PRIVATE_MAC_HOME>/Workspace/MoltenVK/Package/Latest/MoltenVK/dynamic/dylib/macOS/libMoltenVK.dylib",
     "sha256": "768325c65cdb6b6c9ce814dcce5d962d6e675135e6d48700f8488b54ac2fbdf8"
+  },
+  "_public_redaction": {
+    "presentation_copy": true,
+    "original_preserved_privately": true,
+    "note": "Environment fields are placeholders. Historical hashes/results describe the original evidence, not this redacted JSON. Not an executable deployment binding or replacement build-time seal."
   }
 }
