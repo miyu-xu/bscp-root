@@ -1,0 +1,123 @@
+--- a/src/gfxstream/guest/vulkan_enc/ResourceTracker.cpp
++++ b/src/gfxstream/guest/vulkan_enc/ResourceTracker.cpp
+@@ -1558,11 +1558,19 @@
+ }
+ 
+ bool ResourceTracker::supportsAsyncQueueSubmit() const {
++#if defined(BSCP_REQUIRE_NATIVE_SUBMIT_RESULT) && BSCP_REQUIRE_NATIVE_SUBMIT_RESULT
++    // Strict submit-result profile: the virtio capability bootstrap assumes
++    // async support without consulting render-control feature negotiation.
++    // The existing reply-bearing opcode preserves native acceptance errors;
++    // the old void async wire cannot carry those per-submission results.
++    return false;
++#else
+     // Opt-in diagnostic/compatibility fallback: use the existing reply-bearing
+     // vkQueueSubmit/2 protocol. No opcode is added and no result is fabricated.
+     const char* exact = std::getenv("BSCP_REQUIRE_SUBMIT_RESULTS");
+     if (exact && std::strcmp(exact, "1") == 0) return false;
+     return mFeatureInfo.hasVulkanAsyncQueueSubmit;
++#endif
+ }
+ 
+ bool ResourceTracker::supportsCreateResourcesWithRequirements() const {
+@@ -5794,6 +5802,13 @@
+                                                    VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT);
+ 
+     if (exportSyncFd) {
++#if !GFXSTREAM_ENABLE_GUEST_GOLDFISH
++    // A normal virtio fence is not a native semaphore sync_file. Require
++    // both halves of the descriptor-export protocol; never fabricate an FD.
++    if (!(mCaps.params[kParamFencePassing] && mCaps.vulkanCapset.externalSync)) {
++        return VK_ERROR_UNKNOWN;
++    }
++#endif
+         finalCreateInfo.pNext = nullptr;
+         // If we have timeline semaphores externally, leave it there.
+         const VkSemaphoreTypeCreateInfo* typeCi =
+@@ -5876,6 +5891,13 @@
+     bool getSyncFd = pGetFdInfo->handleType & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+ 
+     if (getSyncFd) {
++#if !GFXSTREAM_ENABLE_GUEST_GOLDFISH
++    // A normal virtio fence is not a native semaphore sync_file. Require
++    // both halves of the descriptor-export protocol; never fabricate an FD.
++    if (!(mCaps.params[kParamFencePassing] && mCaps.vulkanCapset.externalSync)) {
++        return VK_ERROR_UNKNOWN;
++    }
++#endif
+         if (mCaps.params[kParamFencePassing] && mCaps.vulkanCapset.externalSync) {
+             uint64_t syncId = ++mAtomicId;
+             int64_t osHandle = -1;
+@@ -5939,6 +5961,13 @@
+     }
+ 
+     if (pImportSemaphoreFdInfo->handleType & VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT) {
++#if !GFXSTREAM_ENABLE_GUEST_GOLDFISH
++    // A normal virtio fence is not a native semaphore sync_file. Require
++    // both halves of the descriptor-export protocol; never fabricate an FD.
++    if (!(mCaps.params[kParamFencePassing] && mCaps.vulkanCapset.externalSync)) {
++        return VK_ERROR_INVALID_EXTERNAL_HANDLE;
++    }
++#endif
+         std::lock_guard<std::recursive_mutex> lock(mLock);
+ 
+         auto semaphoreIt = info_VkSemaphore.find(pImportSemaphoreFdInfo->semaphore);
+@@ -6347,7 +6376,7 @@
+                                                    VkQueue queue, uint32_t submitCount,
+                                                    const VkSubmitInfoType* pSubmits,
+                                                    VkFence fence) {
+-    flushStagingStreams(context, queue, submitCount, pSubmits);
++    // External dependencies must succeed before staging commands are flushed.
+ 
+ #ifdef VK_USE_PLATFORM_FUCHSIA
+     std::vector<VkSemaphore> pre_signal_semaphores;
+@@ -6465,13 +6494,33 @@
+         // https://docs.vulkan.org/refpages/latest/refpages/source/VkImportSemaphoreFdInfoKHR.html
+         // fd == -1 is treated as already signaled
+         if (fd != -1) {
+-            mSyncHelper->wait(fd, 3000);
++            // The imported descriptor remains owned by the semaphore. Waiting
++            // neither consumes nor closes it. Do not submit a pruned dependency
++            // after timeout/error, and do not report a fabricated device loss.
++            const auto deadline = std::chrono::steady_clock::now() +
++                                  std::chrono::milliseconds(3000);
++            int waitResult;
++            int waitError;
++            do {
++                const auto now = std::chrono::steady_clock::now();
++                if (now >= deadline) return VK_ERROR_UNKNOWN;
++                const auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(
++                    deadline - now).count();
++                waitResult = mSyncHelper->wait(fd, static_cast<int>(remaining));
++                waitError = errno;
++            } while (waitResult != 0 && waitError == EINTR);
++            if (waitResult != 0) {
++                mesa_loge("External semaphore dependency wait failed: errno=%d", waitError);
++                return VK_ERROR_UNKNOWN;
++            }
+ #if GFXSTREAM_SYNC_DEBUG
+             mSyncHelper->debugPrint(fd);
+ #endif
+         }
+     }
+ #endif
++
++    flushStagingStreams(context, queue, submitCount, pSubmits);
+ 
+     // The main queue submission
+     input_result = vkQueueSubmitEnc(enc, queue, submitCount, prunedSubmitInfos.data(), fence);
+@@ -7189,6 +7238,14 @@
+         pExternalSemaphoreProperties->externalSemaphoreFeatures = 0;
+     } else if (pExternalSemaphoreInfo->handleType ==
+                VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT) {
++#if !GFXSTREAM_ENABLE_GUEST_GOLDFISH
++        if (!(mCaps.params[kParamFencePassing] && mCaps.vulkanCapset.externalSync)) {
++            pExternalSemaphoreProperties->compatibleHandleTypes = 0;
++            pExternalSemaphoreProperties->exportFromImportedHandleTypes = 0;
++            pExternalSemaphoreProperties->externalSemaphoreFeatures = 0;
++            return;
++        }
++#endif
+         pExternalSemaphoreProperties->compatibleHandleTypes |=
+             VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT;
+         pExternalSemaphoreProperties->exportFromImportedHandleTypes |=

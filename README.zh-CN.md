@@ -31,3 +31,9 @@ repo sync
 BSCP 原创部分采用 [PolyForm Noncommercial 1.0.0](LICENSE)，属于源码可用，不宣称是 OSI 认可的开源软件。商业使用须取得[单独授权](COMMERCIAL_LICENSING.md)。第三方组件保留原许可，参阅[许可政策](LICENSE_POLICY.md)、[贡献说明](CONTRIBUTING.md)及[安全说明](SECURITY.md)。
 
 [English](README.md)
+
+## 实测推理与候选修复
+
+[多平台 llama.cpp 对比](docs/LLAMA-PERFORMANCE.zh-CN.md)区分历史同机 Host/Guest、最新 ASG 回归和 Android 原生结果。三平台已验证真实 Guest Vulkan 推理；严格数值失败、性能波动和手机 Microdroid GPU 未运行均保留。
+
+[可复现隔离源码](experiments/aosp17-sync-asg/README.zh-CN.md)包含保守同步/生命周期与 ASG 修复，不自动启用实验能力或替换冻结发布二进制。

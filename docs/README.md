@@ -23,3 +23,5 @@ AOSP17 is the default. Start with the current operational guides below; technica
 Current guides supersede historical preparation status. They do not rewrite original failures or grant new installation/security permissions.
 
 [简体中文](README.zh-CN.md)
+
+- [llama.cpp: Host / Guest / Android](LLAMA-PERFORMANCE.md)

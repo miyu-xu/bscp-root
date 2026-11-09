@@ -1,0 +1,3 @@
+# Hash-bound snapshots and patch input bytes must survive every checkout.
+* -text
+**/* -text

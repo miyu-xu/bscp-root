@@ -31,3 +31,9 @@ This is not a runtime installation command. See the pinned [manifest](https://gi
 BSCP-original material is source-available under [PolyForm Noncommercial 1.0.0](LICENSE), not represented as OSI-approved open source. Commercial use requires [separate authorization](COMMERCIAL_LICENSING.md). Third-party components retain their own licenses; see [license policy](LICENSE_POLICY.md). Read [contributing](CONTRIBUTING.md) and [security](SECURITY.md).
 
 [简体中文](README.zh-CN.md)
+
+## Measured inference and candidate fixes
+
+[Multi-platform llama.cpp results](docs/LLAMA-PERFORMANCE.md) separate historical same-machine Host/Guest pairs, latest ASG regressions and native Android. Actual Guest Vulkan inference has run on all three desktop hosts; strict numerical failures, timing variability and untested phone Microdroid GPU remain explicit.
+
+[Reproducible isolated source](experiments/aosp17-sync-asg/README.md) packages conservative synchronization/lifecycle and ASG fixes. It does not enable experimental capabilities or replace frozen release binaries.

@@ -1,0 +1,60 @@
+--- a/ggml/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/ggml/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -1,3 +1,5 @@
++#include <atomic>
++#include <chrono>
+ #include "ggml-vulkan-common.h"
+ 
+ static vk_device_architecture get_device_architecture(const vk::PhysicalDevice& device) {
+@@ -336,7 +338,17 @@
+     return range;
+ }
+ 
++
++static std::atomic<uint64_t> bscp_wait_calls{0}, bscp_wait_total_ns{0}, bscp_wait_near_ns{0}, bscp_status_calls{0}, bscp_status_ns{0};
++static uint64_t bscp_now_ns() {return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();}
++extern "C" void bscp_vk_wait_report() {
++ fprintf(stderr,"BSCP_FENCE_V1916 blocking=%d calls=%llu total_ns=%llu near_ns=%llu status_calls=%llu status_ns=%llu\n",getenv("BSCP_VK_BLOCKING_FENCE_WAIT")!=nullptr,(unsigned long long)bscp_wait_calls.load(),(unsigned long long)bscp_wait_total_ns.load(),(unsigned long long)bscp_wait_near_ns.load(),(unsigned long long)bscp_status_calls.load(),(unsigned long long)bscp_status_ns.load());
++}
++#ifndef __ANDROID__
++static const int bscp_wait_report_registered=(atexit(bscp_vk_wait_report),0);
++#endif
+ void ggml_vk_wait_for_fence(ggml_backend_vk_context * ctx) {
++    const uint64_t bscp_begin=bscp_now_ns(); uint64_t bscp_queries=0,bscp_query_ns=0;
+     // Use waitForFences while most of the graph executes. Hopefully the CPU can sleep
+     // during this wait.
+     if (ctx->almost_ready_fence_pending) {
+@@ -345,9 +357,17 @@
+         ctx->almost_ready_fence_pending = false;
+     }
+ 
++    const uint64_t bscp_near_end=bscp_now_ns();
++    if (getenv("BSCP_VK_BLOCKING_FENCE_WAIT") != nullptr) {
++        VK_CHECK(ctx->device->device.waitForFences({ ctx->fence }, true, UINT64_MAX), "BSCP blocking final fence", ctx->device);
++        ctx->device->device.resetFences({ ctx->fence });
++        bscp_wait_calls.fetch_add(1); bscp_wait_total_ns.fetch_add(bscp_now_ns()-bscp_begin); bscp_wait_near_ns.fetch_add(bscp_near_end-bscp_begin);
++        return;
++    }
+     // Spin (w/pause) waiting for the graph to finish executing.
+     vk::Result result;
+     for (;;) {
++        const uint64_t bscp_query_begin=bscp_now_ns(); ++bscp_queries;
+         try {
+             result = ctx->device->device.getFenceStatus(ctx->fence);
+         } catch (vk::DeviceLostError &) {
+@@ -355,6 +375,7 @@
+             GGML_LOG_ERROR("ggml_vulkan: getFenceStatus at %s:%d\n", __FILE__, __LINE__);
+             throw;
+         }
++        bscp_query_ns += bscp_now_ns()-bscp_query_begin;
+         if (result == vk::Result::eSuccess) {
+             break;
+         }
+@@ -376,6 +397,7 @@
+         }
+     }
+     ctx->device->device.resetFences({ ctx->fence });
++    bscp_wait_calls.fetch_add(1); bscp_wait_total_ns.fetch_add(bscp_now_ns()-bscp_begin); bscp_wait_near_ns.fetch_add(bscp_near_end-bscp_begin); bscp_status_calls.fetch_add(bscp_queries); bscp_status_ns.fetch_add(bscp_query_ns);
+ }
+ 
+ static bool ggml_vk_strip_decode_vector(const uint32_t * code, size_t word_count, std::vector<uint32_t> & out) {

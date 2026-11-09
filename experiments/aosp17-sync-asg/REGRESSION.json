@@ -1,0 +1,402 @@
+{
+  "scope": "isolated candidates, not released binaries",
+  "linux": {
+    "renderer_sha256": "2758a54713cc635a4f20028f5590b00ea68b76ea8389910e3a0607c44381e993",
+    "correctness": [
+      {
+        "case": "c0",
+        "prompt": 0,
+        "repeat": 0,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c0",
+        "prompt": 1,
+        "repeat": 0,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c0",
+        "prompt": 2,
+        "repeat": 0,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c0",
+        "prompt": 0,
+        "repeat": 1,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c0",
+        "prompt": 1,
+        "repeat": 1,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c0",
+        "prompt": 2,
+        "repeat": 1,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c0",
+        "prompt": 0,
+        "repeat": 2,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c0",
+        "prompt": 1,
+        "repeat": 2,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c0",
+        "prompt": 2,
+        "repeat": 2,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 0,
+        "repeat": 0,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 1,
+        "repeat": 0,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 2,
+        "repeat": 0,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 0,
+        "repeat": 1,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 1,
+        "repeat": 1,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 2,
+        "repeat": 1,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 0,
+        "repeat": 2,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 1,
+        "repeat": 2,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      },
+      {
+        "case": "c1",
+        "prompt": 2,
+        "repeat": 2,
+        "logits": 151936,
+        "byte_equal": true,
+        "generated_equal": true
+      }
+    ],
+    "performance": [
+      {
+        "case": "b0a",
+        "rows": [
+          {
+            "build_commit": "unknown",
+            "build_number": 0,
+            "cpu_info": "12th Gen Intel(R) Core(TM) i7-12700KF",
+            "gpu_info": "Virtio-GPU GFXStream (NVIDIA GeForce RTX 2060)",
+            "backends": "Vulkan",
+            "model_filename": "<MODEL.gguf>",
+            "model_type": "qwen2 1B Q4_K - Medium",
+            "model_size": 485452288,
+            "model_n_params": 630167424,
+            "n_batch": 512,
+            "n_ubatch": 128,
+            "n_threads": 1,
+            "cpu_mask": "0x0",
+            "cpu_strict": false,
+            "poll": 50,
+            "type_k": "f16",
+            "type_v": "f16",
+            "n_gpu_layers": 99,
+            "n_cpu_moe": 0,
+            "split_mode": "layer",
+            "main_gpu": 0,
+            "no_kv_offload": false,
+            "flash_attn": 0,
+            "devices": "auto",
+            "tensor_split": "0.00",
+            "tensor_buft_overrides": "none",
+            "load_mode": "auto",
+            "lazy_mode": "auto",
+            "embeddings": false,
+            "no_op_offload": 0,
+            "no_host": false,
+            "repack": true,
+            "fit_target": 0,
+            "fit_min_ctx": 0,
+            "n_prompt": 512,
+            "n_gen": 0,
+            "n_depth": 1024,
+            "test_time": "2026-11-09T16:06:32Z",
+            "avg_ns": 483360494,
+            "stddev_ns": 1888644,
+            "avg_ts": 1059.261625,
+            "stddev_ts": 4.147753,
+            "samples_ns": [
+              484647231,
+              484241989,
+              481192262
+            ],
+            "samples_ts": [
+              1056.44,
+              1057.32,
+              1064.02
+            ]
+          },
+          {
+            "build_commit": "unknown",
+            "build_number": 0,
+            "cpu_info": "12th Gen Intel(R) Core(TM) i7-12700KF",
+            "gpu_info": "Virtio-GPU GFXStream (NVIDIA GeForce RTX 2060)",
+            "backends": "Vulkan",
+            "model_filename": "<MODEL.gguf>",
+            "model_type": "qwen2 1B Q4_K - Medium",
+            "model_size": 485452288,
+            "model_n_params": 630167424,
+            "n_batch": 512,
+            "n_ubatch": 128,
+            "n_threads": 1,
+            "cpu_mask": "0x0",
+            "cpu_strict": false,
+            "poll": 50,
+            "type_k": "f16",
+            "type_v": "f16",
+            "n_gpu_layers": 99,
+            "n_cpu_moe": 0,
+            "split_mode": "layer",
+            "main_gpu": 0,
+            "no_kv_offload": false,
+            "flash_attn": 0,
+            "devices": "auto",
+            "tensor_split": "0.00",
+            "tensor_buft_overrides": "none",
+            "load_mode": "auto",
+            "lazy_mode": "auto",
+            "embeddings": false,
+            "no_op_offload": 0,
+            "no_host": false,
+            "repack": true,
+            "fit_target": 0,
+            "fit_min_ctx": 0,
+            "n_prompt": 0,
+            "n_gen": 128,
+            "n_depth": 1024,
+            "test_time": "2026-11-09T16:06:36Z",
+            "avg_ns": 587132984,
+            "stddev_ns": 1713729,
+            "avg_ts": 218.009768,
+            "stddev_ts": 0.635148,
+            "samples_ns": [
+              589108059,
+              586045424,
+              586245471
+            ],
+            "samples_ts": [
+              217.278,
+              218.413,
+              218.339
+            ]
+          }
+        ]
+      },
+      {
+        "case": "b1a",
+        "rows": [
+          {
+            "build_commit": "unknown",
+            "build_number": 0,
+            "cpu_info": "12th Gen Intel(R) Core(TM) i7-12700KF",
+            "gpu_info": "Virtio-GPU GFXStream (NVIDIA GeForce RTX 2060)",
+            "backends": "Vulkan",
+            "model_filename": "<MODEL.gguf>",
+            "model_type": "qwen2 1B Q4_K - Medium",
+            "model_size": 485452288,
+            "model_n_params": 630167424,
+            "n_batch": 512,
+            "n_ubatch": 128,
+            "n_threads": 1,
+            "cpu_mask": "0x0",
+            "cpu_strict": false,
+            "poll": 50,
+            "type_k": "f16",
+            "type_v": "f16",
+            "n_gpu_layers": 99,
+            "n_cpu_moe": 0,
+            "split_mode": "layer",
+            "main_gpu": 0,
+            "no_kv_offload": false,
+            "flash_attn": 0,
+            "devices": "auto",
+            "tensor_split": "0.00",
+            "tensor_buft_overrides": "none",
+            "load_mode": "auto",
+            "lazy_mode": "auto",
+            "embeddings": false,
+            "no_op_offload": 0,
+            "no_host": false,
+            "repack": true,
+            "fit_target": 0,
+            "fit_min_ctx": 0,
+            "n_prompt": 512,
+            "n_gen": 0,
+            "n_depth": 1024,
+            "test_time": "2026-11-09T16:06:46Z",
+            "avg_ns": 483555663,
+            "stddev_ns": 1739374,
+            "avg_ts": 1058.832438,
+            "stddev_ts": 3.814367,
+            "samples_ns": [
+              484911481,
+              481594877,
+              484160633
+            ],
+            "samples_ts": [
+              1055.86,
+              1063.13,
+              1057.5
+            ]
+          },
+          {
+            "build_commit": "unknown",
+            "build_number": 0,
+            "cpu_info": "12th Gen Intel(R) Core(TM) i7-12700KF",
+            "gpu_info": "Virtio-GPU GFXStream (NVIDIA GeForce RTX 2060)",
+            "backends": "Vulkan",
+            "model_filename": "<MODEL.gguf>",
+            "model_type": "qwen2 1B Q4_K - Medium",
+            "model_size": 485452288,
+            "model_n_params": 630167424,
+            "n_batch": 512,
+            "n_ubatch": 128,
+            "n_threads": 1,
+            "cpu_mask": "0x0",
+            "cpu_strict": false,
+            "poll": 50,
+            "type_k": "f16",
+            "type_v": "f16",
+            "n_gpu_layers": 99,
+            "n_cpu_moe": 0,
+            "split_mode": "layer",
+            "main_gpu": 0,
+            "no_kv_offload": false,
+            "flash_attn": 0,
+            "devices": "auto",
+            "tensor_split": "0.00",
+            "tensor_buft_overrides": "none",
+            "load_mode": "auto",
+            "lazy_mode": "auto",
+            "embeddings": false,
+            "no_op_offload": 0,
+            "no_host": false,
+            "repack": true,
+            "fit_target": 0,
+            "fit_min_ctx": 0,
+            "n_prompt": 0,
+            "n_gen": 128,
+            "n_depth": 1024,
+            "test_time": "2026-11-09T16:06:49Z",
+            "avg_ns": 612227175,
+            "stddev_ns": 39656701,
+            "avg_ts": 209.63797,
+            "stddev_ts": 13.089672,
+            "samples_ns": [
+              658018770,
+              589368326,
+              589294429
+            ],
+            "samples_ts": [
+              194.523,
+              217.182,
+              217.209
+            ]
+          }
+        ]
+      }
+    ],
+    "all_cases_exit0_eof": true
+  },
+  "mac": {
+    "renderer_sha256": "898d273cb204d1ff41eeac6b1b1c5ba405291d42a046682d641b510d9e27f857",
+    "logit_records": 9,
+    "byte_equal": true,
+    "state": "REAPED",
+    "external_syncfd": "unsupported: features=0; real Guest gate checked"
+  },
+  "windows": {
+    "normal_renderer_sha256": "f8e995b30a8acc8eb4989179d5dafa5865218a51818868d7c5637d8b8c5cd23e",
+    "injected_error_repeats": 3,
+    "normal_external_syncfile": "0 -> 1, PASS",
+    "logit_records_byte_equal": 9,
+    "state": "REAPED"
+  },
+  "limits": [
+    "No same injected-error matrix on Linux/Mac",
+    "Mac does not support external SYNC_FD",
+    "Linux decode slow sample retained",
+    "No formal release or default capability promotion",
+    "Full experimental Win32 bridge and kernel out-fence sources are not part of this conservative overlay"
+  ]
+}

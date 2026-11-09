@@ -26,3 +26,4 @@ jobs:
       - run: python -B releases/aosp17/verify_snapshot.py
       - run: python -B releases/aosp17/verify_host_sources.py
       - run: python -B releases/aosp17/test_public_verifiers.py
+      - run: python -B experiments/aosp17-sync-asg/test_overlay.py

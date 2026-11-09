@@ -1,0 +1,85 @@
+{
+  "format": 1,
+  "formal_release_changed": false,
+  "baseline": "Exact per-file recorded baselines; partial overlays, not applicability to an arbitrary upstream checkout.",
+  "files": {
+    "host": [
+      {
+        "path": "host/common/external_object_manager.cpp",
+        "before_sha256": "64bc9bca9f140d0545cf54ce28433066c26bea9ed365c602dbd504dbf61d60c5",
+        "after_sha256": "8e52b041425d3ef218786077a000fb3f9193f7a8963328644648d8375608ea7c",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/common/include/gfxstream/host/external_object_manager.h",
+        "before_sha256": "c8694e27a98297a5c6e68a61319ec5709b35819dbe8585ca46159f34c93ffb3d",
+        "after_sha256": "fef9f340fc12de2ef6f0e05daa5dd904c68b1dd1a9dd1fb19fc171c0caa42611",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/virtio_gpu_frontend.cpp",
+        "before_sha256": "a1e2a8e49c3162f7b38dd92b76a19cc6f99dc0cf7ad7645159087df1ebebdbcb",
+        "after_sha256": "ad25bc876431225672c3c0f450004866653f5fcc1a2591ab6633ec539bb1fb5d",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/virtio_gpu_frontend.h",
+        "before_sha256": "d3847d1c44a3c40c612104675b47dd5fec132ea01b03c73e6503a2ed7a84324d",
+        "after_sha256": "ff12f1d0c7635818821fe085dcf69e1cc30b24affefc019694a730bafbec81c2",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/vulkan/device_op_tracker.cpp",
+        "before_sha256": "a0f69d4a0f4a5a468e2238c9fc0b2f11904a704d58c49c692e978baa2bc66dba",
+        "after_sha256": "eeb8d5b4638a9bb7c33be5429f4141791d84bd9febbf2925d8f511909963f82b",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/vulkan/device_op_tracker.h",
+        "before_sha256": "12475ba7ffd186d686060e493513cc53fb1ae14841461ca1515cb5b07b7a1162",
+        "after_sha256": "5ec040a647c078c511ba59353f6f2f00678d5b807ac4052084ae9a9dd3d93206",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/vulkan/vk_decoder.cpp",
+        "before_sha256": "498db0c0d654ebceaceb4caf7ccce9d2adba822c195b25448c9b75238f019b1f",
+        "after_sha256": "1eb2f017d62127fc8747771dd7de028e17b2637df8a32933c21cc29c316e994c",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/vulkan/vk_decoder_global_state.cpp",
+        "before_sha256": "b595f5eb86c990dfc36c997c5fbbe64418b7f4c04e53714197cc1f175f2e8b41",
+        "after_sha256": "a3048bfeaa5eac938dac077e7c2ecab6e4c26004dc996cf039127f24bd6e9859",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/vulkan/vk_decoder_global_state.h",
+        "before_sha256": "4c7df017b2c096316e07c146e6eaa9097b07b579458b113c39b0f11178af7c1b",
+        "after_sha256": "80772d2710feaa817a426a79e1bc4478b49de2dbb8e2a7fd54a057c61d40cb54",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/ring_stream.cpp",
+        "before_sha256": "e909875ffd365b90a254930f6c1cc6f60399786fd415b7983b7f1391f705fb86",
+        "after_sha256": "5e726622be15f1b6301ec9ac019f01b4e2cd662429f23f279d49154d7ff8bb4f",
+        "after_line_endings": "LF"
+      },
+      {
+        "path": "host/address_space/address_space_graphics.cpp",
+        "before_sha256": "774824954a8d39a0b8c8cb85e55f85a293d1cc5310d12ed31b8901ba00546526",
+        "after_sha256": "ef979fdf921a4a49727f1c6026cc8a853bc536dfaf8f84f1bebd5d51d4198fd8",
+        "after_line_endings": "LF"
+      }
+    ],
+    "guest": [
+      {
+        "path": "src/gfxstream/guest/vulkan_enc/ResourceTracker.cpp",
+        "before_sha256": "9a6a5fce74e54766618180afa64395e7de6dae7c4c32ad47825602b92d5b49d9",
+        "after_sha256": "dfaa1139827af2a165d8fb276df7d519e2b4cea604ee56ab01251d3725d22a9b",
+        "after_line_endings": "LF"
+      }
+    ]
+  },
+  "scope": "isolated Host/Guest core integration; llama tuning patches are optional unchanged extras; no full external semaphore support",
+  "canonical_encoding": "UTF-8 LF output; input raw bytes pinned; platform build raw hashes recorded separately and LF-normalized source identity verified"
+}

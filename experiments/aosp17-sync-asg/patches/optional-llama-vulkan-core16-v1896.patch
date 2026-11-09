@@ -1,0 +1,45 @@
+--- a/ggml/src/ggml-vulkan/ggml-vulkan.cpp
++++ b/ggml/src/ggml-vulkan/ggml-vulkan.cpp
+@@ -4678,7 +4678,23 @@
+             throw std::runtime_error("Unsupported device");
+         }
+ 
+-        device_extensions.push_back("VK_KHR_16bit_storage");
++        // The feature is core in Vulkan 1.1. A core-capable implementation
++        // need not enumerate the former extension name. Keep the feature check above.
++        bool has_16bit_storage_extension = false;
++        for (const auto & ext : device->physical_device.enumerateDeviceExtensionProperties()) {
++            if (strcmp(ext.extensionName.data(), "VK_KHR_16bit_storage") == 0) {
++                has_16bit_storage_extension = true;
++                break;
++            }
++        }
++        if (has_16bit_storage_extension) {
++            device_extensions.push_back("VK_KHR_16bit_storage");
++        } else if (device->physical_device.getProperties().apiVersion < VK_API_VERSION_1_1) {
++            throw std::runtime_error("16-bit storage requires Vulkan 1.1 or VK_KHR_16bit_storage");
++        }
++        fprintf(stderr, "BSCP_VK_CORE16 feature=%u extension=%u\n",
++                vk11_features.storageBuffer16BitAccess, has_16bit_storage_extension);
++
+ 
+ #ifdef GGML_VULKAN_VALIDATE
+         device_extensions.push_back("VK_KHR_shader_non_semantic_info");
+@@ -4800,6 +4816,17 @@
+             .setQueueCreateInfos(device_queue_create_infos)
+             .setPEnabledExtensionNames(device_extensions);
+         device_create_info.setPNext(&device_features2);
++        fprintf(stderr, "BSCP_VK_DIAG api=%u\n", device->physical_device.getProperties().apiVersion);
++        for (const auto & ext : device->physical_device.enumerateDeviceExtensionProperties()) {
++            fprintf(stderr, "BSCP_VK_AVAILABLE %s\n", ext.extensionName.data());
++        }
++        for (const auto * ext : device_extensions) {
++            fprintf(stderr, "BSCP_VK_REQUESTED %s\n", ext);
++        }
++        for (const VkBaseOutStructure * node = (const VkBaseOutStructure *)&device_features2;
++             node != nullptr; node = node->pNext) {
++            fprintf(stderr, "BSCP_VK_CHAIN %u\n", (unsigned)node->sType);
++        }
+         device->device = device->physical_device.createDevice(device_create_info);
+ 
+         if (device->device_fault) {

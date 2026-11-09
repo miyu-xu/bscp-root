@@ -1,0 +1,1542 @@
+--- a/host/common/external_object_manager.cpp
++++ b/host/common/external_object_manager.cpp
+@@ -101,6 +101,17 @@
+     mSyncDescriptorInfos.insert(std::make_pair(key, std::move(info)));
+ }
+ 
++void ExternalObjectManager::removeSyncDescriptorsForContext(uint32_t ctxId) {
++    std::lock_guard<std::mutex> lock(mMutex);
++    for (auto it = mSyncDescriptorInfos.begin(); it != mSyncDescriptorInfos.end();) {
++        if (it->first.first == ctxId) {
++            it = mSyncDescriptorInfos.erase(it);
++        } else {
++            ++it;
++        }
++    }
++}
++
+ std::optional<SyncDescriptorInfo> ExternalObjectManager::removeSyncDescriptorInfo(uint32_t ctxId,
+                                                                                   uint64_t syncId) {
+     auto key = std::make_pair(ctxId, syncId);
+--- a/host/common/include/gfxstream/host/external_object_manager.h
++++ b/host/common/include/gfxstream/host/external_object_manager.h
+@@ -139,6 +139,9 @@
+ 
+     void addSyncDescriptorInfo(uint32_t ctx_id, uint64_t syncId, ManagedDescriptor descriptor,
+                                uint32_t streamHandleType);
++    // Caller must first stop/join this context's descriptor producers.
++    void removeSyncDescriptorsForContext(uint32_t ctxId);
++
+     std::optional<SyncDescriptorInfo> removeSyncDescriptorInfo(uint32_t ctx_id, uint64_t syncId);
+ 
+    private:
+--- a/host/virtio_gpu_frontend.cpp
++++ b/host/virtio_gpu_frontend.cpp
+@@ -193,8 +193,17 @@
+     }
+     auto& context = contextIt->second;
+ 
++    // Destroy joins the ASG producer threads before descriptor retirement.
+     context.Destroy(get_gfxstream_address_space_ops());
+-
++    ExternalObjectManager::get()->removeSyncDescriptorsForContext(contextId);
++    for (auto it = mSyncMap.begin(); it != mSyncMap.end();) {
++        if (it->second.contextId == contextId) {
++            it = mSyncMap.erase(it);
++        } else {
++            ++it;
++        }
++    }
++    // Erasing the context also closes any acquired, not-yet-fenced descriptor.
+     mContexts.erase(contextIt);
+     return 0;
+ }
+@@ -421,13 +430,17 @@
+     }
+     auto& context = contextIt->second;
+ 
++    if (mSyncMap.find(fenceId) != mSyncMap.end()) {
++        return -EINVAL; // Do not consume pending sync or replace another owner.
++    }
+     auto syncInfoOpt = context.TakeSync();
+     if (!syncInfoOpt) {
+         GFXSTREAM_ERROR("failed to acquire context %u fence: no sync acquired", contextId);
+         return -EINVAL;
+     }
+ 
+-    mSyncMap[fenceId] = std::make_shared<SyncDescriptorInfo>(std::move(*syncInfoOpt));
++    mSyncMap.emplace(fenceId, ContextSyncDescriptor{contextId,
++        std::make_shared<SyncDescriptorInfo>(std::move(*syncInfoOpt))});
+ 
+     return 0;
+ }
+@@ -877,7 +890,7 @@
+         return -EINVAL;
+     }
+ 
+-    auto& entry = it->second;
++    auto& entry = it->second.info;
+     DescriptorType rawDescriptor;
+     auto rawDescriptorOpt = entry->descriptor.release();
+     if (rawDescriptorOpt)
+@@ -893,6 +906,7 @@
+     handle->os_handle = static_cast<int64_t>(rawDescriptor);
+ #endif
+ 
++    mSyncMap.erase(it); // Descriptor ownership was transferred to the caller.
+     return 0;
+ }
+ 
+--- a/host/virtio_gpu_frontend.h
++++ b/host/virtio_gpu_frontend.h
+@@ -153,7 +153,12 @@
+     // LINT.IfChange(virtio_gpu_frontend)
+     std::unordered_map<VirtioGpuContextId, VirtioGpuContext> mContexts;
+     std::unordered_map<VirtioGpuResourceId, VirtioGpuResource> mResources;
+-    std::unordered_map<uint64_t, std::shared_ptr<SyncDescriptorInfo>> mSyncMap;
++    // Owned by the serialized virtio control/resource-bridge worker.
++    struct ContextSyncDescriptor {
++        uint32_t contextId;
++        std::shared_ptr<SyncDescriptorInfo> info;
++    };
++    std::unordered_map<uint64_t, ContextSyncDescriptor> mSyncMap;
+     // When we wait for gpu or wait for gpu vulkan, the next (and subsequent)
+     // fences created for that context should not be signaled immediately.
+     // Rather, they should get in line.
+--- a/host/vulkan/device_op_tracker.cpp
++++ b/host/vulkan/device_op_tracker.cpp
+@@ -1,3 +1,4 @@
++#include <cstdio>
+ // Copyright 2024 The Android Open Source Project
+ //
+ // Licensed under the Apache License, Version 2.0 (the "License");
+@@ -15,6 +16,9 @@
+ #include "device_op_tracker.h"
+ 
+ #include <algorithm>
++#include <cstdlib>
++#include <cstring>
++#include <new>
+ #include <type_traits>
+ 
+ #include "gfxstream/common/logging.h"
+@@ -35,7 +39,59 @@
+ }  // namespace
+ 
+ DeviceOpTracker::DeviceOpTracker(VkDevice device, VulkanDispatch* deviceDispatch)
+-    : mDevice(device), mDeviceDispatch(deviceDispatch) {}
++    : mReuseCompletedFences(std::getenv("BSCP_INTERNAL_FENCE_REUSE") && std::strcmp(std::getenv("BSCP_INTERNAL_FENCE_REUSE"), "1") == 0),
++      mDevice(device), mDeviceDispatch(deviceDispatch) {}
++
++void DeviceOpTracker::MarkDeviceLost() {
++    RecordSubmissionError(VK_ERROR_DEVICE_LOST);
++}
++VkResult DeviceOpTracker::SubmissionStatus() {
++    std::lock_guard<std::mutex> lock(mFailedFenceMutex);
++    return mDeviceLost ? VK_ERROR_DEVICE_LOST : VK_SUCCESS;
++}
++bool DeviceOpTracker::ReserveFailureOwnership() {
++    std::lock_guard<std::mutex> lock(mFailedFenceMutex);
++    if (mDeviceLost || mFailureReservations == kFailureOwnershipLimit) return false;
++    ++mFailureReservations;
++    return true;
++}
++void DeviceOpTracker::ReleaseFailureOwnership() {
++    std::lock_guard<std::mutex> lock(mFailedFenceMutex);
++    if (!mFailureReservations) GFXSTREAM_FATAL("Failure ownership reservation underflow");
++    --mFailureReservations;
++}
++void DeviceOpTracker::RecordSubmissionError(VkResult error) {
++    if (error == VK_ERROR_DEVICE_LOST) {
++        std::lock_guard<std::mutex> lock(mFailedFenceMutex);
++        mDeviceLost = true;
++    }
++}
++
++VkResult DeviceOpTracker::AcquireInternalFence(VkFence* out) {
++    *out = VK_NULL_HANDLE;
++    if (mReuseCompletedFences) {
++        std::lock_guard<std::mutex> lock(mCompletedFenceMutex);
++        if (!mCompletedFences.empty()) {
++            *out=mCompletedFences.back(); mCompletedFences.pop_back();
++        }
++    }
++    if (*out != VK_NULL_HANDLE) {
++        VkResult result=mDeviceDispatch->vkResetFences(mDevice,1,out);
++        if (result!=VK_SUCCESS) {
++            mDeviceDispatch->vkDestroyFence(mDevice,*out,nullptr); *out=VK_NULL_HANDLE;
++        }
++        return result;
++    }
++    const VkFenceCreateInfo info={VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,nullptr,0};
++    return mDeviceDispatch->vkCreateFence(mDevice,&info,nullptr,out);
++}
++void DeviceOpTracker::RetireInternalFence(VkFence fence, bool succeeded) {
++    if (mReuseCompletedFences && succeeded) {
++        std::lock_guard<std::mutex> lock(mCompletedFenceMutex);
++        if (mCompletedFences.size()<64) { mCompletedFences.push_back(fence); return; }
++    }
++    mDeviceDispatch->vkDestroyFence(mDevice,fence,nullptr);
++}
+ 
+ void DeviceOpTracker::AddPendingGarbage(DeviceOpWaitable waitable, VkFence fence) {
+     std::lock_guard<std::mutex> lock(mPendingGarbageMutex);
+@@ -148,9 +204,35 @@
+ }
+ 
+ void DeviceOpTracker::OnDestroyDevice() {
+-    mDeviceDispatch->vkDeviceWaitIdle(mDevice);
++    const VkResult idle = mDeviceDispatch->vkDeviceWaitIdle(mDevice);
++#ifdef BSCP_SUBMIT_FAULT_PROBE_1957
++    std::fprintf(stderr, "FAULT1957 teardown idle=%d\n", idle);
++#endif
++    // DEVICE_LOST has SUCCESS's resource-in-use semantics for this wait.
++    // Other errors do not prove idle; never destroy potentially active fences.
++    if (idle != VK_SUCCESS && idle != VK_ERROR_DEVICE_LOST) {
++        GFXSTREAM_FATAL("Device idle not established during tracker teardown: %d", idle);
++    }
++    {
++        std::lock_guard<std::mutex> lock(mFailedFenceMutex);
++        while (mFailedFences) {
++            auto fence = std::move(mFailedFences);
++            mFailedFences = std::move(fence->next);
++            #ifdef BSCP_SUBMIT_FAULT_PROBE_1957
++            std::fprintf(stderr, "FAULT1957 quarantine_destroy after_idle=1\n");
++#endif
++            mDeviceDispatch->vkDestroyFence(mDevice, fence->fence, nullptr);
++            if (!mFailureReservations) GFXSTREAM_FATAL("Quarantine reservation underflow");
++            --mFailureReservations;
++        }
++    }
+ 
+     PollAndProcessGarbage();
++    {
++        std::lock_guard<std::mutex> lock(mCompletedFenceMutex);
++        for (VkFence fence:mCompletedFences) mDeviceDispatch->vkDestroyFence(mDevice,fence,nullptr);
++        mCompletedFences.clear();
++    }
+ 
+     {
+         std::lock_guard<std::mutex> pollFunctionsLock(mPollFunctionsMutex);
+@@ -182,43 +264,79 @@
+ DeviceOpBuilder::DeviceOpBuilder(DeviceOpTracker& tracker) : mTracker(tracker) {}
+ 
+ DeviceOpBuilder::~DeviceOpBuilder() {
+-    if (!mSubmittedFence) {
++    if (!mSubmittedFence && !mCreationFailed && !mSubmissionFailed) {
+         GFXSTREAM_FATAL("Invalid usage: failed to call OnQueueSubmittedWithFence().");
+     }
+ }
+ 
+-VkFence DeviceOpBuilder::CreateFenceForOp() {
+-    const VkFenceCreateInfo fenceCreateInfo = {
+-        .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
+-        .pNext = nullptr,
+-        .flags = 0,
+-    };
+-    VkFence fence = VK_NULL_HANDLE;
+-    VkResult result = mTracker.mDeviceDispatch->vkCreateFence(mTracker.mDevice, &fenceCreateInfo,
+-                                                              nullptr, &fence);
+-
+-    mCreatedFence = fence;
+-    if (result != VK_SUCCESS) {
+-        GFXSTREAM_ERROR("DeviceOpBuilder failed to create VkFence!");
+-        return VK_NULL_HANDLE;
+-    }
+-    return fence;
++VkResult DeviceOpBuilder::CreateFenceForOp(VkFence* out) {
++    if (mCreatedFence || mSubmittedFence || mCreationFailed || mSubmissionFailed) {
++        GFXSTREAM_FATAL("Invalid usage: repeated or terminal fence creation.");
++    }
++    *out = VK_NULL_HANDLE;
++    VkResult admission = mTracker.SubmissionStatus();
++    if (admission != VK_SUCCESS) { mCreationFailed = true; return admission; }
++    if (!mTracker.ReserveFailureOwnership()) {
++        mCreationFailed = true;
++        admission = mTracker.SubmissionStatus();
++        return admission == VK_SUCCESS ? VK_ERROR_OUT_OF_HOST_MEMORY : admission;
++    }
++    mFailureReserved = true;
++    mFailureOwnership.reset(new (std::nothrow) DeviceOpTracker::FailedFence());
++    if (!mFailureOwnership) {
++        mTracker.ReleaseFailureOwnership(); mFailureReserved = false;
++        mCreationFailed = true;
++        return VK_ERROR_OUT_OF_HOST_MEMORY;
++    }
++    VkResult result=mTracker.AcquireInternalFence(out);
++    if (result!=VK_SUCCESS) {
++        mTracker.RecordSubmissionError(result);
++        mTracker.ReleaseFailureOwnership(); mFailureReserved = false;
++        mCreationFailed=true; return result;
++    }
++    mCreatedFence=*out;
++    mFailureOwnership->fence=*out;
++    return result;
++}
++
++void DeviceOpTracker::QuarantineFailedFence(std::unique_ptr<FailedFence> fence) {
++    std::lock_guard<std::mutex> lock(mFailedFenceMutex);
++    fence->next = std::move(mFailedFences);
++    mFailedFences = std::move(fence);
++}
++
++VkResult DeviceOpBuilder::OnQueueSubmissionFailed(VkResult error) {
++    if (error >= VK_SUCCESS || mSubmittedFence || mCreationFailed || mSubmissionFailed) {
++        GFXSTREAM_FATAL("Invalid usage: submission failure state/result.");
++    }
++    mTracker.RecordSubmissionError(error);
++    if (mFailureOwnership) {
++        mTracker.QuarantineFailedFence(std::move(mFailureOwnership));
++        mFailureReserved = false; // Reservation follows the quarantined node.
++    }
++    mSubmissionFailed = true;
++    return error;
+ }
+ 
+ DeviceOpWaitable DeviceOpBuilder::OnQueueSubmittedWithFence(VkFence fence) {
++    if (mSubmittedFence || mCreationFailed || mSubmissionFailed) {
++        GFXSTREAM_FATAL("Invalid usage: repeated or terminal submission.");
++    }
+     if (mCreatedFence.has_value() && fence != mCreatedFence) {
+         GFXSTREAM_FATAL(
+             "Invalid usage: failed to call OnQueueSubmittedWithFence() with the fence "
+             "requested from CreateFenceForOp.");
+     }
+     mSubmittedFence = fence;
++    mFailureOwnership.reset();
++    if (mFailureReserved) { mTracker.ReleaseFailureOwnership(); mFailureReserved = false; }
+ 
+     const bool destroyFenceOnCompletion = mCreatedFence.has_value();
+ 
+     std::shared_ptr<std::promise<void>> promise = std::make_shared<std::promise<void>>();
+     DeviceOpWaitable future = promise->get_future().share();
+ 
+-    mTracker.AddPendingDeviceOp([device = mTracker.mDevice,
++    mTracker.AddPendingDeviceOp([tracker = &mTracker, device = mTracker.mDevice,
+                                  deviceDispatch = mTracker.mDeviceDispatch, fence,
+                                  promise = std::move(promise), destroyFenceOnCompletion] {
+         if (fence == VK_NULL_HANDLE) {
+@@ -231,7 +349,7 @@
+         }
+ 
+         if (destroyFenceOnCompletion) {
+-            deviceDispatch->vkDestroyFence(device, fence, nullptr);
++            tracker->RetireInternalFence(fence, result == VK_SUCCESS);
+         }
+         promise->set_value();
+ 
+--- a/host/vulkan/device_op_tracker.h
++++ b/host/vulkan/device_op_tracker.h
+@@ -22,7 +22,9 @@
+ #include <future>
+ #include <mutex>
+ #include <optional>
++#include <memory>
+ #include <variant>
++#include <vector>
+ 
+ #include "vulkan_dispatch.h"
+ #include "gfxstream/ThreadAnnotations.h"
+@@ -66,8 +68,29 @@
+     void PollAndProcessGarbage();
+ 
+     void OnDestroyDevice();
++    VkResult SubmissionStatus();
++    void MarkDeviceLost();
++    static constexpr size_t kFailureOwnershipLimit = 64;
+ 
+    private:
++    // Allocated before native submission. Failure transfer performs no allocation.
++    struct FailedFence {
++        VkFence fence = VK_NULL_HANDLE;
++        std::unique_ptr<FailedFence> next;
++    };
++    void QuarantineFailedFence(std::unique_ptr<FailedFence> fence);
++    bool ReserveFailureOwnership();
++    void ReleaseFailureOwnership();
++    void RecordSubmissionError(VkResult error);
++    size_t mFailureReservations = 0;
++    bool mDeviceLost = false;
++    std::mutex mFailedFenceMutex;
++    std::unique_ptr<FailedFence> mFailedFences;
++    VkResult AcquireInternalFence(VkFence* out);
++    void RetireInternalFence(VkFence fence, bool succeeded);
++    bool mReuseCompletedFences = false;
++    std::mutex mCompletedFenceMutex;
++    std::vector<VkFence> mCompletedFences;
+     VkDevice mDevice = VK_NULL_HANDLE;
+     VulkanDispatch* mDeviceDispatch = nullptr;
+ 
+@@ -109,15 +132,24 @@
+     // DeviceOpBuilder and its underlying DeviceOpTracker maintain
+     // ownership of the VkFence and will destroy it when then host op
+     // has completed.
+-    VkFence CreateFenceForOp();
++    VkResult CreateFenceForOp(VkFence* out);
+ 
+     // Returns a waitable that can be used to check whether a host op
+     // has completed.
+     DeviceOpWaitable OnQueueSubmittedWithFence(VkFence fence);
+ 
++    // Explicit failure completion, not a successful submission or ready waitable.
++    // Submission may have reached the device; owned fences remain quarantined
++    // until device-idle teardown, including DEVICE_LOST and unknown errors.
++    VkResult OnQueueSubmissionFailed(VkResult error);
++
+    private:
+     DeviceOpTracker& mTracker;
+ 
++    bool mCreationFailed = false;
++    bool mSubmissionFailed = false;
++    bool mFailureReserved = false;
++    std::unique_ptr<DeviceOpTracker::FailedFence> mFailureOwnership;
+     std::optional<VkFence> mCreatedFence;
+     std::optional<VkFence> mSubmittedFence;
+ };
+--- a/host/vulkan/vk_decoder.cpp
++++ b/host/vulkan/vk_decoder.cpp
+@@ -1489,7 +1489,7 @@
+                         &m_pool, snapshotApiCallHandle, queue, submitCount, pSubmits, fence);
+                 }
+                 if ((vkQueueSubmit_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForQueue(queue);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkQueueSubmit_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -1525,7 +1525,7 @@
+                         m_state->on_vkQueueWaitIdle(&m_pool, snapshotApiCallHandle, queue);
+                 }
+                 if ((vkQueueWaitIdle_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForQueue(queue);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkQueueWaitIdle_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -1560,7 +1560,7 @@
+                     vkDeviceWaitIdle_VkResult_return = vk->vkDeviceWaitIdle(unboxed_device);
+                 }
+                 if ((vkDeviceWaitIdle_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkDeviceWaitIdle_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -1627,7 +1627,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pAllocateInfo, pAllocator, pMemory);
+                 }
+                 if ((vkAllocateMemory_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pMemory;
+                 vkStream->unsetHandleMapping();
+@@ -1755,7 +1755,8 @@
+                         m_state->on_vkMapMemory(&m_pool, snapshotApiCallHandle, device, memory,
+                                                 offset, size, flags, ppData);
+                 }
+-                if ((vkMapMemory_VkResult_return) == VK_ERROR_DEVICE_LOST) m_state->on_DeviceLost();
++                if ((vkMapMemory_VkResult_return) == VK_ERROR_DEVICE_LOST)
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)ppData;
+@@ -1882,7 +1883,7 @@
+                         unboxed_device, memoryRangeCount, pMemoryRanges);
+                 }
+                 if ((vkFlushMappedMemoryRanges_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkFlushMappedMemoryRanges_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -1940,7 +1941,7 @@
+                                                            pMemoryRanges);
+                 }
+                 if ((vkInvalidateMappedMemoryRanges_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkInvalidateMappedMemoryRanges_VkResult_return, sizeof(VkResult));
+                 if (!m_state->usingDirectMapping()) {
+@@ -2059,7 +2060,7 @@
+                         &m_pool, snapshotApiCallHandle, device, buffer, memory, memoryOffset);
+                 }
+                 if ((vkBindBufferMemory_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkBindBufferMemory_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -2108,7 +2109,7 @@
+                         &m_pool, snapshotApiCallHandle, device, image, memory, memoryOffset);
+                 }
+                 if ((vkBindImageMemory_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkBindImageMemory_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -2499,7 +2500,7 @@
+                         &m_pool, snapshotApiCallHandle, queue, bindInfoCount, pBindInfo, fence);
+                 }
+                 if ((vkQueueBindSparse_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForQueue(queue);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkQueueBindSparse_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -2565,7 +2566,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pCreateInfo, pAllocator, pFence);
+                 }
+                 if ((vkCreateFence_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pFence;
+                 vkStream->unsetHandleMapping();
+@@ -2677,7 +2678,7 @@
+                         &m_pool, snapshotApiCallHandle, device, fenceCount, pFences);
+                 }
+                 if ((vkResetFences_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkResetFences_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -2716,7 +2717,7 @@
+                         m_state->on_vkGetFenceStatus(&m_pool, snapshotApiCallHandle, device, fence);
+                 }
+                 if ((vkGetFenceStatus_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkGetFenceStatus_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -2777,7 +2778,7 @@
+                                                     fenceCount, pFences, waitAll, timeout);
+                 }
+                 if ((vkWaitForFences_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkWaitForFences_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -2845,7 +2846,7 @@
+                                                       pCreateInfo, pAllocator, pSemaphore);
+                 }
+                 if ((vkCreateSemaphore_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pSemaphore;
+                 vkStream->unsetHandleMapping();
+@@ -2976,7 +2977,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pCreateInfo, pAllocator, pEvent);
+                 }
+                 if ((vkCreateEvent_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pEvent;
+                 vkStream->unsetHandleMapping();
+@@ -3079,7 +3080,7 @@
+                     vkGetEventStatus_VkResult_return = vk->vkGetEventStatus(unboxed_device, event);
+                 }
+                 if ((vkGetEventStatus_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkGetEventStatus_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -3116,7 +3117,8 @@
+                     vkSetEvent_VkResult_return =
+                         m_state->on_vkSetEvent(&m_pool, snapshotApiCallHandle, device, event);
+                 }
+-                if ((vkSetEvent_VkResult_return) == VK_ERROR_DEVICE_LOST) m_state->on_DeviceLost();
++                if ((vkSetEvent_VkResult_return) == VK_ERROR_DEVICE_LOST)
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkSetEvent_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -3154,7 +3156,7 @@
+                         m_state->on_vkResetEvent(&m_pool, snapshotApiCallHandle, device, event);
+                 }
+                 if ((vkResetEvent_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkResetEvent_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -3224,7 +3226,7 @@
+                         vk->vkCreateQueryPool(unboxed_device, pCreateInfo, pAllocator, pQueryPool);
+                 }
+                 if ((vkCreateQueryPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin auto non dispatchable handle create for pQueryPool;
+                 if (vkCreateQueryPool_VkResult_return == VK_SUCCESS)
+@@ -3363,7 +3365,7 @@
+                                                   dataSize, pData, stride, flags);
+                 }
+                 if ((vkGetQueryPoolResults_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((void*)pData, dataSize * sizeof(uint8_t));
+                 vkStream->write(&vkGetQueryPoolResults_VkResult_return, sizeof(VkResult));
+@@ -3432,7 +3434,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pCreateInfo, pAllocator, pBuffer);
+                 }
+                 if ((vkCreateBuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pBuffer;
+                 vkStream->unsetHandleMapping();
+@@ -3566,7 +3568,7 @@
+                         vk->vkCreateBufferView(unboxed_device, pCreateInfo, pAllocator, pView);
+                 }
+                 if ((vkCreateBufferView_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin auto non dispatchable handle create for pView;
+                 if (vkCreateBufferView_VkResult_return == VK_SUCCESS)
+@@ -3700,7 +3702,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pCreateInfo, pAllocator, pImage);
+                 }
+                 if ((vkCreateImage_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pImage;
+                 vkStream->unsetHandleMapping();
+@@ -3894,7 +3896,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pCreateInfo, pAllocator, pView);
+                 }
+                 if ((vkCreateImageView_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pView;
+                 vkStream->unsetHandleMapping();
+@@ -4028,7 +4030,7 @@
+                                                          pCreateInfo, pAllocator, pShaderModule);
+                 }
+                 if ((vkCreateShaderModule_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pShaderModule;
+                 vkStream->unsetHandleMapping();
+@@ -4168,7 +4170,7 @@
+                                                           pCreateInfo, pAllocator, pPipelineCache);
+                 }
+                 if ((vkCreatePipelineCache_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pPipelineCache;
+                 vkStream->unsetHandleMapping();
+@@ -4307,7 +4309,7 @@
+                         vk->vkGetPipelineCacheData(unboxed_device, pipelineCache, pDataSize, pData);
+                 }
+                 if ((vkGetPipelineCacheData_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_4 = (uint64_t)(uintptr_t)pDataSize;
+@@ -4382,7 +4384,7 @@
+                         unboxed_device, dstCache, srcCacheCount, pSrcCaches);
+                 }
+                 if ((vkMergePipelineCaches_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkMergePipelineCaches_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -4475,7 +4477,7 @@
+                             pCreateInfos, pAllocator, pPipelines);
+                 }
+                 if ((vkCreateGraphicsPipelines_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pPipelines;
+                 vkStream->unsetHandleMapping();
+@@ -4580,7 +4582,7 @@
+                         pCreateInfos, pAllocator, pPipelines);
+                 }
+                 if ((vkCreateComputePipelines_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pPipelines;
+                 vkStream->unsetHandleMapping();
+@@ -4719,7 +4721,7 @@
+                         pPipelineLayout);
+                 }
+                 if ((vkCreatePipelineLayout_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pPipelineLayout;
+                 vkStream->unsetHandleMapping();
+@@ -4862,7 +4864,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pCreateInfo, pAllocator, pSampler);
+                 }
+                 if ((vkCreateSampler_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pSampler;
+                 vkStream->unsetHandleMapping();
+@@ -4999,7 +5001,7 @@
+                                                                 pSetLayout);
+                 }
+                 if ((vkCreateDescriptorSetLayout_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pSetLayout;
+                 vkStream->unsetHandleMapping();
+@@ -5139,7 +5141,7 @@
+                         pDescriptorPool);
+                 }
+                 if ((vkCreateDescriptorPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pDescriptorPool;
+                 vkStream->unsetHandleMapping();
+@@ -5252,7 +5254,7 @@
+                         &m_pool, snapshotApiCallHandle, device, descriptorPool, flags);
+                 }
+                 if ((vkResetDescriptorPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkResetDescriptorPool_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -5314,7 +5316,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pAllocateInfo, pDescriptorSets);
+                 }
+                 if ((vkAllocateDescriptorSets_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pDescriptorSets;
+                 vkStream->unsetHandleMapping();
+@@ -5406,7 +5408,7 @@
+                         pDescriptorSets);
+                 }
+                 if ((vkFreeDescriptorSets_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkFreeDescriptorSets_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -5549,7 +5551,7 @@
+                                                         pCreateInfo, pAllocator, pFramebuffer);
+                 }
+                 if ((vkCreateFramebuffer_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pFramebuffer;
+                 vkStream->unsetHandleMapping();
+@@ -5686,7 +5688,7 @@
+                                                        pCreateInfo, pAllocator, pRenderPass);
+                 }
+                 if ((vkCreateRenderPass_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pRenderPass;
+                 vkStream->unsetHandleMapping();
+@@ -5875,7 +5877,7 @@
+                                                         pCreateInfo, pAllocator, pCommandPool);
+                 }
+                 if ((vkCreateCommandPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pCommandPool;
+                 vkStream->unsetHandleMapping();
+@@ -5987,7 +5989,7 @@
+                         &m_pool, snapshotApiCallHandle, device, commandPool, flags);
+                 }
+                 if ((vkResetCommandPool_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkResetCommandPool_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -6049,7 +6051,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pAllocateInfo, pCommandBuffers);
+                 }
+                 if ((vkAllocateCommandBuffers_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 if (pAllocateInfo->commandBufferCount) {
+                     uint64_t* cgen_var_2;
+@@ -8673,7 +8675,7 @@
+                         &m_pool, snapshotApiCallHandle, device, bindInfoCount, pBindInfos);
+                 }
+                 if ((vkBindBufferMemory2_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkBindBufferMemory2_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -8726,7 +8728,7 @@
+                         &m_pool, snapshotApiCallHandle, device, bindInfoCount, pBindInfos);
+                 }
+                 if ((vkBindImageMemory2_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkBindImageMemory2_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -9866,7 +9868,7 @@
+                                                                    pYcbcrConversion);
+                 }
+                 if ((vkCreateSamplerYcbcrConversion_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pYcbcrConversion;
+                 vkStream->unsetHandleMapping();
+@@ -10013,7 +10015,7 @@
+                             pDescriptorUpdateTemplate);
+                 }
+                 if ((vkCreateDescriptorUpdateTemplate_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pDescriptorUpdateTemplate;
+                 vkStream->unsetHandleMapping();
+@@ -10601,7 +10603,7 @@
+                                                         pCreateInfo, pAllocator, pRenderPass);
+                 }
+                 if ((vkCreateRenderPass2_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pRenderPass;
+                 vkStream->unsetHandleMapping();
+@@ -10848,7 +10850,7 @@
+                         vk->vkGetSemaphoreCounterValue(unboxed_device, semaphore, pValue);
+                 }
+                 if ((vkGetSemaphoreCounterValue_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((uint64_t*)pValue, sizeof(uint64_t));
+                 vkStream->write(&vkGetSemaphoreCounterValue_VkResult_return, sizeof(VkResult));
+@@ -10898,7 +10900,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pWaitInfo, timeout);
+                 }
+                 if ((vkWaitSemaphores_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkWaitSemaphores_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -10939,7 +10941,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pSignalInfo);
+                 }
+                 if ((vkSignalSemaphore_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkSignalSemaphore_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -11253,7 +11255,7 @@
+                         unboxed_device, pCreateInfo, pAllocator, pPrivateDataSlot);
+                 }
+                 if ((vkCreatePrivateDataSlot_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin auto non dispatchable handle create for pPrivateDataSlot;
+                 if (vkCreatePrivateDataSlot_VkResult_return == VK_SUCCESS)
+@@ -11377,7 +11379,7 @@
+                         unboxed_device, objectType, objectHandle, privateDataSlot, data);
+                 }
+                 if ((vkSetPrivateData_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkSetPrivateData_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -11722,7 +11724,7 @@
+                         &m_pool, snapshotApiCallHandle, queue, submitCount, pSubmits, fence);
+                 }
+                 if ((vkQueueSubmit2_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForQueue(queue);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkQueueSubmit2_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -12990,7 +12992,7 @@
+                         vk->vkMapMemory2(unboxed_device, pMemoryMapInfo, ppData);
+                 }
+                 if ((vkMapMemory2_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_2 = (uint64_t)(uintptr_t)ppData;
+@@ -13041,7 +13043,7 @@
+                         vk->vkUnmapMemory2(unboxed_device, pMemoryUnmapInfo);
+                 }
+                 if ((vkUnmapMemory2_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkUnmapMemory2_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -13704,7 +13706,7 @@
+                         vk->vkCopyMemoryToImage(unboxed_device, pCopyMemoryToImageInfo);
+                 }
+                 if ((vkCopyMemoryToImage_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkCopyMemoryToImage_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -13751,7 +13753,7 @@
+                         vk->vkCopyImageToMemory(unboxed_device, pCopyImageToMemoryInfo);
+                 }
+                 if ((vkCopyImageToMemory_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkCopyImageToMemory_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -13798,7 +13800,7 @@
+                         vk->vkCopyImageToImage(unboxed_device, pCopyImageToImageInfo);
+                 }
+                 if ((vkCopyImageToImage_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkCopyImageToImage_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -13854,7 +13856,7 @@
+                         vk->vkTransitionImageLayout(unboxed_device, transitionCount, pTransitions);
+                 }
+                 if ((vkTransitionImageLayout_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkTransitionImageLayout_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -13928,7 +13930,7 @@
+                         unboxed_device, pCreateInfo, pAllocator, pSwapchain);
+                 }
+                 if ((vkCreateSwapchainKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin auto non dispatchable handle create for pSwapchain;
+                 if (vkCreateSwapchainKHR_VkResult_return == VK_SUCCESS)
+@@ -14077,7 +14079,7 @@
+                         unboxed_device, swapchain, pSwapchainImageCount, pSwapchainImages);
+                 }
+                 if ((vkGetSwapchainImagesKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_4 = (uint64_t)(uintptr_t)pSwapchainImageCount;
+@@ -14162,7 +14164,7 @@
+                         unboxed_device, swapchain, timeout, semaphore, fence, pImageIndex);
+                 }
+                 if ((vkAcquireNextImageKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((uint32_t*)pImageIndex, sizeof(uint32_t));
+                 vkStream->write(&vkAcquireNextImageKHR_VkResult_return, sizeof(VkResult));
+@@ -14206,7 +14208,7 @@
+                         &m_pool, snapshotApiCallHandle, queue, pPresentInfo);
+                 }
+                 if ((vkQueuePresentKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForQueue(queue);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkQueuePresentKHR_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -14261,7 +14263,7 @@
+                 }
+                 if ((vkGetDeviceGroupPresentCapabilitiesKHR_VkResult_return) ==
+                     VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 if (pDeviceGroupPresentCapabilities) {
+                     transform_fromhost_VkDeviceGroupPresentCapabilitiesKHR(
+@@ -14331,7 +14333,7 @@
+                 }
+                 if ((vkGetDeviceGroupSurfacePresentModesKHR_VkResult_return) ==
+                     VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pModes;
+@@ -14501,7 +14503,7 @@
+                         vk->vkAcquireNextImage2KHR(unboxed_device, pAcquireInfo, pImageIndex);
+                 }
+                 if ((vkAcquireNextImage2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((uint32_t*)pImageIndex, sizeof(uint32_t));
+                 vkStream->write(&vkAcquireNextImage2KHR_VkResult_return, sizeof(VkResult));
+@@ -15300,7 +15302,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pImportSemaphoreFdInfo);
+                 }
+                 if ((vkImportSemaphoreFdKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkImportSemaphoreFdKHR_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -15350,7 +15352,7 @@
+                         &m_pool, snapshotApiCallHandle, device, pGetFdInfo, pFd);
+                 }
+                 if ((vkGetSemaphoreFdKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((int*)pFd, sizeof(int));
+                 vkStream->write(&vkGetSemaphoreFdKHR_VkResult_return, sizeof(VkResult));
+@@ -15430,7 +15432,7 @@
+                             pDescriptorUpdateTemplate);
+                 }
+                 if ((vkCreateDescriptorUpdateTemplateKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pDescriptorUpdateTemplate;
+                 vkStream->unsetHandleMapping();
+@@ -15635,7 +15637,7 @@
+                                                            pCreateInfo, pAllocator, pRenderPass);
+                 }
+                 if ((vkCreateRenderPass2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pRenderPass;
+                 vkStream->unsetHandleMapping();
+@@ -15906,7 +15908,7 @@
+                         vk->vkImportFenceFdKHR(unboxed_device, pImportFenceFdInfo);
+                 }
+                 if ((vkImportFenceFdKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkImportFenceFdKHR_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -15958,7 +15960,7 @@
+                         vk->vkGetFenceFdKHR(unboxed_device, pGetFdInfo, pFd);
+                 }
+                 if ((vkGetFenceFdKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((int*)pFd, sizeof(int));
+                 vkStream->write(&vkGetFenceFdKHR_VkResult_return, sizeof(VkResult));
+@@ -16269,7 +16271,7 @@
+                             pYcbcrConversion);
+                 }
+                 if ((vkCreateSamplerYcbcrConversionKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pYcbcrConversion;
+                 vkStream->unsetHandleMapping();
+@@ -16395,7 +16397,7 @@
+                         &m_pool, snapshotApiCallHandle, device, bindInfoCount, pBindInfos);
+                 }
+                 if ((vkBindBufferMemory2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkBindBufferMemory2KHR_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -16448,7 +16450,7 @@
+                         &m_pool, snapshotApiCallHandle, device, bindInfoCount, pBindInfos);
+                 }
+                 if ((vkBindImageMemory2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkBindImageMemory2KHR_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -16738,7 +16740,7 @@
+                                                                  pExecutableCount, pProperties);
+                 }
+                 if ((vkGetPipelineExecutablePropertiesKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pExecutableCount;
+@@ -16854,7 +16856,7 @@
+                                                                  pStatisticCount, pStatistics);
+                 }
+                 if ((vkGetPipelineExecutableStatisticsKHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pStatisticCount;
+@@ -16980,7 +16982,7 @@
+                 }
+                 if ((vkGetPipelineExecutableInternalRepresentationsKHR_VkResult_return) ==
+                     VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pInternalRepresentationCount;
+@@ -17308,7 +17310,7 @@
+                         vk->vkQueueSubmit2KHR(unboxed_queue, submitCount, pSubmits, fence);
+                 }
+                 if ((vkQueueSubmit2KHR_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForQueue(queue);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkQueueSubmit2KHR_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -18121,7 +18123,7 @@
+                             grallocUsage);
+                 }
+                 if ((vkGetSwapchainGrallocUsageANDROID_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((int*)grallocUsage, sizeof(int));
+                 vkStream->write(&vkGetSwapchainGrallocUsageANDROID_VkResult_return,
+@@ -18181,7 +18183,7 @@
+                                                           image, nativeFenceFd, semaphore, fence);
+                 }
+                 if ((vkAcquireImageANDROID_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkAcquireImageANDROID_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -18257,7 +18259,7 @@
+                             pWaitSemaphores, image, pNativeFenceFd);
+                 }
+                 if ((vkQueueSignalReleaseImageANDROID_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForQueue(queue);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((int*)pNativeFenceFd, sizeof(int));
+                 vkStream->write(&vkQueueSignalReleaseImageANDROID_VkResult_return,
+@@ -18325,7 +18327,7 @@
+                             swapchainImageUsage, grallocConsumerUsage, grallocProducerUsage);
+                 }
+                 if ((vkGetSwapchainGrallocUsage2ANDROID_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write((uint64_t*)grallocConsumerUsage, sizeof(uint64_t));
+                 vkStream->write((uint64_t*)grallocProducerUsage, sizeof(uint64_t));
+@@ -18981,7 +18983,7 @@
+                         vk->vkSetDebugUtilsObjectNameEXT(unboxed_device, pNameInfo);
+                 }
+                 if ((vkSetDebugUtilsObjectNameEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkSetDebugUtilsObjectNameEXT_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -19027,7 +19029,7 @@
+                         vk->vkSetDebugUtilsObjectTagEXT(unboxed_device, pTagInfo);
+                 }
+                 if ((vkSetDebugUtilsObjectTagEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkSetDebugUtilsObjectTagEXT_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -19506,7 +19508,7 @@
+                 }
+                 if ((vkGetImageDrmFormatModifierPropertiesEXT_VkResult_return) ==
+                     VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 if (pProperties) {
+                     transform_fromhost_VkImageDrmFormatModifierPropertiesEXT(
+@@ -19580,7 +19582,7 @@
+                             unboxed_device, handleType, pHostPointer, pMemoryHostPointerProperties);
+                 }
+                 if ((vkGetMemoryHostPointerPropertiesEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 if (pMemoryHostPointerProperties) {
+                     transform_fromhost_VkMemoryHostPointerPropertiesEXT(
+@@ -20316,7 +20318,7 @@
+                         vk->vkCopyMemoryToImageEXT(unboxed_device, pCopyMemoryToImageInfo);
+                 }
+                 if ((vkCopyMemoryToImageEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkCopyMemoryToImageEXT_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -20363,7 +20365,7 @@
+                         vk->vkCopyImageToMemoryEXT(unboxed_device, pCopyImageToMemoryInfo);
+                 }
+                 if ((vkCopyImageToMemoryEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkCopyImageToMemoryEXT_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -20410,7 +20412,7 @@
+                         vk->vkCopyImageToImageEXT(unboxed_device, pCopyImageToImageInfo);
+                 }
+                 if ((vkCopyImageToImageEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkCopyImageToImageEXT_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -20466,7 +20468,7 @@
+                         unboxed_device, transitionCount, pTransitions);
+                 }
+                 if ((vkTransitionImageLayoutEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkTransitionImageLayoutEXT_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -20582,7 +20584,7 @@
+                         vk->vkReleaseSwapchainImagesEXT(unboxed_device, pReleaseInfo);
+                 }
+                 if ((vkReleaseSwapchainImagesEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkReleaseSwapchainImagesEXT_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -20656,7 +20658,7 @@
+                         unboxed_device, pCreateInfo, pAllocator, pPrivateDataSlot);
+                 }
+                 if ((vkCreatePrivateDataSlotEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 uint64_t cgen_var_3;
+                 vkStream->handleMapping()->mapHandles_VkPrivateDataSlot_u64(pPrivateDataSlot,
+@@ -20768,7 +20770,7 @@
+                         unboxed_device, objectType, objectHandle, privateDataSlot, data);
+                 }
+                 if ((vkSetPrivateDataEXT_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkSetPrivateDataEXT_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -21108,7 +21110,7 @@
+                             &m_pool, snapshotApiCallHandle, device, memory, pAddress);
+                 }
+                 if ((vkMapMemoryIntoAddressSpaceGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_3 = (uint64_t)(uintptr_t)pAddress;
+@@ -21511,7 +21513,7 @@
+                             pMemoryRequirements);
+                 }
+                 if ((vkCreateImageWithRequirementsGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pImage;
+                 vkStream->unsetHandleMapping();
+@@ -21612,7 +21614,7 @@
+                             pBuffer, pMemoryRequirements);
+                 }
+                 if ((vkCreateBufferWithRequirementsGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // Begin manual non dispatchable handle create for pBuffer;
+                 vkStream->unsetHandleMapping();
+@@ -21712,7 +21714,7 @@
+                                                                      pSize, pHostmemId);
+                 }
+                 if ((vkGetMemoryHostAddressInfoGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 // WARNING PTR CHECK
+                 uint64_t cgen_var_5 = (uint64_t)(uintptr_t)pAddress;
+@@ -21792,7 +21794,7 @@
+                         &m_pool, snapshotApiCallHandle, device, memory, pAllocator);
+                 }
+                 if ((vkFreeMemorySyncGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkFreeMemorySyncGOOGLE_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -22470,7 +22472,7 @@
+                         m_state->on_vkGetBlobGOOGLE(&m_pool, snapshotApiCallHandle, device, memory);
+                 }
+                 if ((vkGetBlobGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkGetBlobGOOGLE_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+@@ -22755,7 +22757,7 @@
+                         &m_pool, snapshotApiCallHandle, device, semaphore, syncId);
+                 }
+                 if ((vkGetSemaphoreGOOGLE_VkResult_return) == VK_ERROR_DEVICE_LOST)
+-                    m_state->on_DeviceLost();
++                    m_state->on_DeviceLostForDevice(device);
+                 vkStream->unsetHandleMapping();
+                 vkStream->write(&vkGetSemaphoreGOOGLE_VkResult_return, sizeof(VkResult));
+                 vkStream->commitWrite();
+--- a/host/vulkan/vk_decoder_global_state.cpp
++++ b/host/vulkan/vk_decoder_global_state.cpp
+@@ -1,3 +1,9 @@
++#include <cstdlib>
++#include <cstring>
++#include <atomic>
++#include <cstdlib>
++#include <cstring>
++#include <cstdio>
+ // Copyright 2018 The Android Open Source Project
+ //
+ // Licensed under the Apache License, Version 2.0 (the "License");
+@@ -316,7 +322,10 @@
+         for(auto& w:waits) w->stop();
+         for(auto& w:waits) w->joinObserver();
+         // CPU cancellation is not GPU completion. Never release on failed idle.
+-        if(dispatch) VK_CHECK(dispatch->vkDeviceWaitIdle(device));
++        if (dispatch) {
++            const VkResult idle = dispatch->vkDeviceWaitIdle(device);
++            if (idle != VK_SUCCESS && idle != VK_ERROR_DEVICE_LOST) VK_CHECK(idle);
++        }
+         std::lock_guard<std::mutex> lock(mMutex);
+         for(auto it=mNativeFenceWaits.begin();it!=mNativeFenceWaits.end();) {
+             auto f=mFenceInfo.find(it->first);
+@@ -2103,6 +2112,14 @@
+                                VkPhysicalDevice boxed_physicalDevice,
+                                const VkDeviceCreateInfo* pCreateInfo,
+                                const VkAllocationCallbacks* pAllocator, VkDevice* pDevice) {
++        // The strict native-result profile has no deferred-result/error contract.
++        // Reject incompatible configuration before native device creation or allocation.
++        if (containRegisteredDeviceLoss() &&
++            m_vkEmulation->getFeatures().VulkanVirtualQueue.enabled()) {
++            *pDevice = VK_NULL_HANDLE;
++            GFXSTREAM_ERROR("Strict native-submit-result profile requires VulkanVirtualQueue disabled");
++            return VK_ERROR_INITIALIZATION_FAILED;
++        }
+         auto physicalDevice = unbox_VkPhysicalDevice(boxed_physicalDevice);
+         auto vk = dispatch_VkPhysicalDevice(boxed_physicalDevice);
+ 
+@@ -6771,7 +6788,8 @@
+ 
+         VkFence usedFence = fence;
+         if (usedFence == VK_NULL_HANDLE) {
+-            usedFence = builder.CreateFenceForOp();
++            VkResult fenceResult = builder.CreateFenceForOp(&usedFence);
++            if (fenceResult != VK_SUCCESS) return fenceResult;
+         }
+ 
+         AndroidNativeBufferInfo* anbInfo = imageInfo->anbInfo.get();
+@@ -6780,7 +6798,7 @@
+             anbInfo->on_vkAcquireImageANDROID(m_vkEmulation, vk, device, defaultQueue, defaultQueueFamilyIndex,
+                                               defaultQueueMutex, semaphore, usedFence);
+         if (result != VK_SUCCESS) {
+-            return result;
++            return builder.OnQueueSubmissionFailed(result);
+         }
+ 
+         DeviceOpWaitable aniCompletedWaitable = builder.OnQueueSubmittedWithFence(usedFence);
+@@ -7488,6 +7506,8 @@
+             }
+ 
+             deviceOpTracker = deviceInfo->deviceOpTracker.get();
++            const VkResult admission = deviceOpTracker->SubmissionStatus();
++            if (admission != VK_SUCCESS) return admission;
+ 
+             if (mRenderDocWithMultipleVkInstances && m_vkEmulation->supportsFrameBoundary()) {
+                 // Check if this is a frame boundary submission, only the first submit call
+@@ -7549,7 +7569,8 @@
+             // Note: This fence will be managed by the DeviceOpTracker after the
+             // OnQueueSubmittedWithFence call, so it does not need to be destroyed in the scope
+             // of this queueSubmit
+-            usedFence = builder.CreateFenceForOp();
++            VkResult fenceResult = builder.CreateFenceForOp(&usedFence);
++            if (fenceResult != VK_SUCCESS) return fenceResult;
+         }
+ 
+         // Dispatch only if it's safe
+@@ -7558,11 +7579,36 @@
+         {
+             std::lock_guard<std::mutex> queueLock(*queueMutex);
+             if (canDispatch) {
+-                auto result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
++                VkResult result;
++#if defined(BSCP_SUBMIT_FAULT_PROBE_1957)
++        // A dedicated test process performs one empty submission. The hook is
++        // compiled out of normal builds and never simulates hardware failure.
++        static std::atomic<unsigned> faultCalls{0};
++        const unsigned call = faultCalls.fetch_add(1);
++        const char* mode = std::getenv("BSCP_SUBMIT_FAULT_PROBE_1957");
++        const bool before = mode && std::strcmp(mode, "before-oom") == 0;
++        const bool after = mode && std::strcmp(mode, "after-device-lost") == 0;
++        if (mode && !before && !after && std::strcmp(mode, "control") != 0) {
++            GFXSTREAM_FATAL("Invalid test-only submit fault mode");
++        }
++        if (call == 0 && before) {
++            result = VK_ERROR_OUT_OF_HOST_MEMORY;
++            std::fprintf(stderr, "FAULT1957 before native_attempted=0 returned=%d\n", result);
++        } else {
++            result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
++            std::fprintf(stderr, "FAULT1957 native call=%u result=%d\n", call, result);
++            if (call == 0 && after && result == VK_SUCCESS) {
++                result = VK_ERROR_DEVICE_LOST;
++                std::fprintf(stderr, "FAULT1957 after synthetic=1 returned=%d\n", result);
++            }
++        }
++#else
++        result = dispatchVkQueueSubmit(vk, queue, submitCount, pSubmits, usedFence);
++#endif
+                 if (result != VK_SUCCESS) {
+                     GFXSTREAM_WARNING("dispatchVkQueueSubmit failed: %s [%d]", string_VkResult(result),
+                                     result);
+-                    return result;
++                    return builder.OnQueueSubmissionFailed(result);
+                 }
+             } else {
+                 // Special handling of submissions where the signalling will be done later.
+@@ -7599,7 +7645,7 @@
+                 if (result != VK_SUCCESS) {
+                     GFXSTREAM_WARNING("dispatchVkQueueSubmit failed: %s [%d]", string_VkResult(result),
+                                     result);
+-                    return result;
++                    return builder.OnQueueSubmissionFailed(result);
+                 }
+             }
+         }
+@@ -9140,6 +9186,35 @@
+         GFXSTREAM_FATAL("Encountered device lost.");
+     }
+ 
++    bool containRegisteredDeviceLoss() const {
++        const char* mode = std::getenv("BSCP_SYNC_SUBMIT_RESULTS");
++        return mode && std::strcmp(mode, "1") == 0;
++    }
++    void on_DeviceLostForDevice(VkDevice boxed_device) {
++        if (!containRegisteredDeviceLoss()) { on_DeviceLost(); return; }
++        const VkDevice device = unbox_VkDevice(boxed_device);
++        std::lock_guard<std::mutex> lock(mMutex);
++        auto* info = gfxstream::base::find(mDeviceInfo, device);
++        if (!info || !info->deviceOpTracker) {
++            GFXSTREAM_FATAL("Device loss has no registered logical device scope");
++        }
++        info->deviceOpTracker->MarkDeviceLost();
++        GFXSTREAM_ERROR("Registered logical VkDevice lost; preserve VkResult and reject new submits");
++    }
++    void on_DeviceLostForQueue(VkQueue boxed_queue) {
++        if (!containRegisteredDeviceLoss()) { on_DeviceLost(); return; }
++        const VkQueue queue = unbox_VkQueue(boxed_queue);
++        std::lock_guard<std::mutex> lock(mMutex);
++        auto* queueInfo = gfxstream::base::find(mQueueInfo, queue);
++        if (!queueInfo) GFXSTREAM_FATAL("Device loss has no registered queue scope");
++        auto* info = gfxstream::base::find(mDeviceInfo, queueInfo->device);
++        if (!info || !info->deviceOpTracker) {
++            GFXSTREAM_FATAL("Queue loss has no registered logical device scope");
++        }
++        info->deviceOpTracker->MarkDeviceLost();
++        GFXSTREAM_ERROR("Registered logical VkQueue device lost; preserve VkResult and reject new submits");
++    }
++
+     VkResult waitForFences(VkDevice unboxed_device, VulkanDispatch* vk, uint32_t fenceCount,
+                            const VkFence* pFences, VkBool32 waitAll, uint64_t timeout, bool checkWaitState) {
+         if (!fenceCount) {
+@@ -10083,7 +10158,7 @@
+             // https://bugs.chromium.org/p/chromium/issues/detail?id=1074600
+             // it's important to idle the device before destroying it!
+             VkResult res = deviceDispatch->vkDeviceWaitIdle(device);
+-            if (res != VK_SUCCESS) {
++            if (res != VK_SUCCESS && res != VK_ERROR_DEVICE_LOST) {
+                 // Something went wrong.. Skip destroying the vulkan objects of the device
+                 // to avoid further issues.
+                 GFXSTREAM_ERROR(
+@@ -12038,6 +12113,13 @@
+ }
+ 
+ void VkDecoderGlobalState::on_DeviceLost() { mImpl->on_DeviceLost(); }
++void VkDecoderGlobalState::on_DeviceLostForDevice(VkDevice device) {
++    mImpl->on_DeviceLostForDevice(device);
++}
++void VkDecoderGlobalState::on_DeviceLostForQueue(VkQueue queue) {
++    mImpl->on_DeviceLostForQueue(queue);
++}
++
+ 
+ void VkDecoderGlobalState::stopNativeFenceWaits() {mImpl->stopNativeFenceWaits();}
+ std::shared_ptr<NativeFenceWait> VkDecoderGlobalState::createNativeFenceWait(
+--- a/host/vulkan/vk_decoder_global_state.h
++++ b/host/vulkan/vk_decoder_global_state.h
+@@ -913,6 +913,8 @@
+         VkPhysicalDeviceGroupProperties* pPhysicalDeviceGroupProperties);
+ 
+     void on_DeviceLost();
++    void on_DeviceLostForDevice(VkDevice boxed_device);
++    void on_DeviceLostForQueue(VkQueue boxed_queue);
+ 
+     // Fence waits
+     void stopNativeFenceWaits();
+--- a/host/ring_stream.cpp
++++ b/host/ring_stream.cpp
+@@ -236,6 +236,7 @@
+ 
+                 bool sleeping = false;
+                 do {
++                    sleeping = false;
+                     const AsgOnUnavailableReadStatus status = mCallbacks.onUnavailableRead();
+                     switch (status) {
+                         case AsgOnUnavailableReadStatus::kContinue: {
+--- a/host/address_space/address_space_graphics.cpp
++++ b/host/address_space/address_space_graphics.cpp
+@@ -561,7 +561,7 @@
+ AddressSpaceGraphicsContext::~AddressSpaceGraphicsContext() {
+     if (mCurrentConsumer) {
+         mExiting = 1;
+-        mConsumerMessages.send(ConsumerCommand::Exit);
++        mConsumerMessages.stop();
+         mConsumerInterface.destroy(mCurrentConsumer);
+     }
+ 
+@@ -621,7 +621,7 @@
+ 
+ AsgOnUnavailableReadStatus AddressSpaceGraphicsContext::onUnavailableRead() {
+     ConsumerCommand cmd;
+-    mConsumerMessages.receive(&cmd);
++    if (!mConsumerMessages.receive(&cmd)) { return AsgOnUnavailableReadStatus::kExit; }
+     switch (cmd) {
+         case ConsumerCommand::Wakeup:
+             return AsgOnUnavailableReadStatus::kContinue;

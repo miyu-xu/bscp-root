@@ -23,3 +23,5 @@ AOSP17 是默认版本。请先读当前操作指南；技术实现参考描述�
 当前指南取代旧准备阶段状态，不改写原失败，也不授予新增安装或安全权限。
 
 [English](README.md)
+
+- [llama.cpp: Host / Guest / Android](LLAMA-PERFORMANCE.zh-CN.md)
