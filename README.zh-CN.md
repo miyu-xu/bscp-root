@@ -7,6 +7,17 @@ AOSP 17 是 Linux/KVM、macOS/HVF 和 Windows/WHPX 上 Microdroid 算力流程�
 - [部署条件](docs/DEPLOYMENT.zh-CN.md)与[运行操作](docs/OPERATIONS.zh-CN.md)。
 - [架构](docs/ARCHITECTURE.zh-CN.md)、[源码与构建](docs/BUILD.zh-CN.md)、[故障排查](docs/TROUBLESHOOTING.zh-CN.md)。
 
+## 通用 Guest payload
+
+BSCP 的执行单元是 Microdroid Guest payload，即 native 程序或服务，不绑定特定推理引擎。
+载荷入口、Ready/退出回调、Binder RPC 和实例存储可支撑不同工作负载。三桌面已验证
+VADD、离屏像素、coherent buffer 操作及同盘状态保留；llama.cpp 是其中一种负载和性能探针。
+
+Android 的 NDK/bionic、APK 打包和 AIDL/Binder 提供可复用基础，但只有受支持 API 与已配置
+依赖可用。Microdroid 不是完整 Android，不代表任意 APK、Framework/UI 或 Play 服务可用。
+图像处理、文件转换及其他 native 服务是潜在 payload 应用，不是已经验收的应用套件。
+见[架构与状态区分](docs/ARCHITECTURE.zh-CN.md)。
+
 ## 当前能力边界
 
 分平台记录的验收覆盖 GPU 开/关、VADD、离屏/coherent、健康同盘重启，以及有界超时/断连回收。资源 REAPED 不会把 UNKNOWN 业务改成成功。Windows 独立 CLI 重连仍禁用；Mac 历史 ext4 结果保留 70 通过、1 失败。A/H3、真实画面/输入及任意新机器安装均不属于本发布验收。构建或源码 CI 通过不等于 VM 测试通过。

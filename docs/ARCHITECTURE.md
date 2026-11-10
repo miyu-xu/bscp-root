@@ -10,6 +10,29 @@ BSCP provides one host-facing control plane for isolated Android compute across 
 WHPX. Portability is achieved at explicit interfaces; platform behavior is not hidden behind
 claims of identical capability.
 
+## Payload contract: implemented mechanisms and future composition
+
+The Guest entry is `AVmPayload_main`; returning finishes the VM with an exit code.
+Readiness notification, Binder RPC serving and access to packaged resources and
+configured instance storage let a payload implement a one-shot task or service.
+These mechanisms do not restrict the business logic to AI. Current finite evidence
+covers CPU/GPU workloads, offscreen readback, coherent memory and persistence; it
+does not prove arbitrary native-library or Android-app compatibility.
+
+NDK/CMake, bionic and APK assets can be reused with the matching ABI/API level and
+library namespace. AIDL needs matching generated bindings, runtime and transport;
+it does not expose all Android system services. Framework/UI, device HAL services
+and hardware codecs are not automatic payload capabilities. The BSCP graphics
+Guest is an explicit integration beyond the minimal Microdroid environment.
+
+A unified task schema for artifact identities, inputs/outputs, resource requests,
+capability negotiation and state migration is a design direction, not a completed
+portable SDK. x86_64 and arm64 require separate native artifacts. Android phone
+native tests do not establish phone Microdroid GPU support. Cross-device scheduling,
+unified quotas and adversarial multi-tenant isolation remain goals. Desktop HVF/WHPX
+are not Android pKVM; pVM/attestation guarantees require a separately supported and
+verified hardware, firmware and runtime configuration.
+
 ## Runtime layers
 
 1. `vm` and `virtmgr` validate configuration, prepare payload metadata and instance storage, and
@@ -17,8 +40,8 @@ claims of identical capability.
 2. The Virtualization libraries translate Android VM requests into a host-neutral launch plan.
 3. `crosvm` maps that plan to KVM, HVF, or WHPX and exposes only requested virtio devices.
 4. Microdroid boots a minimal Android userspace and executes the payload in the guest boundary.
-5. Optional gfxstream/ANGLE integration accelerates graphics without changing the control-plane
-   trust boundary.
+5. Optional gfxstream/ANGLE integration accelerates graphics. Its renderer, shared buffers and
+   host driver add data-plane trust dependencies that must be assessed separately.
 
 ## Repository ownership
 

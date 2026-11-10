@@ -7,6 +7,21 @@ AOSP 17 is the default source baseline for the Microdroid compute workflow on Li
 - [Supported deployment](docs/DEPLOYMENT.md) and [operations](docs/OPERATIONS.md).
 - [Architecture](docs/ARCHITECTURE.md), [source/build](docs/BUILD.md), [troubleshooting](docs/TROUBLESHOOTING.md).
 
+## General-purpose Guest payloads
+
+BSCP's execution unit is a Microdroid Guest payload: a native program or service,
+not a particular inference engine. Payload entry, readiness/exit callbacks,
+Binder RPC and instance storage support different workloads. Actual three-desktop
+validation includes VADD, offscreen pixels, coherent-buffer operations and
+same-disk state retention. llama.cpp is one workload and a performance probe.
+
+Android's NDK/bionic, APK packaging and AIDL/Binder offer reusable building blocks;
+only supported APIs and configured dependencies are available. Microdroid is not
+full Android: arbitrary APKs, Framework/UI or Play services are not implied.
+Image processing, file conversion and other native services are possible payload
+applications, not already validated application suites. See [architecture and
+status distinctions](docs/ARCHITECTURE.md).
+
 ## Current capability boundary
 
 The separately recorded three-platform acceptance covers GPU on/off, VADD, offscreen/coherent, healthy same-disk restart and bounded timeout/disconnect recovery. UNKNOWN business results remain UNKNOWN even after resources are REAPED. Windows independent CLI reconnect remains disabled. Mac historical ext4 results remain 70 pass / 1 fail. A/H3, real display/input and arbitrary-machine deployment are not part of this release acceptance. A build or source CI pass is not a VM test.
