@@ -49,6 +49,47 @@ Mac model preparation took about 208–212 seconds. Startup, transfer and hash c
 are excluded from throughput. This old Mac baseline predates later tuning; do not
 present it as the latest optimized candidate or a released-runtime benchmark.
 
+## Mac optimization follow-up (isolated candidates)
+
+The severe original Mac loss above was substantially corrected in later experiments.
+It is not the current candidate's performance. These stages are separate experiments,
+not a single contemporaneous Host/Guest comparison or a released-binary benchmark.
+
+| Stage / workload | Host tokens/s | Guest tokens/s | Sampling and meaning |
+|---|---:|---:|---|
+| v1916 blocking fence wait, pp512 | 778.72 | 793.73 | One invocation per mode, 3 internal samples; about 2% is not evidence of stable Guest superiority |
+| v1916 blocking fence wait, tg128 | 59.97 | 46.13 | Same experiment; polling Guest was 9.1272 |
+| v1921 nodes-per-submit=1000, tg128 | 60.95 ± 0.93 | 53.16 ± 0.69 | 5 samples per side; Guest/Host 87.2% |
+| v1927 combined wait, tg128 depth 0 | Not remeasured | 59.33 ± 1.63 | OFF/ON/ON/OFF; 6 samples/mode; OFF 52.46 ± 1.89, gain 13.1% |
+| v1927 combined wait, tg128 depth 1024 | Not remeasured | 58.82 ± 1.27 | 6 samples/mode; OFF 54.74 ± 1.86, gain 7.46% |
+| v1961 strict submit results, depth 0 / 1024 | Not remeasured | 53.75 ± 1.72 / 54.90 ± 1.22 | 6 samples/mode; result-checking OFF 57.60 / 58.66; costs 6.69% / 6.41% |
+| v2026 profile guard, depth 0 / 1024 | Not remeasured | 53.58 / 54.00 | Mean of 2 launches/mode, 3 internal samples/shape; control 53.19 / 54.54; changes +0.73% / −0.99%, not a robust speedup claim |
+
+SD where shown is sample SD, not a confidence interval. Same M1, Vulkan/MoltenVK
+(not native Metal), Q4_K_M model/hash and llama commit/core16 basis listed above;
+1 thread, batch 512, ubatch 128, requested GPU layers 99, FP16 arithmetic off,
+Guest 1 vCPU/2048 MiB. Later stages use nodes-per-submit=1000 and isolated backend
+patches; they must not be attributed to an unchanged upstream build. The v1927
+backend source SHA256 is `a71b102e757b4ba176e9a3d2f9281b0b407a500326cf8d53165d627ec8a96d36`.
+Frequency was not locked. Startup/model staging is excluded. There is no new
+paired Host denominator for 59.33 or the later strict-profile results.
+
+The main change replaced repeated final-fence status polling with blocking completion;
+submission grouping and combined waiting further improved decode. Strict submission
+error handling subsequently incurred measurable cost: do not publish only the fastest
+59.33 figure as the latest complete candidate. v1924/v1927 compared 3 prompts with
+1024 input tokens, 3 repeats, 151936 logits each and generation; compared GPU outputs
+were byte-equal. v1927 numeric comparison passed but one correctness instance remained
+UNKNOWN after a lifecycle identity change, so its overall case did not pass. Its four
+performance instances were PASS/REAPED. v2026 correctness was PASS/REAPED with EOF.
+These comparisons do not prove CPU/GPU equality or arbitrary-model correctness.
+
+The later ASG shutdown regression below has no new Mac throughput measurement.
+Optional llama patches are source experiments, not automatically applied by the
+candidate overlay or enabled in the formal release. The frozen release selector and
+binary assets are unchanged. Original record names, hashes, samples and stage-specific
+limits are in [the aggregate JSON](benchmarks/llama-20261109.json), `mac_optimization`.
+
 ## CPU observations (different sampling designs)
 
 | Hardware / sampling | Host pp512 | Guest pp512 | Host tg128 | Guest tg128 |

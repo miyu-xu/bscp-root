@@ -534,5 +534,286 @@
       },
       "numerical_control": "3 prompts exact logits and generated tokens versus stored Guest g50"
     }
+  },
+  "mac_optimization": {
+    "scope": "Historical isolated candidates, not latest ASG throughput or released binary performance",
+    "records_sha256": {
+      "MAC-FENCE-AB-v1916.json": "5f4f522f8afd7a0609b0fcc39e54a3382ef7d9af53507196632e847cabeee401",
+      "MAC-NODES-v1921.json": "1c0dce8278973ab380f96d97d8370b3e906cd9c64476ec4db75f4def54daf9df",
+      "MAC-COMBINED-SUMMARY-v1927.json": "926db16b4263a98a0a76dd0556c728212cca71c0caacff94c1b67e4740d39f11",
+      "MAC-COMBINED-CORRECTNESS-v1927.json": "3497bdd36f79b86d659ce7f4f4e8ded7e8652b280947af16522c00477352025b",
+      "MAC-LONG-CORRECTNESS-v1924.json": "e05e7bb5c90766cab200b70858a08c3b389044a2312e8fd78f31535651ff3fc5",
+      "MAC-SYNCPERF-v1961.json": "ded03f264896c607fcb76b861382b87807d0a4a5074a055937383f385d5e7601",
+      "MAC-PROFILEGUARD-v2026.json": "98b500f52deb9708b98b59498f1f7eb4977d57e972a94d63757f3d8ece815220",
+      "MAC-PROFILEGUARD-CORRECT-v2026.json": "20aad44544b079fa25a8fba4e51f1c5bcac7e88380171374962612a947d4b14d"
+    },
+    "blocking_wait_v1916": [
+      {
+        "prompt": 128,
+        "generated": 0,
+        "guest_poll_toks": 298.347195,
+        "guest_block_toks": 808.777317,
+        "host_block_toks": 794.469098,
+        "speedup": 2.710859463585706,
+        "guest_host_block_ratio": 1.0180097867066442
+      },
+      {
+        "prompt": 512,
+        "generated": 0,
+        "guest_poll_toks": 297.693674,
+        "guest_block_toks": 793.726506,
+        "host_block_toks": 778.720117,
+        "speedup": 2.666252511633821,
+        "guest_host_block_ratio": 1.01927058088317
+      },
+      {
+        "prompt": 0,
+        "generated": 32,
+        "guest_poll_toks": 9.125717,
+        "guest_block_toks": 45.34753,
+        "host_block_toks": 59.901275,
+        "speedup": 4.969201872028247,
+        "guest_host_block_ratio": 0.7570378092953781
+      },
+      {
+        "prompt": 0,
+        "generated": 128,
+        "guest_poll_toks": 9.127202,
+        "guest_block_toks": 46.132935,
+        "host_block_toks": 59.966146,
+        "speedup": 5.0544443959934275,
+        "guest_host_block_ratio": 0.7693163239138296
+      }
+    ],
+    "nodes_v1921": {
+      "host": [
+        {
+          "n_prompt": 0,
+          "n_gen": 128,
+          "n_depth": 0,
+          "avg_ts": 60.950251,
+          "stddev_ts": 0.929926,
+          "samples_ts": [
+            59.4145,
+            60.9732,
+            61.0807,
+            61.8939,
+            61.3889
+          ]
+        }
+      ],
+      "guest": [
+        {
+          "n_prompt": 0,
+          "n_gen": 128,
+          "n_depth": 0,
+          "avg_ts": 53.15544,
+          "stddev_ts": 0.693936,
+          "samples_ts": [
+            53.6,
+            51.973,
+            53.5866,
+            53.088,
+            53.5295
+          ]
+        }
+      ]
+    },
+    "combined_wait_v1927": {
+      "candidate_source_sha256": "a71b102e757b4ba176e9a3d2f9281b0b407a500326cf8d53165d627ec8a96d36",
+      "parameters": {
+        "batch": 512,
+        "ubatch": 128,
+        "threads": 1,
+        "gpu_layers": 99,
+        "nodes_per_submit": 1000,
+        "FP16_arithmetic": false,
+        "order": [
+          "off",
+          "on",
+          "on",
+          "off"
+        ]
+      },
+      "performance": {
+        "off": {
+          "0": {
+            "samples_tok_s": [
+              52.5795,
+              53.1725,
+              53.5263,
+              53.2472,
+              48.685,
+              53.5779
+            ],
+            "mean": 52.464733333333335,
+            "sd": 1.8856726658321858,
+            "n": 6
+          },
+          "1024": {
+            "samples_tok_s": [
+              53.7756,
+              56.8222,
+              54.7844,
+              51.7567,
+              56.5212,
+              54.7896
+            ],
+            "mean": 54.741616666666665,
+            "sd": 1.8624066348858048,
+            "n": 6
+          }
+        },
+        "on": {
+          "0": {
+            "samples_tok_s": [
+              59.9268,
+              58.7052,
+              57.3663,
+              58.973,
+              62.2062,
+              58.7924
+            ],
+            "mean": 59.328316666666666,
+            "sd": 1.6304376816262154,
+            "n": 6
+          },
+          "1024": {
+            "samples_tok_s": [
+              57.7394,
+              59.3726,
+              58.9791,
+              57,
+              60.5661,
+              59.2859
+            ],
+            "mean": 58.82385,
+            "sd": 1.2709535801908727,
+            "n": 6
+          }
+        }
+      },
+      "gains_percent": {
+        "0": 13.082280033190541,
+        "1024": 7.457275802048224
+      },
+      "production_unchanged": true
+    },
+    "combined_correctness": {
+      "complete": true,
+      "strict_gpu_pass": true,
+      "numeric_comparison_only": true,
+      "overall_case_pass": false,
+      "lifecycle_boundary": "g144 UNKNOWN: session identity changed during token query after complete payload output; original-handle failure cleanup and storage snapshot completed; no replay"
+    },
+    "strict_results_v1961": {
+      "0": {
+        "0": {
+          "samples": [
+            57.9054,
+            59.4057,
+            59.0619,
+            58.8029,
+            53.2729,
+            57.1778
+          ],
+          "n": 6,
+          "mean": 57.60443333333333,
+          "sd": 2.2733178833297094,
+          "median": 58.354150000000004
+        },
+        "1": {
+          "samples": [
+            52.216,
+            51.6534,
+            56.356,
+            53.4827,
+            54.0181,
+            54.7817
+          ],
+          "n": 6,
+          "mean": 53.75131666666667,
+          "sd": 1.717430927189408,
+          "median": 53.7504
+        },
+        "delta_percent": -6.688923827043403
+      },
+      "1024": {
+        "0": {
+          "samples": [
+            57.398,
+            59.116,
+            60.4729,
+            57.6926,
+            57.5752,
+            59.7288
+          ],
+          "n": 6,
+          "mean": 58.663916666666665,
+          "sd": 1.2916719094517255,
+          "median": 58.4043
+        },
+        "1": {
+          "samples": [
+            53.5861,
+            56.0999,
+            55.7483,
+            53.1775,
+            55.6353,
+            55.1629
+          ],
+          "n": 6,
+          "mean": 54.90166666666667,
+          "sd": 1.2216773873108497,
+          "median": 55.399100000000004
+        },
+        "delta_percent": -6.413226756367829
+      }
+    },
+    "profile_guard_v2026": {
+      "0": {
+        "0": {
+          "per_launch_mean": [
+            53.453799,
+            52.93411
+          ],
+          "mean": 53.1939545
+        },
+        "1": {
+          "per_launch_mean": [
+            52.749598,
+            54.41163
+          ],
+          "mean": 53.580614
+        },
+        "change_percent": 0.7268861727510734
+      },
+      "1024": {
+        "0": {
+          "per_launch_mean": [
+            54.173991,
+            54.912017
+          ],
+          "mean": 54.543003999999996
+        },
+        "1": {
+          "per_launch_mean": [
+            54.70208,
+            53.300715
+          ],
+          "mean": 54.001397499999996
+        },
+        "change_percent": -0.9929898617245247
+      }
+    },
+    "limits": [
+      "No contemporaneous Host remeasurement for v1927/v1961/v2026; no inferred paired ratios",
+      "v1927 performance PASS/REAPED; one correctness lifecycle UNKNOWN despite equal numeric output",
+      "v2026 correctness PASS/REAPED/EOF",
+      "Same model and core16 base; isolated stage patches, not identical binaries",
+      "No native Metal comparison; startup and model staging excluded",
+      "Latest ASG regression has no new Mac throughput",
+      "Optional llama patches not enabled by release selector"
+    ]
   }
 }
